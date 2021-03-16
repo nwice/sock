@@ -1,0 +1,11 @@
+{
+  "name": "sock",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/nwice/sock",
+  "author": "Kevin McIntyre <kebin70@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "puppeteer": "^8.0.0"
+  }
+}
