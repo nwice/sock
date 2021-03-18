@@ -10,7 +10,7 @@
         "token": "0xde3a24028580884448a5397872046a019649b084"
       },
       "account": "0x3fcfbcb4b368222fcb4d9c314eca597489fe8605",
-      "locked_value": 176.85
+      "locked_value": 58150
     },
     {
       "token0": {
@@ -22,7 +22,7 @@
         "token": "0xb3fe5374f67d7a22886a0ee082b2e2f9d2651651"
       },
       "account": "0x974ef0bda58c81f3094e124f530ef34fe70dc103",
-      "locked_value": 678237
+      "locked_value": 683107
     },
     {
       "token0": {
@@ -34,7 +34,7 @@
         "token": "0xf20d962a6c8f70c731bd838a3a388d7d48fa6e15"
       },
       "account": "0x953853590b805a0e885a75a3c786d2affceea3cf",
-      "locked_value": 3089785
+      "locked_value": 3107906
     },
     {
       "token0": {
@@ -46,7 +46,7 @@
         "token": "0x60781c2586d68229fde47564546784ab3faca982"
       },
       "account": "0x6a803904b9ea0fc982fbb077c7243c244ae05a2d",
-      "locked_value": 4279802
+      "locked_value": 4312399
     },
     {
       "token0": {
@@ -58,7 +58,7 @@
         "token": "0xc38f41a296a4493ff429f1238e030924a1542e50"
       },
       "account": "0xb12531a2d758c7a8bf09f44fc88e646e1bf9d375",
-      "locked_value": 4354986
+      "locked_value": 4164277
     },
     {
       "token0": {
@@ -70,9 +70,9 @@
         "token": "0x39cf1bd5f15fb22ec3d9ff86b0727afc203427cc"
       },
       "account": "0x14ec55f8b4642111a5af4f5ddc56b7be867eb6cc",
-      "locked_value": 2444834
+      "locked_value": 2459161
     }
   ],
-  "locked_value": 14847820.85,
-  "date": "2021-03-18T21:31:13.266Z"
+  "locked_value": 14785000,
+  "date": "2021-03-18T21:46:02.984Z"
 }
