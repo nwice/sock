@@ -8,6 +8,11 @@
 <style>
     body {
         font-family: 'Rubik', sans-serif;
+        text-rendering: optimizeLegibility;
+    }
+    body > table {
+        max-width:500px;
+        margin: auto;
     }
     .header {
         border-bottom: 1pt solid black;
@@ -29,6 +34,9 @@
         height: 24px;
         width: 24px;
     }
+    .head {
+        margin: 5px 10px 10px 10px;
+    }
 </style>
 <template id="pair_row">
     <tr>
@@ -46,7 +54,7 @@
     <table>
         <thead>
             <tr class="header">
-                <td colspan="2"><div class="center">Total Locked Value</div></td>
+                <td colspan="2"><div class="center head">Total Value Locked</div></td>
                 <td class="money"></td>
             </tr>          
         </thead>
@@ -76,7 +84,7 @@
             });
             let summary = document.querySelector('#summary_row').content.cloneNode(true);            
             let summary_td = summary.querySelectorAll('td');        
-            summary_td[0].innerHTML = 'as of: ' + new Date(info.date).toLocaleTimeString()
+            summary_td[0].innerHTML = new Date(info.date).toLocaleTimeString()
             document.querySelector("tbody").appendChild(summary)
             console.log('summary', summary)
         });        
