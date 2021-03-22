@@ -32,7 +32,7 @@
             document.querySelector('#supply').innerHTML = info.circulating;
             document.querySelector('#total').innerHTML = info.total;
         }).catch(function(err) {
-            console.log('supply :', err);
+            console.log('supply error:', err);
             document.querySelector('#total').innerHTML = '18000000';
             document.querySelector('#supply').innerHTML = "⛷️";
             document.querySelector('#supply').classList.add('error');
