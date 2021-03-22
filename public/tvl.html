@@ -5,44 +5,14 @@
 </head>
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap" rel="stylesheet">
+<link href="assets/site.css" rel="stylesheet">
 <style>
-    body {
-        font-family: 'Rubik', sans-serif;
-        text-rendering: optimizeLegibility;
-    }
-    body > table {
-        max-width:500px;
-        margin: auto;
-    }
-    .header {
-        border-bottom: 1pt solid black;
-    }
-    .center {
-        text-align: center;
-    }
-    .snowballs {
-        background-color: #33A9FF;
-    }
-    .as_of {
-        text-align: right;
-        font-size: smaller;
-    }    
-    .money {
-        text-align:right;
-    }
-    .token {
-        height: 24px;
-        width: 24px;
-    }
-    .head {
-        margin: 5px 10px 10px 10px;
-    }
 </style>
 <template id="pair_row">
     <tr>
         <td class="center"></td>
         <td class="center"></td>
-        <td class="money"></td>
+        <td class="right"></td>
       </tr>
 </template>
 <template id="summary_row">
@@ -55,7 +25,7 @@
         <thead>
             <tr class="header">
                 <td colspan="2"><div class="center head">Total Value Locked</div></td>
-                <td class="money"></td>
+                <td class="right" id="total"></td>
             </tr>          
         </thead>
         <tbody></tbody>
@@ -71,7 +41,7 @@
             document.body.appendChild(t);
             return response.json();
         }).then(function (info) {            
-            document.querySelector('.money').innerHTML = nf.format(info.locked_value);
+            document.querySelector('#total').innerHTML = nf.format(info.locked_value);
             let rt = document.querySelector('#pair_row')    
             info.pairs.forEach(p => {
                 console.log('pair:', p)
@@ -87,6 +57,9 @@
             summary_td[0].innerHTML = new Date(info.date).toLocaleTimeString()
             document.querySelector("tbody").appendChild(summary)
             console.log('summary', summary)
+        }).catch(function (err) {
+            document.querySelector('#total').innerHTML = "⛷️";
+            document.querySelector('#total').classList.add('error');
         });        
     </script>
 </body>
