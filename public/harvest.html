@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Snowball Finance - Be a flake</title> 
+</head>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap" rel="stylesheet">
+<style>
+    body {
+        font-family: 'Rubik', sans-serif;
+        text-rendering: optimizeLegibility;
+    }
+    body > table {
+        max-width:500px;
+        margin: auto;
+    }
+    .header {
+        border-bottom: 1pt solid black;
+    }
+    .center {
+        text-align: center;
+    }
+    .snowballs {
+        background-color: #33A9FF;
+    }
+    .as_of {
+        text-align: right;
+        font-size: smaller;
+    }    
+    .money {
+        text-align:right;
+    }
+    .token {
+        height: 24px;
+        width: 24px;
+    }
+    .head {
+        margin: 5px 10px 10px 10px;
+    }
+</style>
+<template id="harvest_table">
+    <table>
+        <tbody>
+            <tr>
+                <td>Harvest</td>
+                <td id="harvest"></td>
+            </tr>
+        </tbody>
+    </table>
+</template>
+<body>
+    <script>
+        fetch('/harvest.json').then(function (response) {
+            let t = document.querySelector('#harvest_table').content.cloneNode(true);
+            document.body.appendChild(t);
+            return response.json();
+        }).then(function (info) {            
+            document.querySelector('#supply').innerHTML = info.circulating;
+            document.querySelector('#total').innerHTML = info.total;
+        });        
+    </script>
+</body>
+</html>
