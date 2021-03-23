@@ -58,6 +58,7 @@
             document.querySelector("tbody").appendChild(summary)
             console.log('summary', summary)
         }).catch(function (err) {
+            console.log('tvl error:', err);
             document.querySelector('#total').innerHTML = "⛷️";
             document.querySelector('#total').classList.add('error');
         });        
