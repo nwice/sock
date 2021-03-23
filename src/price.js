@@ -1,11 +1,7 @@
 const puppeteer = require('puppeteer');
-const fs = require('fs');
+console.log('price')
 
-function delay(time) {
-    return new Promise(function (resolve) {
-        setTimeout(resolve, time)
-    });
-}
+let pause = true;
 
 const pricing = []
 function getprice(symbol) {
@@ -24,31 +20,34 @@ function getprice(symbol) {
     const page = await context.newPage()
     await page.setViewport({ width: 1920, height: 1080});
     await page.goto('https://info.pangolin.exchange/#/tokens', { waitUntil: 'domcontentloaded' });
-    let stopped = false;
-    while(!stopped) {
-        await delay(2000);
+    let dl = 0;
+    let level_flight = 500;
+    while(dl < level_flight) {
+        await new Promise(function (resolve) {
+            setTimeout(resolve, 2000)
+        });
         try {
-            const wavax_div = await page.evaluate(() => {  
+            console.log('bye console div count:', dl)
+            dl = await page.evaluate(() => {  
                 let divs = document.querySelectorAll('div');
-                let f = null;
-                [].forEach.call(divs, function (div) {
-                    if (div.innerHTML === 'Symbol ') {
-                        [].forEach.call(div.parentNode.parentNode.nextElementSibling.nextElementSibling.children, function(child) {
-                            let inner_divs = child.firstChild.querySelectorAll(":scope > div"); 
-                            console.log('2:', inner_divs[1].innerHTML)
-                        });
-                        //f = d.innerHTML
-                    }
-                    console.log('')
+                if ( divs.length < 500 ) {
+                    console.log('nh')
+                    return divs.length
+                }
+                else return new Promise ((resolve, reject) => {
+                        
                 });
-                return f;
-            })
-            console.log('wavax div:', wavax_div)
+                return divs.length;
+            }, {})
         } catch (err) {
             console.log('error:', err)    
-        }                    
+        }
     }
-
+    if (pause) {
+        console.log('pause:', pause);
+        await delay(3600 * 1000)
+    }
+    
     /*
     for (let x = 0; x < info.pairs.length; x++) {
         let pair = info.pairs[x]

@@ -18,7 +18,7 @@ let usdt = { symbol: 'usdt', token: '0xde3a24028580884448a5397872046a019649b084'
 let info = { pairs: [
     { 
         token0: avax, token1: usdt, 
-        account: '0x3fcFBCB4b368222fCB4d9c314eCA597489FE8605' },        
+        account: '0x74db28797957a52a28963f424daf2b10226ba04c' },        
     { 
         token0: avax, token1: link, 
         account: '0x974Ef0bDA58C81F3094e124f530eF34fe70dc103' },    
