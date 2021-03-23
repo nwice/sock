@@ -11,11 +11,11 @@ const fs = require('fs');
     let dumb = ['https://x-api.snowballfinance.info/harvest', 'https://x-api.snowballfinance.info/harvest.json'];
 
     for (var x = 0; x < dumb.length; x++) {
-        // 
-        const page = await browser.newPage()
-        await browser.newPage()
-        page.goto(dumb[x]);
+        console.log('skipping:', dumb[x]) 
+        //const page = await browser.newPage()
+        //await browser.newPage()
+        //page.goto();
     }
-    fs.writeFileSync('public/harvest.json', JSON.stringify({}, null, 2))
+    //fs.writeFileSync('public/harvest.json', JSON.stringify({}, null, 2))
     await browser.close();
 })()
