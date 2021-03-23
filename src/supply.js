@@ -22,61 +22,19 @@ function onScan(err, data) {
     if (err) {
         console.log('scan error:', JSON.stringify(err, null, 2));
     } else {
-        console.log('scan data:', data)
+        console.log('scan data length:', data.Items.length)
         data.Items.forEach(function(item) {
             previous_item = item
             console.log('scan item:', item);
         });
-        if (typeof data.LastEvaluatedKey != 'undefined') {
-            params.ExclusiveStartKey = data.LastEvaluatedKey;
-            client.scan(params, onScan);
-        }        
+        //if (typeof data.LastEvaluatedKey != 'undefined') {
+        //    params.ExclusiveStartKey = data.LastEvaluatedKey;
+        //    client.scan(params, onScan);
+        //}        
     }
 }
 
 client.scan(scan_params, onScan);
-
-/**
-var create_params = {
-    AttributeDefinitions: [
-        {
-            AttributeName: 'circulating',
-            AttributeType: 'N'
-        },
-        {
-            AttributeName: 'timestamp',
-            AttributeType: 'N'
-        }
-    ],
-    KeySchema: [
-        {
-            AttributeName: 'circulating',
-            KeyType: 'HASH'
-        },
-        {
-            AttributeName: 'timestamp',
-            KeyType: 'RANGE'
-        }
-    ],
-    ProvisionedThroughput: {
-        ReadCapacityUnits: 1,
-        WriteCapacityUnits: 1
-    },
-    TableName: table,
-    StreamSpecification: {
-        StreamEnabled: false
-    }
-};
-
-// call it every time
-ddb.createTable(create_params, function (err, data) {
-    if (err) {
-        //console.log('create error', err);
-    } else {
-        console.log('create info', data);
-    }
-});
- */
 
 function delay(time) {
     return new Promise(function (resolve) {
@@ -106,24 +64,27 @@ function delay(time) {
         })
         return l
     })
-    supply.circulating = parseFloat(eval_circulating).toString()
-    let item = {
-        circulating : { N: supply.circulating },
-        timestamp: { N: new Date().getTime().toString() },
-        maxsupply: { N: supply.total.toString() }
-    }
+    supply.circulating = parseFloat(eval_circulating)
+
+    fs.writeFileSync('public/supply.json', JSON.stringify(Object.assign(supply, { previous: previous_item }), null, 2))
+
     const potential_supply = {
         TableName: table,
-        Item: item
+        Item: {
+            circulating : { N: supply.circulating.toString() },
+            timestamp : { N: new Date().getTime().toString() },
+            total: { N: supply.total.toString() },
+        }
     };
     await ddb.putItem(potential_supply, function (err, data) {
         if (err) {
-          console.log('put error', err);
+          console.log('put error:', err);
         } else {
-          console.log('put success', data);
-          console.log('potential_supply:', potential_supply)
-          fs.writeFileSync('public/supply.json', JSON.stringify(Object.assign(supply, { previous: previous_item }), null, 2))
+          console.log('put success:', data);
+          console.log('potential supply:', potential_supply)
+          
         }
     });  
+
     await browser.close();    
 })()
