@@ -1,12 +1,43 @@
 const puppeteer = require('puppeteer');
-console.log('price')
+const WebSocket = require('ws');
+
+console.log('price service')
+
+// yeah sure - if anything we re-fire from systemd
+const WebSocket = require('ws');
+
+const wss = new WebSocket.Server({
+  port: 8081,
+  perMessageDeflate: {
+    zlibDeflateOptions: {
+      // See zlib defaults.
+      chunkSize: 1024,
+      memLevel: 7,
+      level: 3
+    },
+    zlibInflateOptions: {
+      chunkSize: 10 * 1024
+    },
+    // Other options settable:
+    clientNoContextTakeover: true, // Defaults to negotiated value.
+    serverNoContextTakeover: true, // Defaults to negotiated value.
+    serverMaxWindowBits: 10, // Defaults to negotiated value.
+    // Below options specified as default values.
+    concurrencyLimit: 10, // Limits zlib concurrency for perf.
+    threshold: 1024 // Size (in bytes) below which messages
+    // should not be compressed.
+  }
+});
+
+wss.on('connection', function connection(ws) {
+    ws.on('message', function incoming(message) {
+      console.log('received: %s', message);
+    });  
+});
+
+const ws = new WebSocket('ws://localhost:8081');
 
 let pause = true;
-
-const pricing = []
-function getprice(symbol) {
-    pricing.filter(p => { return p.symbol == symbol})
-}
 
 (async () => {
 
@@ -20,25 +51,26 @@ function getprice(symbol) {
     const page = await context.newPage()
     await page.setViewport({ width: 1920, height: 1080});
     await page.goto('https://info.pangolin.exchange/#/tokens', { waitUntil: 'domcontentloaded' });
-    let dl = 0;
+    let div_attitude = 0;
     let level_flight = 500;
-    while(dl < level_flight) {
+    while(div_attitude < level_flight) {
         await new Promise(function (resolve) {
             setTimeout(resolve, 2000)
         });
         try {
             console.log('bye console div count:', dl)
-            dl = await page.evaluate(() => {  
+            div_attitude = await page.evaluate((radio) => {  
                 let divs = document.querySelectorAll('div');
                 if ( divs.length < 500 ) {
-                    console.log('nh')
+                    radio.send('contact')
                     return divs.length
                 }
                 else return new Promise ((resolve, reject) => {
-                        
+                    radio.send('get ready for mutation listeners')
                 });
+                // yeah that's probably a wrap here.
                 return divs.length;
-            }, {})
+            }, ws)
         } catch (err) {
             console.log('error:', err)    
         }
