@@ -1,0 +1,27 @@
+* {
+    font-family: 'Rubik', sans-serif;
+    font-size: xx-large
+}
+body > table {
+    max-width: 500px;
+    margin: auto;
+}
+.header {
+    border-bottom: 1pt solid black;
+}
+.center {
+    text-align: center;
+}
+.right {
+    text-align:right;
+}
+.token {
+    height: 24px;
+    width: 24px;
+}
+.head {
+    margin: 5px 10px 10px 10px;
+}
+.error {
+    transform: rotate(180deg);
+}
