@@ -27,7 +27,7 @@
             document.body.appendChild(t);
             return response.json();
         }).then(function (harvest) {            
-            document.querySelector('#harvest').innerHTML = harvest;
+            document.querySelector('#harvest').innerHTML = JSON.stringify(harvest);
         }).catch(function(err) {
             console.log('harvest error:', err);
             document.querySelector('#harvest').innerHTML = "⛷️";

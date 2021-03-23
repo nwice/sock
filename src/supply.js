@@ -15,6 +15,8 @@ var scan_params = {
     Select: 'ALL_ATTRIBUTES'
 };
 
+let previous_item = {}
+
 function onScan(err, data) {
     console.log('scan')
     if (err) {
@@ -22,6 +24,7 @@ function onScan(err, data) {
     } else {
         console.log('scan data:', data)
         data.Items.forEach(function(item) {
+            previous_item = item
             console.log('scan item:', item);
         });
         if (typeof data.LastEvaluatedKey != 'undefined') {
@@ -33,6 +36,7 @@ function onScan(err, data) {
 
 client.scan(scan_params, onScan);
 
+/**
 var create_params = {
     AttributeDefinitions: [
         {
@@ -72,6 +76,7 @@ ddb.createTable(create_params, function (err, data) {
         console.log('create info', data);
     }
 });
+ */
 
 function delay(time) {
     return new Promise(function (resolve) {
@@ -117,7 +122,7 @@ function delay(time) {
         } else {
           console.log('put success', data);
           console.log('potential_supply:', potential_supply)
-          fs.writeFileSync('public/supply.json', JSON.stringify(supply, null, 2))
+          fs.writeFileSync('public/supply.json', JSON.stringify(Object.assign(supply, { previous: previous_item }), null, 2))
         }
     });  
     await browser.close();    
