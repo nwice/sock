@@ -3,10 +3,16 @@ const WebSocket = require('ws');
 
 console.log('price service')
 
-// yeah sure - if anything we re-fire from systemd
-const WebSocket = require('ws');
+let specific_dex = {
+    value: 0, 
+    token: 'PNG',
+    info: {
+        tokens: 'https://info.pangolin.exchange/#/tokens',
+        trigger_div: 'WAVAX'
+    }
+}
 
-const wss = new WebSocket.Server({
+const server = new WebSocket.Server({
   port: 8081,
   perMessageDeflate: {
     zlibDeflateOptions: {
@@ -29,15 +35,13 @@ const wss = new WebSocket.Server({
   }
 });
 
-wss.on('connection', function connection(ws) {
-    ws.on('message', function incoming(message) {
-      console.log('received: %s', message);
-    });  
+server.on('connection', function connection(ws) {
+    ws.on('message', (message) => {
+        console.log('message:', message);
+    });      
 });
 
-const ws = new WebSocket('ws://localhost:8081');
-
-let pause = true;
+let forever_after = true;
 
 (async () => {
 
@@ -50,66 +54,46 @@ let pause = true;
     const context = await browser.createIncognitoBrowserContext();
     const page = await context.newPage()
     await page.setViewport({ width: 1920, height: 1080});
-    await page.goto('https://info.pangolin.exchange/#/tokens', { waitUntil: 'domcontentloaded' });
-    let div_attitude = 0;
+    await page.goto(specific_dex.info.tokens, { waitUntil: 'domcontentloaded' });
+    let div_altitude = 0;
     let level_flight = 500;
-    while(div_attitude < level_flight) {
+    while(div_altitude < level_flight) {
         await new Promise(function (resolve) {
-            setTimeout(resolve, 2000)
+            setTimeout(resolve, 3000)
         });
         try {
-            console.log('bye console div count:', dl)
-            div_attitude = await page.evaluate((radio) => {  
+            console.log('pre-eval div altitude:', div_altitude)
+            div_altitude = await page.evaluate( (dex) => {
                 let divs = document.querySelectorAll('div');
                 if ( divs.length < 500 ) {
-                    radio.send('contact')
                     return divs.length
-                }
-                else return new Promise ((resolve, reject) => {
-                    radio.send('get ready for mutation listeners')
-                });
-                // yeah that's probably a wrap here.
+                } else {
+                    let token_divs = [];
+                    for (var x = 0; x < divs.length; x++) {
+                        if ( divs[x].innerHTML === dex.info.trigger_div ) {
+                            token_divs = [...divs[x].parentNode.parentNode.parentNode.parentNode.querySelectorAll(':scope > div:not(:first-of-type)')];
+                            break;
+                        }
+                    }
+                    if ( token_divs.length == 0 ) {
+                        return divs.length
+                    }
+                    return new Promise ((resolve, reject) => {
+                        const client = new WebSocket('ws://localhost:8081');
+                        client.addEventListener('open', function (event) {
+                            client.send(`in tower with ${token_divs.length} tokens`);
+                        });
+                    });                    
+                };
                 return divs.length;
-            }, ws)
+            }, specific_dex);
         } catch (err) {
             console.log('error:', err)    
         }
     }
-    if (pause) {
-        console.log('pause:', pause);
-        await delay(3600 * 1000)
+    if (forever_after) {
+        console.log('forever after');
+        await new Promise ((resolve, reject) => {});
     }
-    
-    /*
-    for (let x = 0; x < info.pairs.length; x++) {
-        let pair = info.pairs[x]
-        pair.account = pair.account.toLowerCase()
-        pair.token0.token = pair.token0.token.toLowerCase()
-        pair.token1.token = pair.token1.token.toLowerCase();
-        
-        await delay(5000);
-        const liquidity = await page.evaluate(() => {            
-            let l = 0;
-
-        })
-        try {
-            pair.locked_value = parseFloat(liquidity.replace(/[^0-9.-]+/g, ''))
-            if ( isNaN(pair.locked_value) ) {
-                x = x - 1
-                console.log('again!')
-            } else {
-                console.log('pair:', pair.token1.symbol, 'liquidity:', pair.locked_value)
-            }    
-        } catch (err) {
-            x = x - 1
-            console.log('again:', err)
-        }
-    }
-    
-    info.date = new Date().toISOString();
-    info.locked_value = info.pairs.map(p => { return p.locked_value }).reduce((a, b) => a + b)
-    console.log('total:', '$' + info.locked_value.toFixed(2))
-    fs.writeFileSync('public/pairs.json', JSON.stringify(info, null, 2))
-    */
     await browser.close();
 })()
