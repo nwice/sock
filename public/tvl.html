@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Total Locked Value</title> 
+<title>Total Value Locked</title> 
 </head>
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap" rel="stylesheet">
@@ -41,7 +41,7 @@
             document.body.appendChild(t);
             return response.json();
         }).then(function (info) {            
-            document.querySelector('#total').innerHTML = nf.format(info.locked_value);
+            document.querySelector('#total').innerHTML = nf.format(info.value);
             let rt = document.querySelector('#pair_row')    
             info.pairs.forEach(p => {
                 console.log('pair:', p)
@@ -49,12 +49,12 @@
                 let row_td = row.querySelectorAll('td');
                 row_td[0].innerHTML = `<a target="_blank" href="https://info.pangolin.exchange/#/token/${p.token0.token}"><img class="token" src="assets/avalanche-tokens/${p.token0.token}/logo.png"></a>`
                 row_td[1].innerHTML = `<a target="_blank" href="https://info.pangolin.exchange/#/token/${p.token1.token}"><img class="token" src="assets/avalanche-tokens/${p.token1.token}/logo.png"></a>`
-                row_td[2].textContent = nf.format(p.locked_value);                
+                row_td[2].textContent = nf.format(p.value);                
                 document.querySelector("tbody").appendChild(row)
             });
             let summary = document.querySelector('#summary_row').content.cloneNode(true);            
             let summary_td = summary.querySelectorAll('td');        
-            summary_td[0].innerHTML = new Date(info.date).toLocaleTimeString()
+            summary_td[0].innerHTML = new Date(info.timestamp).toLocaleTimeString()
             document.querySelector("tbody").appendChild(summary)
             console.log('summary', summary)
         }).catch(function (err) {

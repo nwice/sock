@@ -1,19 +1,55 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 
+var AWS = require('aws-sdk');
+
+AWS.config.update({ region: 'us-east-1' });
+
+var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+var client = new AWS.DynamoDB.DocumentClient();
+
+let table = 'tvl'
+
+var scan_params = {
+    TableName : table,
+    Select: 'ALL_ATTRIBUTES',
+    Limit: 1
+};
+
+let previous_item = {}
+
+let king = {
+    account: '0x5df42ace37bA4AceB1f3465Aad9bbAcaA238D652'.toLowerCase()
+}
+
+function onScan(err, data) {
+    if (err) {
+        console.log('scan error:', JSON.stringify(err, null, 2));
+    } else {
+        console.log('table:', table, 'items length:', data.Items.length)
+        data.Items.forEach(function(item) {
+            previous_item = item
+            console.log('previous item:', new Date(previous_item.timestamp).toLocaleTimeString());
+        }); 
+        // normally need to check scan for more items
+    }
+}
+
+client.scan(scan_params, onScan);
+
 function delay(time) {
     return new Promise(function (resolve) {
         setTimeout(resolve, time)
     });
 }
 
-let avax = { symbol: 'avax', token: '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7' };
-let link = { symbol: 'link', token: '0xb3fe5374f67d7a22886a0ee082b2e2f9d2651651' }
-let eth = { symbol: 'eth', token: '0xf20d962a6c8f70c731bd838a3a388d7d48fa6e15'}
-let png = { symbol: 'png', token: '0x60781c2586d68229fde47564546784ab3faca982'}
-let snob = { symbol: 'snob', token: '0xc38f41a296a4493ff429f1238e030924a1542e50'}
-let sushi = { symbol: 'sushi', token: '0x39cf1BD5f15fb22eC3D9Ff86b0727aFc203427cc'}
-let usdt = { symbol: 'usdt', token: '0xde3a24028580884448a5397872046a019649b084'}
+let avax = { token: 'avax', hash: '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7' };
+let link = { token: 'link', hash: '0xb3fe5374f67d7a22886a0ee082b2e2f9d2651651' }
+let eth = { token: 'eth', hash: '0xf20d962a6c8f70c731bd838a3a388d7d48fa6e15'}
+let png = { token: 'png', hash: '0x60781c2586d68229fde47564546784ab3faca982'}
+let snob = { token: 'snob', hash: '0xc38f41a296a4493ff429f1238e030924a1542e50'}
+let sushi = { token: 'sushi', hash: '0x39cf1BD5f15fb22eC3D9Ff86b0727aFc203427cc'}
+let usdt = { token: 'usdt', hash: '0xde3a24028580884448a5397872046a019649b084'}
 
 let info = { pairs: [
     { 
@@ -36,7 +72,7 @@ let info = { pairs: [
         token0: avax,  token1: sushi, 
         account: '0x14ec55f8B4642111A5aF4f5ddc56B7bE867eB6cC' 
     }    
-], locked_value: 0};
+], locked: 0};
 
 (async () => {
     const browser = await puppeteer.launch({
@@ -48,9 +84,11 @@ let info = { pairs: [
         let pair = info.pairs[x]
         pair.account = pair.account.toLowerCase()
         pair.token0.token = pair.token0.token.toLowerCase()
-        pair.token1.token = pair.token1.token.toLowerCase();
+        pair.token0.price = 0
+        pair.token1.token = pair.token1.token.toLowerCase()
+        pair.token1.price = 0
         await page.goto('https://info.pangolin.exchange/#/account/' + pair.account)
-        await delay(10000);
+        await delay(20000);
         const liquidity = await page.evaluate(() => {            
             let l = 0;
             [].forEach.call(document.querySelectorAll('div'), function (div) {
@@ -61,21 +99,45 @@ let info = { pairs: [
             return l
         })
         try {
-            pair.locked_value = parseFloat(liquidity.replace(/[^0-9.-]+/g, ''))
-            if ( isNaN(pair.locked_value) ) {
+            pair.locked = parseFloat(liquidity.replace(/[^0-9.-]+/g, ''))
+            if ( isNaN(pair.locked) ) {
                 x = x - 1
                 console.log('again!')
             } else {
-                console.log('pair:', pair.token1.symbol, 'liquidity:', pair.locked_value)
+                console.log('pair:', [pair.token0.token, pair.token1.token].join('-'), 'liquidity:', pair.locked)
             }    
         } catch (err) {
             x = x - 1
             console.log('again:', err)
         }
     }
+
+    info.timestamp = new Date().getTime();
+    info.locked = info.pairs.map(p => { return p.locked }).reduce((a, b) => a + b)
+    info.token = 'snob'
+    info.price = 0
+    info.hash = '0xc38f41a296a4493ff429f1238e030924a1542e50wsta'
+
+    var item = AWS.DynamoDB.Converter.marshall(info);
+    
+    console.log('item:', item);
+
+    console.log('total:', '$' + info.locked.toFixed(2))
+    
+    var write_out = Object.assign({}, info, {locked_value: info.locked}, { previous: previous_item })
+
+    fs.writeFileSync('public/tvl.json', JSON.stringify(write_out, null, 2))
+
+    await ddb.putItem({
+        TableName: table,
+        Item: item
+    }, function (err, data) {
+        if (err) {
+          console.log('put error:', err);
+        } else {
+          console.log('put success:', data);
+        }
+    });
+
     await browser.close();
-    info.date = new Date().toISOString();
-    info.locked_value = info.pairs.map(p => { return p.locked_value }).reduce((a, b) => a + b)
-    console.log('total:', '$' + info.locked_value.toFixed(2))
-    fs.writeFileSync('public/tvl.json', JSON.stringify(info, null, 2))
 })()

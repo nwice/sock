@@ -12,20 +12,20 @@ let table = 'supply'
 
 var scan_params = {
     TableName : table,
-    Select: 'ALL_ATTRIBUTES'
+    Select: 'ALL_ATTRIBUTES',
+    Limit: 1
 };
 
 let previous_item = {}
 
 function onScan(err, data) {
-    console.log('scan')
     if (err) {
         console.log('scan error:', JSON.stringify(err, null, 2));
     } else {
-        console.log('scan data length:', data.Items.length)
+        console.log('scan data items length:', data.Items.length)
         data.Items.forEach(function(item) {
             previous_item = item
-            console.log('scan item:', item);
+            console.log('previous item:', new Date(previous_item.timestamp).toLocaleTimeString());
         });
         //if (typeof data.LastEvaluatedKey != 'undefined') {
         //    params.ExclusiveStartKey = data.LastEvaluatedKey;
@@ -68,13 +68,11 @@ function delay(time) {
 
     fs.writeFileSync('public/supply.json', JSON.stringify(Object.assign(supply, { previous: previous_item }), null, 2))
 
+    var item = AWS.DynamoDB.Converter.marshall({ circulating: supply.circulating, timestamp: new Date().getTime(), total: supply.total});
+
     const potential_supply = {
         TableName: table,
-        Item: {
-            circulating : { N: supply.circulating.toString() },
-            timestamp : { N: new Date().getTime().toString() },
-            total: { N: supply.total.toString() },
-        }
+        Item: item
     };
     await ddb.putItem(potential_supply, function (err, data) {
         if (err) {
