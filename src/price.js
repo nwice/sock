@@ -1,48 +1,109 @@
 const puppeteer = require('puppeteer');
 const WebSocket = require('ws');
-
-var AWS = require('aws-sdk');
+const fs = require('fs');
+const AWS = require('aws-sdk');
 
 AWS.config.update({ region: 'us-east-1' });
 
-var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+const s3 = new AWS.S3();
+const ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+const dynamo_client = new AWS.DynamoDB.DocumentClient();
 
-let table = 'price'
+console.log('price service')
 
-let long_dive = true;
+const table = 'price'
 
-console.log('price service:', long_dive)
-
-let specific_dex = {
+const dexes = [{
     value: 0, 
     token: 'PNG',
     info: {
         tokens: 'https://info.pangolin.exchange/#/tokens',
         match_inner_html: 'WAVAX'
     }
+},{
+    value: 0, 
+    token: 'ELK',
+    info: {
+        tokens: 'https://avax-info.elk.finance/#/tokens',
+        match_inner_html: 'ELK'
+    }
+}];
+
+const run_dex = dexes[0];
+
+const server = new WebSocket.Server({ port: 8081 });
+
+const current_prices = [];
+function get_current_price(msg) {
+    try {
+        return current_prices.filter(cp => { return cp.token == msg.token && cp.dex == msg.dex })[0]
+    } catch (err) {
+        current_prices.push(msg)
+    }
 }
 
-const server = new WebSocket.Server({
-  port: 8081
-});
+const publish = (msg, update, previous) => {
+    if ( update ) {
+        ddb.putItem({
+            TableName: table,
+            Item: AWS.DynamoDB.Converter.marshall(msg)
+        }, (err, data) => {
+            if (err) {
+                console.log('put error:', err);
+            }
+        });        
+    }
+    let content = JSON.stringify(Object.assign(msg, previous ? { previous } : {}), null, 2);
+    let path = `price/${msg.token}.json`.toLowerCase();
+        
+    fs.writeFileSync('public/' + path.toLowerCase(), content)
+        
+    s3.upload({
+        Bucket: 'beta.scewpt.com',
+        Key: path, // File name you want to save as in S3
+        Body: content,
+        ContentType: 'application/json',
+        ACL: 'public-read'
+    }, (err, data) => {
+        if (err) {
+            throw err;
+        }
+    });
+}
 
-server.on('connection', function connection(ws) {
+server.on('connection', (ws) => {
     ws.on('message', (message) => {
         try {
-            let msg = JSON.parse(message);
-            //console.log('price change:', msg)
-            ddb.putItem({
-                TableName: 'price',
-                Item: AWS.DynamoDB.Converter.marshall(msg)
-            }, function (err, data) {
+            let msg = JSON.parse(message);        
+            let current_price = get_current_price(msg)
+            if ( current_price !== undefined && current_price.price != msg.price ) {
+                return
+            }
+            dynamo_client.query({
+                TableName : 'price',
+                Select: 'ALL_ATTRIBUTES',
+                Limit: 1,
+                ScanIndexForward: false,
+                KeyConditionExpression: '#token = :token',
+                ExpressionAttributeValues: {
+                    ':token': msg.token
+                },
+                ExpressionAttributeNames: {
+                    '#token': 'token'
+                }    
+            }, (err, data) => {                                
                 if (err) {
-                   console.log('put error:');
+                    console.log('token query error:', JSON.stringify(err, null, 2));                    
+                } else if ( data.Items.length > 0 && data.Items[0].price == msg.price ) {
+                    console.log('ignore:', msg.token, 'price:', msg.price)                    
+                    publish(msg, false)
                 } else {
-                    console.log('put success:', data);
-                }
-            });             
+                    console.log('publish:', msg.token, 'price:', msg.price) 
+                    publish(msg, true, data.Items.length ? null: data.Items[0] )
+                }                
+            });         
         } catch (err) {
-            console.log('text:', message)
+            console.log('text:', err)
         }
     });
     ws.on('close', (event) => {
@@ -64,119 +125,95 @@ server.on('connection', function connection(ws) {
     })
     const context = await browser.createIncognitoBrowserContext();
     const page = await context.newPage()
-    page.on('request', request => {
-        if ( 
-            request.url().indexOf('raw.githubusercontent.com') < 0 && 
-            request.url().indexOf('graph-node.avax.network') < 0 &&
-            request.url().indexOf('unpkg.com') < 0 &&
-            request.url().indexOf('data:image/png;base64') < 0 ) {
-            console.log('request:', request.url());
-        }
-    });
     await page.setViewport({ width: 1920, height: 1080});
     const session = await page.target().createCDPSession();
     await session.send("Page.enable");
     await session.send("Page.setWebLifecycleState", { state: "active" });
 
-    await page.goto(specific_dex.info.tokens, { waitUntil: 'domcontentloaded' });
+    await page.goto(run_dex.info.tokens, { waitUntil: 'domcontentloaded' });
     console.log('diver - step off')
-    await page.evaluate((dex) => {
+    await page.evaluate((script_dex) => {
 
-        document.dex = dex;
-
-        return new Promise ((resolve, reject) => {
-            const client = new WebSocket('ws://localhost:8081');
-            
-            document.addEventListener('price', function (e) {
-                //client.send(JSON.stringify(e.detail))
-
-                let rank = e.detail.querySelector(':scope > div > div > div').innerHTML
-                let hash = e.detail.querySelector(':scope > div > div > a').href.split('/').pop();
-                let token = e.detail.querySelector(':scope > div:nth-of-type(2) > div').innerHTML
-                let liquidity = e.detail.querySelector(':scope > div:nth-of-type(3)').innerHTML.replace(/[^\d.-]/g, '')
-                let volume = e.detail.querySelector(':scope > div:nth-of-type(4)').innerHTML.replace(/[^\d.-]/g, '')
-                let price = e.detail.querySelector(':scope > div:nth-of-type(5)').innerHTML.replace(/[^\d.-]/g, '')
-                let change = e.detail.querySelector(':scope > div:nth-of-type(6) > div').innerHTML
-                let obj = { rank, hash, token, liquidity, volume, price, change, timestamp: new Date().getTime() }
-
-                if ( parseInt(rank) < 12) {
-                    client.send('token:' + JSON.stringify(obj));
+        document.findking = () => {
+            let all_divs = document.querySelectorAll('div');
+            let king_div = null;
+            [].forEach.call(all_divs, (div) => {
+                if ( div.innerHTML === script_dex.info.match_inner_html ) {
+                    king_div = div                        
                 }
-                //client.send(JSON.stringify(obj))
+            });
+            return king_div;
+        }       
+        
+        document.get_tokens_array = () => {
+            return [...document.findking().parentNode.parentNode.parentNode.parentNode.querySelectorAll(':scope > div > div:nth-of-type(1)')];
+        }
 
+        return new Promise ((resolve) => {
+            const ws_client = new WebSocket('ws://localhost:8081');
+            
+            document.addEventListener('send', (e) => {
+                ws_client.send(e.detail)
             }, false);
 
-            document.addEventListener('chat', function (e) {
-                client.send(e.detail)
-            }, false);
-
-            document.addEventListener('watchtoken', function (e) {
+            document.addEventListener('watchtoken', (e) => {
                 const observer = new MutationObserver((mutationsList, observer) => {
-                    client.send('mutation change')
+                    ws_client.send('mutation change')
                 });
                 observer.observe(e.detail, { attributes: true, childList: true, subtree: true });
             }, false);
 
-            document.addEventListener('foundking', (e) => {
-                // need to iterate through div
-                // mutation observer not working...yet.
-                // 
-                let king = e.detail;
-                let throne = king.parentNode.parentNode;
-                let tokens = [...throne.parentNode.parentNode.querySelectorAll(':scope > div > div:nth-of-type(1)')];
-                tokens.forEach(t=> {
-                    document.dispatchEvent(new CustomEvent('price', {
-                        detail: t
-                    }));
-                })
-                setInterval( () => { 
-                    // may comfirm pair liquidity -- maybe that trips price updates
-
-                }, 30000);
-
-            });
-
-            client.addEventListener('open', function (event) {
-                client.send(`open ${dex.token} to ${document}`);
+            ws_client.addEventListener('open', (event) => {
+                ws_client.send(`open ${script_dex.token} to ${document}`);
                 resolve()
-            });
-
-            client.addEventListener('close', function (event) {
-                client.send(`close ${dex.token} to ${document}`);
-                reject()
-            });             
+            }); 
+            
         });     
-    }, specific_dex);
+    }, run_dex);
     let submerged = 500;
     
     await page.waitForFunction(`document.querySelectorAll('div').length > ${submerged}`);
-
     let submerged_divs = await page.evaluate(() => {
         return Promise.resolve(document.querySelectorAll('div').length)
     });
     console.log('submerged divs:', submerged_divs)  
-    if (long_dive) {
-        console.log('long dive good luck');
-        await page.evaluate(() => {
-            return new Promise ((resolve, reject) => {
-                let all_divs = document.querySelectorAll('div');
-                document.dispatchEvent(new CustomEvent('chat', {
-                    detail: 'landed:' + all_divs.length
-                }));
-                let king_div = null;
-                [].forEach.call(all_divs, (div) => {
-                    if ( div.innerHTML === document.dex.info.match_inner_html ) {
-                        king_div = div                        
-                    }
-                });
-                if (king_div != null) {
-                    document.dispatchEvent(new CustomEvent('foundking', {
-                        detail: king_div
-                    }));
+    console.log('long dive good luck');
+    await page.evaluate((script_dex) => {
+
+        const outbound = (msg) => {
+            document.dispatchEvent(new CustomEvent('send', {
+                detail: msg
+            }))
+        }
+
+        const process = () => {
+            document.get_tokens_array().forEach( (t) => {      
+                let rank = parseInt(t.querySelector(':scope > div > div > div').innerHTML)
+                let hash = t.querySelector(':scope > div > div > a').href.split('/').pop();
+                let token = t.querySelector(':scope > div:nth-of-type(2) > div').innerHTML
+                if ( hash === '0x64ea9156199161b0c54825c2f117cd71dbde859c' ) {
+                    token = 'BAMBOO'
                 }
-            });
+                if ( token === 'WAVAX' ) {
+                    token = 'AVAX'
+                }                
+                let liquidity = parseFloat(t.querySelector(':scope > div:nth-of-type(3)').innerHTML.replace(/[^\d.-]/g, ''))
+                let volume = parseFloat(t.querySelector(':scope > div:nth-of-type(4)').innerHTML.replace(/[^\d.-]/g, ''))
+                let price = parseFloat(t.querySelector(':scope > div:nth-of-type(5)').innerHTML.replace(/[^\d.-]/g, ''))
+                let change = t.querySelector(':scope > div:nth-of-type(6) > div').innerHTML                
+                let dex = script_dex.token
+                let obj = { dex, rank, price, hash, token, liquidity, volume, price, change, timestamp: new Date().getTime() }
+                if ( obj.price > 0 ) {
+                    outbound(JSON.stringify(obj))
+                }
+            });            
+        }
+
+        return new Promise ((resolve, reject) => {
+            let all_divs = document.querySelectorAll('div');
+            outbound('landed:' + all_divs.length);  
+            outbound('token set size: ' + document.get_tokens_array().length);
+            process()
         });
-    }
-    console.log('before close - assuming task complete');
-    await browser.close();
+    }, run_dex);
 })()
