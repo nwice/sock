@@ -9,7 +9,11 @@ function getParameterByName(name, url = window.location.href) {
 
 function prettyNumber(n) {
     let nonNan = new Intl.NumberFormat('en-US').format(n);
-    console.log('here:', nonNan);
-    if isNaN(nonNan) return n;
+    if  ( isNaN(n) ) {
+        return n;
+    }
+    if ( n > 10000 && parseInt(n) != n ) {
+        return prettyNumber(parseInt(n))
+    }
     return nonNan
 }
