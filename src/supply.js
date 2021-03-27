@@ -72,11 +72,20 @@ function delay(time) {
         });
         return parseFloat(l)
     })  
-    console.log('supply:', supply)
+    
+    let dynamo_item = Object.assign({}, supply, { price: price.price })
+
+    console.log('dynamo supply:', dynamo_item)
+
     await ddb.putItem({
         TableName: table,
-        Item: AWS.DynamoDB.Converter.marshall(supply)
-    });  
-    fs.writeFileSync(`public/supply/${supply.token.toLowerCase()}.json`, JSON.stringify(Object.assign(price, supply, { previous: previous_supply }), null, 2))
+        Item: AWS.DynamoDB.Converter.marshall(dynamo_item)
+    }).promise();  
+
+    let s3_contents = Object.assign(price, supply, { previous: previous_supply })
+
+    console.log('s3 supply:', s3_contents)
+
+    fs.writeFileSync(`public/supply/${supply.token.toLowerCase()}.json`, JSON.stringify(s3_contents, null, 2))
     await browser.close();    
 })()
