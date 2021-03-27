@@ -104,8 +104,12 @@ server.on('connection', (ws) => {
                     console.log('ignore:', msg.token, 'price:', msg.price)                    
                     publish(msg, false, data.Items[0])
                 } else {
-                    console.log('publish:', msg.token, 'price:', msg.price, 'previous:', new Date(data.Items[0].timestamp).toLocaleDateString()) 
-                    publish(msg, true, data.Items.length > 0 ? data.Items[0] : null )
+                    let p = null
+                    if ( data.Items.length > 0 ) {
+                        p = data.Items[0]
+                    }
+                    console.log('publish:', msg.token, 'price:', msg.price, 'previous:', p ? new Date(p.timestamp).toLocaleDateString() : null)
+                    publish(msg, true, p )
                 }                
             });         
         } catch (err) {
@@ -197,7 +201,7 @@ server.on('connection', (ws) => {
                 let rank = parseInt(t.querySelector(':scope > div > div > div').innerHTML)
                 let hash = t.querySelector(':scope > div > div > a').href.split('/').pop();
                 let token = t.querySelector(':scope > div:nth-of-type(2) > div').innerHTML
-                if ( hash === '0x64ea9156199161b0c54825c2f117cd71dbde859c' ) {
+                if ( hash === '0x0362d330f94fae853d5c462e57357f7ef7c2ea1d' ) {
                     token = 'BAMBOO'
                 }
                 if ( token === 'WAVAX' ) {
