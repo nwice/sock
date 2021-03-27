@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 
 var AWS = require('aws-sdk');
+const { exit } = require('process');
 AWS.config.update({ region: 'us-east-1' });
 
 var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
@@ -26,78 +27,90 @@ dynamo_client.query({
     }
 }, (err, data) => {
     if (err) return;
-    previous_tvl = data.Items[0]
     console.log('previous tvl:', previous_tvl)
+    previous_tvl = Object.assign({}, data.Items[0])    
 })
-let players = [
+let load = [
     { token: 'avax' }, { token: 'link' }, { token: 'eth' }, { token: 'png' }, { token: 'snob' }, 
     { token: 'sushi' }, { token: 'usdt' }
 ];
-function player(t) {
-    return players.filter(p => { return t.toLowerCase() == p.token.toLowerCase })[0]
-}
-pairs: [
-    {
-        token0: player('avax'), token1: player('usdt'),
-        account: '0x74db28797957a52a28963f424daf2b10226ba04c'
-    },
-    {
-        token0: player('avax'), token1: player('link'),
-        account: '0x974Ef0bDA58C81F3094e124f530eF34fe70dc103'
-    },
-    {
-        token0: player('avax'), token1: player('eth'),
-        account: '0x953853590b805A0E885A75A3C786D2aFfcEEA3Cf'
-    },
-    {
-        token0: player('avax'), token1: player('png'),
-        account: '0x6a803904b9ea0fc982fbb077c7243c244ae05a2d'
-    },
-    {
-        token0: player('avax'), token1: player('snob'),
-        account: '0xB12531a2d758c7a8BF09f44FC88E646E1BF9D375'
-    },
-    {
-        token0: player('avax'), token1: player('sushi'),
-        account: '0x14ec55f8B4642111A5aF4f5ddc56B7bE867eB6cC'
-    }
-];
 
-(async () => { 
+function delay(time) {
+    return new Promise(function (resolve) {
+        setTimeout(resolve, time)
+    });
+};
 
-    for (var x = 0; x < players.length; x++) {        
+(async () => {     
+    const players = await Promise.all(load.map(async (p) => {
         let data = await s3.getObject({
             Bucket: 'beta.scewpt.com',
-            Key: `price/${players[x].token.toLowerCase()}.json`
+            Key: `price/${p.token.toLowerCase()}.json`
         }).promise()
-        let p = JSON.parse(data.Body.toString());
-        delete p.previos;
-        players[x] = p
+        let content = await data.Body.toString();
+        let loaded_p = JSON.parse(content);
+        delete loaded_p.previous;        
+        return Object.assign({}, p, loaded_p)
+    }))
+    
+    function player(t) {
+        return players.filter(p => { return t.toLowerCase() == p.token.toLowerCase() })[0]
     }
+
+    let new_tvl = Object.assign({
+        pairs: [
+            {
+                token0: player('avax'), token1: player('usdt'),
+                account: '0x74db28797957a52a28963f424daf2b10226ba04c'
+            },
+            {
+                token0: player('avax'), token1: player('link'),
+                account: '0x974Ef0bDA58C81F3094e124f530eF34fe70dc103'
+            },
+            {
+                token0: player('avax'), token1: player('eth'),
+                account: '0x953853590b805A0E885A75A3C786D2aFfcEEA3Cf'
+            },
+            {
+                token0: player('avax'), token1: player('png'),
+                account: '0x6a803904b9ea0fc982fbb077c7243c244ae05a2d'
+            },
+            {
+                token0: player('avax'), token1: player('snob'),
+                account: '0xB12531a2d758c7a8BF09f44FC88E646E1BF9D375'
+            },
+            {
+                token0: player('avax'), token1: player('sushi'),
+                account: '0x14ec55f8B4642111A5aF4f5ddc56B7bE867eB6cC'
+            }        
+        ]}, 
+        player('snob'), { timestamp: new Date().getTime() }
+    );
 
     const browser = await puppeteer.launch({
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
     })
     const page = await browser.newPage()
-    for (let x = 0; x < info.pairs.length; x++) {
-        let pair = info.pairs[x]
+    for (let x = 0; x < new_tvl.pairs.length; x++) {
+        let pair = new_tvl.pairs[x]
         pair.account = pair.account.toLowerCase()
-        pair.token0.token = pair.token0.token.toLowerCase()
-        pair.token0.price = 0
-        pair.token1.token = pair.token1.token.toLowerCase()
-        pair.token1.price = 0
         await page.goto('https://info.pangolin.exchange/#/account/' + pair.account)
-        await delay(20000);
+
+        let some_time = 10000
+
+        console.log('diver in:', some_time / 1000, 'sec(s)');
+        await delay(some_time);
         const liquidity = await page.evaluate(() => {
             let l = 0;
-            [].forEach.caplayer(document.querySelectorAplayer('div'), function (div) {
+            [].forEach.call(document.querySelectorAll('div'), function (div) {
                 if (div.innerHTML === 'Liquidity (Including Fees)') {
                     l = div.parentNode.nextElementSibling.firstElementChild.innerHTML
                 }
             })
             return l
         })
+        console.log('diver out:', liquidity);
         try {
             pair.locked = parseFloat(liquidity.replace(/[^0-9.-]+/g, ''))
             if (isNaN(pair.locked)) {
@@ -112,17 +125,29 @@ pairs: [
         }
     }
 
-    new_tvl.locked = info.pairs.map(p => { return p.locked }).reduce((a, b) => a + b)
+    new_tvl.locked = new_tvl.pairs.map(p => { return p.locked }).reduce((a, b) => a + b)
 
     console.log('new_tvl:', new_tvl);
-    console.log('total:', '$' + new_tvl.locked.toFixed(2))
 
-    var write_out = Object.assign({}, info, { locked_value: info.locked }, { previous: previous_item })
-    fs.writeFileSync(`public/tvl/${tvl.token}.json`, JSON.stringify(write_out, null, 2))
+    console.log('');
+
+    console.log('total:', '$' + new_tvl.locked.toFixed(2));
 
     await ddb.putItem({
         TableName: table,
-        Item: AWS.DynamoDB.Converter.marshaplayer(info)
-    });
+        Item: AWS.DynamoDB.Converter.marshaplayer(new_tvl)
+    }).promise();
+
+    var write_out = Object.assign({}, new_tvl, { locked_value: new_tvl.locked }, previous_tvl ? { previous: previous_tvl } : {})
+    
+    fs.writeFileSync(`public/tvl/${new_tvl.token.toLowerCase()}.json`, JSON.stringify(write_out, null, 2));
+
+    await s3.upload({
+        Bucket: 'beta.scewpt.com',
+        Key:`tvl/${new_tvl.token.toLowerCase()}.json`,
+        Body: JSON.stringify(write_out),
+        ContentType: 'application/json',
+        ACL: 'public-read'
+    }).promise();
     await browser.close();    
 })();
