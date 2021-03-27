@@ -34,7 +34,7 @@
         const skier = { price: "⛷️", token: getParameterByName('token') || 'SNOB', hash: "⛷️" };
 
         document.addEventListener('price', (e) => {
-            console.log('price:', e.detail);
+            console.log('price update:', e.detail);
             let pe = document.querySelector('#price-' + e.detail.token.toLocaleLowerCase())
 
             let previous_price = pe.querySelector('.price').innerHTML;

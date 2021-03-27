@@ -102,10 +102,10 @@ server.on('connection', (ws) => {
                     console.log('token query error:', JSON.stringify(err, null, 2));                    
                 } else if ( data.Items.length > 0 && data.Items[0].price == msg.price ) {
                     console.log('ignore:', msg.token, 'price:', msg.price)                    
-                    publish(msg, false)
+                    publish(msg, false, data.Items[0])
                 } else {
                     console.log('publish:', msg.token, 'price:', msg.price) 
-                    publish(msg, true, data.Items.length ? data.Items[0] : null )
+                    publish(msg, true, data.Items.length > 0 ? data.Items[0] : null )
                 }                
             });         
         } catch (err) {
