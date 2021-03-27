@@ -104,7 +104,7 @@ server.on('connection', (ws) => {
                     console.log('ignore:', msg.token, 'price:', msg.price)                    
                     publish(msg, false, data.Items[0])
                 } else {
-                    console.log('publish:', msg.token, 'price:', msg.price) 
+                    console.log('publish:', msg.token, 'price:', msg.price, 'previous:', new Date(data.Items[0].timestamp).toLocaleDateString()) 
                     publish(msg, true, data.Items.length > 0 ? data.Items[0] : null )
                 }                
             });         
