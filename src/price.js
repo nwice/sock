@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer');
 const WebSocket = require('ws');
 const fs = require('fs');
 const AWS = require('aws-sdk');
+const { exit } = require('process');
 
 AWS.config.update({ region: 'us-east-1' });
 
@@ -12,6 +13,11 @@ const dynamo_client = new AWS.DynamoDB.DocumentClient();
 console.log('price service')
 
 const table = 'price'
+
+setTimeout( () => {
+    console.log('well done')
+    exit()
+}, 300)
 
 const dexes = [{
     value: 0, 
