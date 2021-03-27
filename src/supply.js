@@ -82,10 +82,18 @@ function delay(time) {
         Item: AWS.DynamoDB.Converter.marshall(dynamo_item)
     }).promise();  
 
-    let s3_contents = Object.assign(price, supply, { previous: previous_supply })
+    let file_contents = Object.assign(price, supply, { previous: previous_supply })
 
-    console.log('s3 supply:', s3_contents)
+    console.log('s3 supply:', file_contents)
+    let string_contents = JSON.stringify(file_contents, null, 2)
 
-    fs.writeFileSync(`public/supply/${supply.token.toLowerCase()}.json`, JSON.stringify(s3_contents, null, 2))
+    fs.writeFileSync(`public/supply/${supply.token.toLowerCase()}.json`, string_contents)
+    await s3.upload({
+        Bucket: 'beta.scewpt.com',
+        Key: `/supply/${supply.token.toLowerCase()}.json`, // File name you want to save as in S3
+        Body: string_contents,
+        ContentType: 'application/json',
+        ACL: 'public-read'
+    }).promise();     
     await browser.close();    
 })()
