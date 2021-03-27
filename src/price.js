@@ -74,8 +74,6 @@ const publish = (msg, update, previous) => {
                 throw err;
             }
         });        
-    } else {
-        console.log('skip for now')
     }
 }
 
