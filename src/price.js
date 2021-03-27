@@ -17,7 +17,7 @@ const table = 'price'
 setTimeout( () => {
     console.log('well done')
     exit()
-}, 300)
+}, 30 * 1000)
 
 const dexes = [{
     value: 0, 
@@ -109,7 +109,7 @@ server.on('connection', (ws) => {
                 }                
             });         
         } catch (err) {
-            console.log('text:', err)
+            console.log('text:', message)
         }
     });
     ws.on('close', (event) => {
