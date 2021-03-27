@@ -52,6 +52,7 @@ function delay(time) {
     await page.goto(`https://cchain.explorer.avax.network/tokens/${supply.account}/token-transfers`);
 
     await delay(2000)
+        
     supply.circulating = await page.evaluate(() => {
         let l = 0;
         [...document.querySelectorAll('h2')].forEach( (h2) => {
