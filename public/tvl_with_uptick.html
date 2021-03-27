@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Total Value Locked</title>
 </head>
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap" rel="stylesheet">
 <link href="assets/site.css" rel="stylesheet">
+<script type="text/javascript" src="common.js"></script>
 <style>
 </style>
 <template id="tvl_row">
@@ -16,66 +16,65 @@
         <td class="right"></td>
     </tr>
 </template>
-<template id="tvl_summary_row">
-    <tr id="summary">
-        <td colspan="4" class="center"></td>
-    </tr>
-</template>
 <template id="tvl_table">
-    <table id="tvl">
+    <table>
         <thead>
             <tr class="header">
                 <td colspan="2">
                     <div class="center head">Total Value Locked</div>
                 </td>
-                <td class="right" id="total"></td>
+                <td class="total right"></td>
             </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+            <tr class="timestamp">
+                <td colspan="4" class="center"></td>
+            </tr>            
+        </tbody>
     </table>
 </template>
-
 <body>
     <script>
-
-        let nf = new Intl.NumberFormat('en-US');
-
-        function display(info) {
-            document.querySelector('#total').innerHTML = nf.format(info.locked_value);
-            let rt = document.querySelector('#pair_row')
-            info.pairs.forEach(p => {
-                console.log('pair:', p)
-                if (true) {
-                    let row = rt.content.cloneNode(true);
-                    row.setAttribute('id', p.token0.token + '_' + p.token1.token)
-                    let row_td = row.querySelectorAll('td');
-                    row_td[0].innerHTML = `<a target="_blank" href="https://info.pangolin.exchange/#/token/${p.token0.token}"><img class="token" src="assets/avalanche-tokens/${p.token0.token}/logo.png"></a>`
-                    row_td[1].innerHTML = `<a target="_blank" href="https://info.pangolin.exchange/#/token/${p.token1.token}"><img class="token" src="assets/avalanche-tokens/${p.token1.token}/logo.png"></a>`
-                    row_td[2].textContent = nf.format(p.locked_value);
-                    document.querySelector("tbody").appendChild(row)
-                } else {
-                    console.log('already have');
-                }
-            });
+        document.addEventListener('tvl', (e) => {
+            console.log('tvl:', e.detail);
+            let tqs = `tvl-${e.detail.token.toLowerCase()}`;
+            let tab = document.querySelector('#' + tqs)     
             
-        }
+            tab.querySelector('.total').innerHTML = e.detail.locked;
 
-        fetch('/tvl.json').then(function (response) {
-            let t = document.querySelector('#pair_table').content.cloneNode(true);
-            document.body.appendChild(t);
+            e.detail.pairs?.forEach(p => {
+                let qs = `pair-${p.token0.token.toLowerCase()} ${p.token1.token.toLowerCase()}`;
+                let row = tab.querySelector('#' + qs);
+                if ( !row ) {
+                    let r = document.querySelector('#tvl_row').content.cloneNode(true)    
+                    r.firstElementChild.setAttribute('id', qs);
+                    tab.querySelector('tbody').appendChild(r);
+                    row = tab.querySelector('#' + qs);
+                }
+                let row_td = row.querySelectorAll('td');
+                row_td[0].innerHTML = `<a target="_blank" href="https://info.pangolin.exchange/#/token/${p.token0.token}"><img class="token" src="assets/avalanche-tokens/${p.token0.token}/logo.png"></a>`
+                row_td[1].innerHTML = `<a target="_blank" href="https://info.pangolin.exchange/#/token/${p.token1.token}"><img class="token" src="assets/avalanche-tokens/${p.token1.token}/logo.png"></a>`
+                row_td[2].textContent = prettyNumber(p.locked);
+            })
+            let tmp = new Date(e.detail.timestamp)?.toLocaleTimeString() || '';
+            tab.querySelector('.timestamp').innerHTML = tmp != 'Invalid Date' ? tmp : '';
+        })
+
+        const skier = { locked: "⛷️", token: getParameterByName('token') || 'SNOB' };
+
+        fetch(`/tvl/${skier.token.toLowerCase()}.json`).then(function (response) {
+            let t = document.querySelector('#tvl_table').content.cloneNode(true);
+            t.firstElementChild.setAttribute('id', `tvl-${skier.token.toLowerCase()}`);
+            document.body.appendChild(t);            
             return response.json();
         }).then(function (info) {
-            display(info)
-            let summary = document.querySelector('#summary_row').content.cloneNode(true);
-            let summary_td = summary.querySelectorAll('td');
-            summary_td[0].innerHTML = new Date(info.date).toLocaleTimeString()
-            document.querySelector("tbody").appendChild(summary)
-
-            console.log('summary', summary)
+           //display(info)
+           console.log('no')
         }).catch(function (err) {
-            console.log('tvl error:', err);
-            document.querySelector('#total').innerHTML = "⛷️";
-            document.querySelector('#total').classList.add('error');
+            console.log(err)
+            document.dispatchEvent(new CustomEvent('tvl', {
+                detail: skier
+            }))
         });        
     </script>
 </body>

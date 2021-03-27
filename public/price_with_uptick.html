@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Price</title> 
+</head>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap" rel="stylesheet">
+<link href="assets/site.css" rel="stylesheet">
+<script type="text/javascript" src="common.js"></script>
+<style>
+    
+</style>
+<template id="price_table">
+    <table>
+        <tbody>
+            <tr>
+                <td>Price</td>
+                <td class="price"></td>
+            </tr>
+            <tr>
+                <td>Token</td>
+                <td class="token"></td>
+            </tr>
+            <tr>
+                <td>Hash</td>
+                <td class="hash"></td>
+            </tr>
+        </tbody>
+    </table>
+</template>
+<body>
+    <script>
+        
+        const skier = { price: "⛷️", token: getParameterByName('token') || 'SNOB', hash: "⛷️" };
+
+        document.addEventListener('price', (e) => {
+            console.log('price:', e.detail);
+            let pe = document.querySelector('#price-' + e.detail.token.toLocaleLowerCase())
+
+            let previous_price = pe.querySelector('.price').innerHTML;
+
+            pe.querySelector('.price').innerHTML = e.detail.price;
+            pe.querySelector('.token').innerHTML = e.detail.token;
+            pe.querySelector('.hash').innerHTML = e.detail.hash; 
+            
+            if ( previous_price ) {
+                console.log('previous price:', previous_price );
+                if ( parseFloat(previous_price) < e.detail.price) {
+                    pe.querySelector('.price').classList.remove('down')
+                    pe.querySelector('.price').classList.add('up')
+                } else {
+                    pe.querySelector('.price').classList.remove('up')
+                    pe.querySelector('.price').classList.add('down')
+                }               
+            } else {
+                pe.querySelector('.price').classList.remove('up')
+                pe.querySelector('.price').classList.remove('down')
+            }
+
+        })
+
+        fetch(`/price/${skier.token.toLowerCase()}.json`).then(function (response) {   
+            let price_table = document.querySelector('#price_table').content.cloneNode(true);
+            price_table.firstElementChild.setAttribute('id', `price-${skier.token.toLocaleLowerCase()}`)
+            document.body.appendChild(price_table);                                        
+            return response.json();
+        }).then(function (info) {
+            if ( info.previous ) {
+                document.dispatchEvent(new CustomEvent('price', {
+                    detail: info.previous
+                }))
+                setTimeout( () => {
+                    document.dispatchEvent(new CustomEvent('price', {
+                        detail: info
+                    }))                
+                }, 1000)                
+            } else {
+                document.dispatchEvent(new CustomEvent('price', {
+                    detail: info
+                }))
+            }         
+        }).catch(function(err) {
+            document.dispatchEvent(new CustomEvent('price', {
+                detail: skier
+            }))
+        });        
+    </script>
+</body>
+</html>

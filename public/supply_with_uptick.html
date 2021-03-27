@@ -6,6 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap" rel="stylesheet">
 <link href="assets/site.css" rel="stylesheet">
+<script type="text/javascript" src="common.js"></script>
 <style>
 </style>
 <template id="supply_table">
@@ -13,36 +14,51 @@
         <tbody>
             <tr>
                 <td>Circulating Supply</td>
-                <td id="supply"></td>
+                <td class="circulating"></td>
             </tr>
             <tr>
                 <td>Max Supply</td>
-                <td id="total"></td>
+                <td class="total"></td>
             </tr>
         </tbody>
     </table>
 </template>
 <body>
     <script>
-        fetch('/supply.json').then(function (response) {
+        const skier = { circulating: "⛷️", token: getParameterByName('token') || 'SNOB', total: 18000000 };        
+
+        document.addEventListener('supply', (e) => {
+            let pe = document.querySelector('#supply-' + e.detail.token.toLowerCase())
+            pe.querySelector('.circulating').innerHTML = prettyNumber(e.detail.circulating);
+            pe.querySelector('.total').innerHTML = prettyNumber(e.detail.total);
+        })        
+
+        fetch(`/supply/${skier.token.toLowerCase()}.json`).then(function (response) {
             let t = document.querySelector('#supply_table').content.cloneNode(true);
+            t.firstElementChild.setAttribute('id', `supply-${skier.token.toLowerCase()}`);
             document.body.appendChild(t);
             return response.json();
         }).then(function (info) {
-            function dip(i) {
-                console.log('dip')
-                document.querySelector('#supply').innerHTML = i.circulating;
-                document.querySelector('#total').innerHTML = i.total;
-            }
-            dip(info.previous);
-            setTimeout(() => { 
-                console.log('after set timeout');
-                dip(info) 
-            }, 1000);
+            console.log(info)
+            if ( info.previous ) {
+                document.dispatchEvent(new CustomEvent('supply', {
+                    detail: info.previous
+                }))
+                setTimeout( () => {
+                    document.dispatchEvent(new CustomEvent('supply', {
+                        detail: info
+                    }))                
+                }, 1000)                
+            } else {
+                document.dispatchEvent(new CustomEvent('supply', {
+                    detail: info
+                }))
+            }            
         }).catch(function(err) {
-            console.log('supply error:', err);
-            document.querySelector('#total').innerHTML = '18000000';
-            document.querySelector('#supply').innerHTML = "⛷️";
+            console.log(err)
+            document.dispatchEvent(new CustomEvent('supply', {
+                detail: skier
+            }))
         });        
     </script>
 </body>

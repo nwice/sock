@@ -99,7 +99,7 @@ server.on('connection', (ws) => {
                     publish(msg, false)
                 } else {
                     console.log('publish:', msg.token, 'price:', msg.price) 
-                    publish(msg, true, data.Items.length ? null: data.Items[0] )
+                    publish(msg, true, data.Items.length ? data.Items[0] : null )
                 }                
             });         
         } catch (err) {

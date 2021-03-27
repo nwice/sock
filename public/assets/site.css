@@ -22,3 +22,13 @@ body > table {
 .head {
     margin: 5px 10px 10px 10px;
 }
+:root {  
+    --up-color: green;  
+    --down-color: red;  
+}
+.up {
+    color: var(--up-color);
+}
+.down {
+    color: var(--red-color);
+}
