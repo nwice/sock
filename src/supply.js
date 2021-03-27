@@ -4,6 +4,8 @@ const fs = require('fs');
 var AWS = require('aws-sdk');
 
 AWS.config.update({ region: 'us-east-1' });
+
+const s3 = new AWS.S3();
 var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 const dynamo_client = new AWS.DynamoDB.DocumentClient();
 
@@ -44,6 +46,14 @@ function delay(time) {
 
 (async () => {
 
+    let data = await s3.getObject({
+        Bucket: 'beta.scewpt.com',
+        Key: `price/snob.json`
+    }).promise()
+    let content = await data.Body.toString();
+    let price = JSON.parse(content);
+    delete price.previous
+
     const browser = await puppeteer.launch({
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -67,6 +77,6 @@ function delay(time) {
         TableName: table,
         Item: AWS.DynamoDB.Converter.marshall(supply)
     });  
-    fs.writeFileSync(`public/supply/${supply.token.toLowerCase()}.json`, JSON.stringify(Object.assign(supply, { previous: previous_supply }), null, 2))
+    fs.writeFileSync(`public/supply/${supply.token.toLowerCase()}.json`, JSON.stringify(Object.assign(price, supply, { previous: previous_supply }), null, 2))
     await browser.close();    
 })()
