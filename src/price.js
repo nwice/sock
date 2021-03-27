@@ -58,23 +58,25 @@ const publish = (msg, update, previous) => {
                 console.log('put error:', err);
             }
         });        
+        let content = JSON.stringify(Object.assign(msg, previous ? { previous } : {}), null, 2);
+        let path = `price/${msg.token}.json`.toLowerCase();
+            
+        fs.writeFileSync('public/' + path.toLowerCase(), content)
+            
+        s3.upload({
+            Bucket: 'beta.scewpt.com',
+            Key: path, // File name you want to save as in S3
+            Body: content,
+            ContentType: 'application/json',
+            ACL: 'public-read'
+        }, (err, data) => {
+            if (err) {
+                throw err;
+            }
+        });        
+    } else {
+        console.log('skip for now')
     }
-    let content = JSON.stringify(Object.assign(msg, previous ? { previous } : {}), null, 2);
-    let path = `price/${msg.token}.json`.toLowerCase();
-        
-    fs.writeFileSync('public/' + path.toLowerCase(), content)
-        
-    s3.upload({
-        Bucket: 'beta.scewpt.com',
-        Key: path, // File name you want to save as in S3
-        Body: content,
-        ContentType: 'application/json',
-        ACL: 'public-read'
-    }, (err, data) => {
-        if (err) {
-            throw err;
-        }
-    });
 }
 
 server.on('connection', (ws) => {
