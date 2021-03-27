@@ -14,18 +14,29 @@
         <tbody>
             <tr>
                 <td>Circulating Supply</td>
-                <td class="circulating"></td>
+                <td class="right circulating"></td>
             </tr>
             <tr>
                 <td>Max Supply</td>
-                <td class="total"></td>
+                <td class="right total"></td>
             </tr>
         </tbody>
     </table>
 </template>
 <body>
     <script>
+        function getParameterByName(name, url = window.location.href) {
+            name = name.replace(/[\[\]]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+
         const skier = { circulating: "⛷️", token: getParameterByName('token') || 'SNOB', total: 18000000 };        
+
+        console.log(skier);
 
         document.addEventListener('supply', (e) => {
             let pe = document.querySelector('#supply-' + e.detail.token.toLowerCase())
