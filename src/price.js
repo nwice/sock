@@ -14,10 +14,16 @@ console.log('price service')
 
 const table = 'price'
 
-setTimeout( () => {
+const killswitch = setTimeout( () => {
     console.log('well done')
     exit()
-}, 30 * 1000)
+}, 119 * 1000)
+
+function delay(time) {
+    return new Promise(function (resolve) {
+        setTimeout(resolve, time)
+    });
+}
 
 const dexes = [{
     value: 0, 
@@ -148,15 +154,25 @@ server.on('connection', (ws) => {
             let all_divs = document.querySelectorAll('div');
             let king_div = null;
             [].forEach.call(all_divs, (div) => {
-                if ( div.innerHTML === script_dex.info.match_inner_html ) {
-                    king_div = div                        
+                if ( div.innerHTML === "Liquidity ↓" ) {
+                    king_div = div.parentNode.parentNode.nextElementSibling.nextElementSibling
                 }
             });
             return king_div;
         }       
         
         document.get_tokens_array = () => {
-            return [...document.findking().parentNode.parentNode.parentNode.parentNode.querySelectorAll(':scope > div > div:nth-of-type(1)')];
+            return [...document.findking().querySelectorAll(':scope > div > div:nth-of-type(1)')];
+        }
+
+        document.get_next_page = () => {
+            let np = null;
+            [...document.querySelectorAll('div')].forEach(d => {
+                if ( d.innerHTML.startsWith('Page ') && d.innerHTML.indexOf(' of ') > -1 && d.innerHTML.split(' ')[1] != d.innerHTML.split(' ')[3] ) {
+                    np = d;
+                }
+            });            
+            return np;
         }
 
         return new Promise ((resolve) => {
@@ -182,7 +198,7 @@ server.on('connection', (ws) => {
     }, run_dex);
     let submerged = 500;
     
-    await page.waitForFunction(`document.querySelectorAll('div').length > ${submerged}`);
+    await page.waitForFunction(`document.querySelectorAll('div').length > ${submerged}`, { timeout: 0});
     let submerged_divs = await page.evaluate(() => {
         return Promise.resolve(document.querySelectorAll('div').length)
     });
@@ -197,14 +213,16 @@ server.on('connection', (ws) => {
         }
 
         const process = () => {
+            outbound('sizing:' + document.get_tokens_array().length);
             document.get_tokens_array().forEach( (t) => {      
                 let rank = parseInt(t.querySelector(':scope > div > div > div').innerHTML)
                 let hash = t.querySelector(':scope > div > div > a').href.split('/').pop();
                 let token = t.querySelector(':scope > div:nth-of-type(2) > div').innerHTML
                 if ( hash === '0x0362d330f94fae853d5c462e57357f7ef7c2ea1d' ) {
+                    token = '__'
+                } else if ( hash === '0xef4988cbe89316fa12650dcc036be2b242895306' ) {
                     token = 'BAMBOO'
-                }
-                if ( token === 'WAVAX' ) {
+                } else if ( token === 'WAVAX' ) {
                     token = 'AVAX'
                 }                
                 let liquidity = parseFloat(t.querySelector(':scope > div:nth-of-type(3)').innerHTML.replace(/[^\d.-]/g, ''))
@@ -213,10 +231,29 @@ server.on('connection', (ws) => {
                 let change = t.querySelector(':scope > div:nth-of-type(6) > div').innerHTML                
                 let dex = script_dex.token
                 let obj = { dex, rank, price, hash, token, liquidity, volume, price, change, timestamp: new Date().getTime() }
-                if ( obj.price > 0 ) {
+                if ( obj.price > 0 && token != '__' ) {
                     outbound(JSON.stringify(obj))
+                } else {
+                    outbound('skipping:' + token)
                 }
-            });            
+            });  
+            setTimeout( () => { 
+                checkcomplete();          
+            }, 2000);             
+            
+        }
+
+        const checkcomplete = () => {
+            let np = document.get_next_page();   
+            outbound('np:' + np);        
+            if ( np ) {
+                np.nextElementSibling.click();
+                setTimeout( () => { 
+                    process()
+                }, 2000);    
+            } else {
+                outbound('done');
+            }
         }
 
         return new Promise ((resolve, reject) => {

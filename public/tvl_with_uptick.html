@@ -9,10 +9,16 @@
 <script type="text/javascript" src="common.js"></script>
 <style>
 </style>
-<template id="tvl_row">
+<template id="tvl_row_2">
     <tr>
         <td class="center"></td>
         <td class="center"></td>
+        <td class="right"></td>
+    </tr>
+</template>
+<template id="tvl_row_3">
+    <tr>
+        <td class="center three" colspan="2"></td>
         <td class="right"></td>
     </tr>
 </template>
@@ -27,34 +33,62 @@
             </tr>
         </thead>
         <tbody>
-            <tr class="timestamp">
-                <td colspan="4" class="center"></td>
-            </tr>            
+
         </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="center timestamp"></td>
+            </tr>            
+        </tfoot>
     </table>
 </template>
 <body>
     <script>
+
+        const tokenlink = (token) => {
+            return `<a target="_blank" href="https://info.pangolin.exchange/#/token/${token.token}"><img class="token" src="assets/avalanche-tokens/${token.hash}/logo.png"></a>`
+        }
+        
+
         document.addEventListener('tvl', (e) => {
             console.log('tvl:', e.detail);
             let tqs = `tvl-${e.detail.token.toLowerCase()}`;
             let tab = document.querySelector('#' + tqs)     
             
-            tab.querySelector('.total').innerHTML = e.detail.locked;
+            tab.querySelector('.total').innerHTML = prettyNumber(e.detail.locked);
 
             e.detail.pairs?.forEach(p => {
-                let qs = `pair-${p.token0.token.toLowerCase()} ${p.token1.token.toLowerCase()}`;
+                let qs = `pair-${p.token0.token.toLowerCase()}-${p.token1.token.toLowerCase()}`;
+                let tc = 2
+                if (p.token2) {
+                    qs = qs + `-${p.token2.token.toLowerCase()}`;
+                    tc = 3
+                }
                 let row = tab.querySelector('#' + qs);
                 if ( !row ) {
-                    let r = document.querySelector('#tvl_row').content.cloneNode(true)    
+                    let r = document.querySelector('#tvl_row_' + tc).content.cloneNode(true)    
                     r.firstElementChild.setAttribute('id', qs);
                     tab.querySelector('tbody').appendChild(r);
                     row = tab.querySelector('#' + qs);
                 }
                 let row_td = row.querySelectorAll('td');
-                row_td[0].innerHTML = `<a target="_blank" href="https://info.pangolin.exchange/#/token/${p.token0.token}"><img class="token" src="assets/avalanche-tokens/${p.token0.token}/logo.png"></a>`
-                row_td[1].innerHTML = `<a target="_blank" href="https://info.pangolin.exchange/#/token/${p.token1.token}"><img class="token" src="assets/avalanche-tokens/${p.token1.token}/logo.png"></a>`
-                row_td[2].textContent = prettyNumber(p.locked);
+                if (tc == 3) {
+                    row_td[0].innerHTML = '<div class="inline">' + tokenlink(p.token0) + '</div>' + '<div class="inline">' + tokenlink(p.token1) + '</div>' + '<div class="inline">' + tokenlink(p.token2) + '</div>'                    
+                    row_td[1].textContent = prettyNumber(p.locked);
+                } else {
+                    row_td[0].innerHTML = tokenlink(p.token0)
+                    if ( p.token0?.price ) {
+                        row_td[0].classList.add('price')
+                        row_td[0].setAttribute('price', p.token0?.price)                        
+                    }
+                    row_td[1].innerHTML = tokenlink(p.token1)
+                    if ( p.token1?.price ) {
+                        row_td[1].classList.add('price')
+                        row_td[1].setAttribute('price', p.token1?.price)
+                    }                    
+                    row_td[2].textContent = prettyNumber(p.locked);
+                }
+                
             })
             let tmp = new Date(e.detail.timestamp)?.toLocaleTimeString() || '';
             tab.querySelector('.timestamp').innerHTML = tmp != 'Invalid Date' ? tmp : '';
@@ -68,8 +102,9 @@
             document.body.appendChild(t);            
             return response.json();
         }).then(function (info) {
-           //display(info)
-           console.log('no')
+            document.dispatchEvent(new CustomEvent('tvl', {
+                detail: info
+            }))
         }).catch(function (err) {
             console.log(err)
             document.dispatchEvent(new CustomEvent('tvl', {
