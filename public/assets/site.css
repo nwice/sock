@@ -1,6 +1,6 @@
 * {
-    font-family: 'Rubik', sans-serif;
-    font-size: x-large
+    font-family: sans-serif;
+    font-size: large;    
 }
 body > table {
     max-width: 500px;
@@ -20,5 +20,12 @@ body > table {
     width: 24px;
 }
 .head {
-    margin: 5px 10px 10px 10px;
+    margin: 5px 15px 10px 15px;
+}
+.inline {
+    display: inline-block;
+    margin: 0 20px 0 20px;
+}
+.pretty {
+    font-family: 'Raleway', sans-serif;
 }

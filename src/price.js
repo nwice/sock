@@ -218,7 +218,7 @@ server.on('connection', (ws) => {
                 let rank = parseInt(t.querySelector(':scope > div > div > div').innerHTML)
                 let hash = t.querySelector(':scope > div > div > a').href.split('/').pop();
                 let token = t.querySelector(':scope > div:nth-of-type(2) > div').innerHTML
-                if ( hash === '0x0362d330f94fae853d5c462e57357f7ef7c2ea1d' ) {
+                if ( hash === '0x0362d330f94fae853d5c462e57357f7ef7c2ea1d' || hash === '0x212ae83a676d3cc71ee111fdaa7aa0b0cd63001c' ) {
                     token = '__'
                 } else if ( hash === '0xef4988cbe89316fa12650dcc036be2b242895306' ) {
                     token = 'BAMBOO'

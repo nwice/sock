@@ -1,9 +1,9 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
+const Web3 = require('web3');
 
 var AWS = require('aws-sdk');
 const { exit } = require('process');
-const { exception } = require('console');
 AWS.config.update({ region: 'us-east-1' });
 
 var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
@@ -12,25 +12,21 @@ const s3 = new AWS.S3();
 
 let table = 'tvl'
 
-let previous_tvl = {}
+let previous_tvl = {};
 
-dynamo_client.query({
-    TableName: table,
-    Select: 'ALL_ATTRIBUTES',
-    Limit: 1,
-    ScanIndexForward: false,
-    KeyConditionExpression: '#token = :token',
-    ExpressionAttributeValues: {
-        ':token': 'SNOB'
-    },
-    ExpressionAttributeNames: {
-        '#token': 'token'
-    }
-}, (err, data) => {
-    if (err) return;
-    console.log('previous tvl:', previous_tvl)
-    previous_tvl = Object.assign({}, data.Items[0])    
-})
+let web3 = new Web3('ws://192.168.1.14:9650/ext/bc/C/ws');
+
+var tokenABI = [{ 
+    "constant": true, 
+    "inputs": [{ "name": "_owner", "type": "address" }], 
+    "name": "balanceOf", 
+    "outputs": [{ "name": "balance", "type": "uint256" }], 
+    "payable": false, 
+    "type": "function" 
+}];
+
+var s3d = new web3.eth.Contract(tokenABI, '0xdE1A11C331a0E45B9BA8FeE04D4B51A745f1e4A4');
+
 let load = [
     { token: 'avax' }, { token: 'link' }, { token: 'eth' }, { token: 'png' }, { token: 'snob' }, 
     { token: 'sushi' }, { token: 'usdt' }, { token: 'dai' }
@@ -43,6 +39,24 @@ function delay(time) {
 };
 
 (async () => {     
+
+
+    const ans = await dynamo_client.query({
+        TableName: table,
+        Select: 'ALL_ATTRIBUTES',
+        Limit: 1,
+        ScanIndexForward: false,
+        KeyConditionExpression: '#token = :token',
+        ExpressionAttributeValues: {
+            ':token': 'SNOB'
+        },
+        ExpressionAttributeNames: {
+            '#token': 'token'
+        }
+    })
+
+    console.log('ans:', ans);
+
     const players = await Promise.all(load.map(async (p) => {
         let data = await s3.getObject({
             Bucket: 'beta.scewpt.com',
@@ -62,7 +76,7 @@ function delay(time) {
         pairs: [
             {
                 token0: player('usdt'), token1: player('dai'),
-                accounts: [{ stake: '0x74db28797957a52a28963f424daf2b10226ba04c'}]                 
+                accounts: [{ contract: '0xdE1A11C331a0E45B9BA8FeE04D4B51A745f1e4A4'}]                 
             },            
             {
                 token0: player('avax'), token1: player('usdt'),
@@ -74,11 +88,11 @@ function delay(time) {
             },
             {
                 token0: player('avax'), token1: player('eth'),
-                accounts: [{ stake: '0x953853590b805A0E885A75A3C786D2aFfcEEA3Cf'}]                
+                accounts: [{ stake: '0x953853590b805A0E885A75A3C786D2aFfcEEA3Cf'}, {pool: '0x586554828eE99811A8ef75029351179949762c26?'}]                
             },
             {
                 token0: player('avax'), token1: player('png'),
-                accounts: [{ stake: '0x6a803904b9ea0fc982fbb077c7243c244ae05a2d'}]
+                accounts: [{ stake: '0x6a803904b9ea0fc982fbb077c7243c244ae05a2d'}, {pool: '0x621207093D2e65Bf3aC55dD8Bf0351B980A63815?'}]
             },
             {
                 token0: player('avax'), token1: player('snob'),
@@ -86,7 +100,7 @@ function delay(time) {
             },
             {
                 token0: player('avax'), token1: player('sushi'),
-                accounts: [{ stake: '0x14ec55f8B4642111A5aF4f5ddc56B7bE867eB6cC'}]
+                accounts: [{ stake: '0x14ec55f8B4642111A5aF4f5ddc56B7bE867eB6cC'}, {pool: '0x751089F1bf31B13Fa0F0537ae78108088a2253BF?'}]
             }        
         ]}, 
         player('snob'), { timestamp: new Date().getTime() }
@@ -97,6 +111,8 @@ function delay(time) {
         hash: '0xaeb044650278731ef3dc244692ab9f64c78ffaea'
     }
 
+    let bo = await s3d.methods.balanceOf('0xB12531a2d758c7a8BF09f44FC88E646E1BF9D375').call()
+    new_tvl.pairs[0].accounts[0].locked = bo / 1e18    
 
     const browser = await puppeteer.launch({
         headless: true,
@@ -113,42 +129,39 @@ function delay(time) {
         }
 
         for (let y = 0; y < pair.accounts.length; y++) {
-            const page = await browser.newPage()                          
-
-            let account = pair.accounts[y][Object.keys(pair.accounts[y])[0]].toLowerCase()            
-
-            console.log('account:', account)
-
-            await page.goto('https://info.pangolin.exchange/#/account/' + account.toLowerCase())
-    
-            let some_time = 60000
-    
-            console.log('diver in:', some_time / 1000, 'sec(s)');
-            await delay(some_time);
-            const liquidity = await page.evaluate(() => {
-                let l = 0;
-                [].forEach.call(document.querySelectorAll('div'), function (div) {
-                    if (div.innerHTML === 'Liquidity (Including Fees)') {
-                        l = div.parentNode.nextElementSibling.firstElementChild.innerHTML
-                    }
+            let account_type = Object.keys(pair.accounts[y])[0];
+            let account = pair.accounts[y][Object.keys(pair.accounts[y])[0]].toLowerCase()
+            if ( account_type == 'pool' || account_type == 'stake') {
+                const page = await browser.newPage()
+                await page.goto('https://info.pangolin.exchange/#/account/' + account.toLowerCase())
+                let some_time = 30000
+                console.log('diver in:', some_time / 1000, 'sec(s)');
+                await delay(some_time);
+                const liquidity = await page.evaluate(() => {
+                    let l = 0;
+                    [].forEach.call(document.querySelectorAll('div'), function (div) {
+                        if (div.innerHTML === 'Liquidity (Including Fees)') {
+                            l = div.parentNode.nextElementSibling.firstElementChild.innerHTML
+                        }
+                    })
+                    return l
                 })
-                return l
-            })
-            console.log('diver out:', liquidity);
-            try {                
-                let locked = parseFloat(liquidity.replace(/[^0-9.-]+/g, ''))
-                console.log('locked:', locked)
-                if (isNaN(locked)) {
-                    throw 'is not a number';
-                } else {
-                    pair.accounts[y].locked = locked                
-                    console.log('pair id:', pair_id, 'account:', pair.accounts[y])
+                console.log('diver out:', liquidity);
+                try {                
+                    let locked = parseFloat(liquidity.replace(/[^0-9.-]+/g, ''))
+                    console.log('locked:', locked)
+                    if (isNaN(locked)) {
+                        throw 'is not a number';
+                    } else {
+                        pair.accounts[y].locked = locked                
+                        console.log('pair id:', pair_id, 'account:', pair.accounts[y])
+                    }
+                } catch (err) {
+                    console.log('error:', err)
+                    y = y - 1
                 }
-            } catch (err) {
-                console.log('error:', err)
-                y = y - 1
+                await page.close()
             }
-            await page.close()    
         }
         pair.locked = pair.accounts.map(a => { return a.locked }).reduce((a, b) => a + b)
         console.log('pair:', pair);
@@ -159,17 +172,8 @@ function delay(time) {
     }).reduce((a, b) => a + b)
 
     console.log('new_tvl:', new_tvl);
-
     console.log('');
-
     console.log('total:', '$' + new_tvl.locked.toFixed(2));
-
-    let wtf = AWS.DynamoDB.Converter.marshall(new_tvl)
-
-    await ddb.putItem({
-        TableName: table,
-        Item: AWS.DynamoDB.Converter.marshall(new_tvl)
-    }).promise();
 
     var write_out = Object.assign({}, new_tvl, { locked_value: new_tvl.locked }, previous_tvl ? { previous: previous_tvl } : {})
 
@@ -183,5 +187,13 @@ function delay(time) {
         ACL: 'public-read'
     }).promise();
 
-    await browser.close();    
+    await ddb.putItem({
+        TableName: table,
+        Item: AWS.DynamoDB.Converter.marshall(new_tvl)
+    }).promise();
+
+    await browser.close();
+    setTimeout( () => {
+        exit()
+    }, 1000)    
 })();
