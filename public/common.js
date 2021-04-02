@@ -1,4 +1,4 @@
-function getParameterByName(name, url = window.location.href) {
+window.getParameterByName = (name, url = window.location.href) => {
     name = name.replace(/[\[\]]/g, '\\$&');
     var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
         results = regex.exec(url);
@@ -7,7 +7,7 @@ function getParameterByName(name, url = window.location.href) {
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
-function prettyNumber(n) {
+window.prettyNumber = (n) => {
     let nonNan = new Intl.NumberFormat('en-US').format(n);
     if  ( isNaN(n) ) {
         return n;
@@ -16,4 +16,24 @@ function prettyNumber(n) {
         return prettyNumber(parseInt(n))
     }
     return nonNan
+}
+
+window.prettyDiff = (n) => {
+    if ( n / 1000000 >= 1000 ) {
+        return parseInt(n / 1000000000) + '.' + ((n % 1000000000) / 10000000) + 'B'
+    } else if ( n / 1000000 >= 1 ) {
+        return parseInt(n / 1000000) + '.' + parseInt((n % 1000000) / 10000) + 'M'
+    } else if ( n / 1000 >= 100 ) {
+        return parseInt(n / 1000) + 'K'
+    } else if ( n / 1000 >= 10 ) {
+        return parseInt(n / 1000) + 'K'
+    } else if ( n / 1000 >= 1 ) {
+        return parseInt(n / 100 ) + 'K'
+    } else if ( parseInt(n) == 0 ) {
+        return ''
+    } else if ( n < 1000 ) {
+        return parseInt(n)
+    } else {
+        return n
+    }
 }

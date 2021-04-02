@@ -85,15 +85,50 @@ function delay(time) {
     let file_contents = Object.assign(price, supply, { previous: previous_supply })
 
     console.log('s3 supply:', file_contents)
-    let string_contents = JSON.stringify(file_contents, null, 2)
+    let write_out = JSON.stringify(file_contents, null, 2)
 
-    fs.writeFileSync(`public/supply/${supply.token.toLowerCase()}.json`, string_contents)
-    await s3.upload({
-        Bucket: 'beta.scewpt.com',
-        Key: `/supply/${supply.token.toLowerCase()}.json`, // File name you want to save as in S3
-        Body: string_contents,
+    fs.writeFileSync(`public/supply/${supply.token.toLowerCase()}.json`, write_out)
+
+    let increment_token = supply.token.toLowerCase();
+    let increment_type = 'supply';
+    let increment_out = write_out;
+
+    let s3object = {        
+        Key:`${increment_type}/${increment_token}.json`,
+        Bucket: 'beta.scewpt.com',        
+    }
+
+    let redirect = await s3.headObject(s3object).promise()    
+    console.log('redirect', redirect)
+    let nv = 0
+    try {
+        nv = parseInt(redirect.WebsiteRedirectLocation.split('/').pop().split('.')[0]) + 1
+        if ( isNaN(nv) ) {
+            nv = 0
+        }        
+    } catch (err) {
+        console.log('going with zero')
+    }
+     
+    let next_version_location = `${increment_type}/${increment_token}/${nv}.json`
+
+    console.log('new version:', nv)
+    console.log('new version location:', next_version_location)
+    
+    await s3.upload(Object.assign({}, s3object, {        
+        ACL: 'public-read',
+        Body: increment_out,
+        ContentType: 'application/json',
+        WebsiteRedirectLocation: '/' + next_version_location        
+    })).promise();    
+
+    await s3.upload({    
+        Bucket: 'beta.scewpt.com',    
+        Key: next_version_location,
+        Body: increment_out,
         ContentType: 'application/json',
         ACL: 'public-read'
-    }).promise();     
+    }).promise();
+
     await browser.close();    
 })()

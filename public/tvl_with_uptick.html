@@ -4,20 +4,53 @@
     <title>Total Value Locked</title>
 </head>
 <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200&display=swap" rel="stylesheet">
 <link href="assets/site.css" rel="stylesheet">
 <script type="text/javascript" src="common.js"></script>
 <style>
+:root {
+    font-family: 'Inter', sans-serif;    
+    --up: "📈";  
+    --down: "📉";  
+}
+.up::before {
+    content: var(--up);
+    position: absolute;
+    right: -22px;
+}
+.down::before {
+    content: var(--down);
+    position: absolute;
+    right: -22px;
+}
+tr td {
+    position: relative;
+}
+tr td.up:last-child::after {
+    top: 3px;
+}
+tr td.down:last-child::after {
+    top: 13px;
+}
+tr td:last-child::after {
+    position: absolute;
+    font-size: x-small;
+    right: -50px;
+    content:  " " attr(tick)
+}    
+.arrows {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin-right: -20px;
+}
+.hidden  {
+    display: none;
+}
 </style>
-<template id="tvl_row_2">
+<template id="tvl_row">
     <tr>
-        <td class="center"></td>
-        <td class="center"></td>
-        <td class="right pretty"></td>
-    </tr>
-</template>
-<template id="tvl_row_3">
-    <tr>
-        <td class="center three" colspan="2"></td>
+        <td class="center tokens"></td>
         <td class="right pretty"></td>
     </tr>
 </template>
@@ -25,7 +58,7 @@
     <table>
         <thead>
             <tr class="header">
-                <td colspan="2">
+                <td>
                     <div class="center head">Total Value Locked</div>
                 </td>
                 <td class="total right pretty"></td>
@@ -36,7 +69,13 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="3" class="center timestamp"></td>
+                <td colspan="2" class="center" style="position:relative">
+                    <div class="arrows hidden">
+                        <button id="previous">⬅</button>
+                        <button id="next">➡</button>                        
+                    </div>
+                    <span class="timestamp"></span>
+                </td>
             </tr>            
         </tfoot>
     </table>
@@ -46,51 +85,55 @@
 
         const tokenlink = (token) => {
             return `<a target="_blank" href="https://info.pangolin.exchange/#/token/${token.token}"><img class="token" src="assets/avalanche-tokens/${token.hash}/logo.png"></a>`
+        }        
+
+        const tick = (el, v, clear) => {
+            let prior = el.innerHTML.replace(/[^\d.-]/g, '');
+            el.innerHTML = prettyNumber(v)
+            el.classList.remove('up');            
+            el.classList.remove('down');
+            if ( !isNaN(parseFloat(prior)) && !clear ) {
+                let plus_minus = ''
+                if ( parseFloat(prior) > v ) {
+                    el.classList.add('down')
+                    plus_minus += '-'
+                } else if ( parseFloat(prior) < v ) {
+                    el.classList.add('up')
+                    plus_minus += '+'
+                }
+                let pd = prettyDiff(Math.abs(parseFloat(prior) - v))
+                el.setAttribute('tick', pd.length > 0 ? plus_minus + pd: '' );
+            } else {
+                el.removeAttribute('tick')
+            }
         }
-        
 
         document.addEventListener('tvl', (e) => {
             console.log('tvl:', e.detail);
             let tqs = `tvl-${e.detail.token.toLowerCase()}`;
             let tab = document.querySelector('#' + tqs)     
             
-            tab.querySelector('.total').innerHTML = prettyNumber(e.detail.locked);
+            tick(tab.querySelector('.total'), e.detail.locked, e.detail.clear)
 
             e.detail.pairs?.forEach(p => {
-                let qs = `pair-${p.token0.token.toLowerCase()}-${p.token1.token.toLowerCase()}`;
-                let tc = 2
-                if (p.token2) {
-                    qs = qs + `-${p.token2.token.toLowerCase()}`;
-                    tc = 3
-                }
+                let tk = Object.keys(p).filter(k => k.startsWith('token'));
+                let qs = 'pair-' + tk.map(k => { return p[k].token.toLowerCase()}).sort().join('-')
                 let row = tab.querySelector('#' + qs);
                 if ( !row ) {
-                    let r = document.querySelector('#tvl_row_' + tc).content.cloneNode(true)    
+                    let r = document.querySelector('#tvl_row').content.cloneNode(true)    
                     r.firstElementChild.setAttribute('id', qs);
+                    tk.forEach(k => {
+                        r.firstElementChild.querySelector('.tokens').innerHTML += '<div class="inline">' + tokenlink(p[k]) + '</div>'
+                    })
                     tab.querySelector('tbody').appendChild(r);
                     row = tab.querySelector('#' + qs);
                 }
                 let row_td = row.querySelectorAll('td');
-                if (tc == 3) {
-                    row_td[0].innerHTML = '<div class="inline">' + tokenlink(p.token0) + '</div>' + '<div class="inline">' + tokenlink(p.token1) + '</div>' + '<div class="inline">' + tokenlink(p.token2) + '</div>'                    
-                    row_td[1].textContent = prettyNumber(p.locked);
-                } else {
-                    row_td[0].innerHTML = tokenlink(p.token0)
-                    if ( p.token0?.price ) {
-                        row_td[0].classList.add('price')
-                        row_td[0].setAttribute('price', p.token0?.price)                        
-                    }
-                    row_td[1].innerHTML = tokenlink(p.token1)
-                    if ( p.token1?.price ) {
-                        row_td[1].classList.add('price')
-                        row_td[1].setAttribute('price', p.token1?.price)
-                    }                    
-                    row_td[2].textContent = prettyNumber(p.locked);
-                }
-                
+                tick(row_td[1], p.locked, e.detail.clear)
             })
             let tmp = new Date(e.detail.timestamp)?.toLocaleTimeString() || '';
             tab.querySelector('.timestamp').innerHTML = tmp != 'Invalid Date' ? tmp : '';
+
         })
 
         const skier = { locked: "⛷️", token: getParameterByName('token') || 'SNOB' };
@@ -101,9 +144,33 @@
             document.body.appendChild(t);            
             return response.json();
         }).then(function (info) {
-            document.dispatchEvent(new CustomEvent('tvl', {
-                detail: info
-            }))
+            if ( info.previous ) {
+                document.querySelector('.arrows').classList.remove('hidden')
+                let previous_button = document.querySelector('#previous')
+                let next_button = document.querySelector('#next')                
+                previous_button.addEventListener('click', () => {                    
+                    document.dispatchEvent(new CustomEvent('tvl', {
+                        detail: Object.assign(info.previous, { clear: true })
+                    }))
+                    previous_button.setAttribute('disabled', 'disabled')
+                    next_button.removeAttribute('disabled')
+                });
+                next_button.addEventListener('click', () => {                    
+                    document.dispatchEvent(new CustomEvent('tvl', {
+                        detail: Object.assign(info, { clear: false })
+                    }))
+                    next_button.setAttribute('disabled', 'disabled')
+                    previous_button.removeAttribute('disabled')
+                });    
+                previous_button.click();
+                setTimeout( () => {
+                    next_button.click();                    
+                }, 666 * 2)
+            } else {
+                document.dispatchEvent(new CustomEvent('tvl', {
+                    detail: Object.assign(info, { clear: true })
+                }))
+            }
         }).catch(function (err) {
             console.log(err)
             document.dispatchEvent(new CustomEvent('tvl', {
@@ -112,5 +179,4 @@
         });        
     </script>
 </body>
-
 </html>

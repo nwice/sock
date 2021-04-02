@@ -12,7 +12,7 @@ const s3 = new AWS.S3();
 
 let table = 'tvl'
 
-let previous_tvl = {};
+let previous_tvl;
 
 let web3 = new Web3('ws://192.168.1.14:9650/ext/bc/C/ws');
 
@@ -40,8 +40,7 @@ function delay(time) {
 
 (async () => {     
 
-
-    const ans = await dynamo_client.query({
+    await dynamo_client.query({
         TableName: table,
         Select: 'ALL_ATTRIBUTES',
         Limit: 1,
@@ -53,9 +52,13 @@ function delay(time) {
         ExpressionAttributeNames: {
             '#token': 'token'
         }
+    }).promise().then( (data) => {
+        try {
+            previous_tvl = data.Items[0]
+        } catch (err) {
+            console.log('previous tvl error:', err);
+        }
     })
-
-    console.log('ans:', ans);
 
     const players = await Promise.all(load.map(async (p) => {
         let data = await s3.getObject({
@@ -75,6 +78,7 @@ function delay(time) {
     let new_tvl = Object.assign({
         pairs: [
             {
+                contract: '0xdE1A11C331a0E45B9BA8FeE04D4B51A745f1e4A4',
                 token0: player('usdt'), token1: player('dai'),
                 accounts: [{ contract: '0xdE1A11C331a0E45B9BA8FeE04D4B51A745f1e4A4'}]                 
             },            
@@ -134,7 +138,7 @@ function delay(time) {
             if ( account_type == 'pool' || account_type == 'stake') {
                 const page = await browser.newPage()
                 await page.goto('https://info.pangolin.exchange/#/account/' + account.toLowerCase())
-                let some_time = 30000
+                let some_time = 90000
                 console.log('diver in:', some_time / 1000, 'sec(s)');
                 await delay(some_time);
                 const liquidity = await page.evaluate(() => {
@@ -158,7 +162,7 @@ function delay(time) {
                     }
                 } catch (err) {
                     console.log('error:', err)
-                    y = y - 1
+		    exit()
                 }
                 await page.close()
             }
@@ -175,17 +179,52 @@ function delay(time) {
     console.log('');
     console.log('total:', '$' + new_tvl.locked.toFixed(2));
 
-    var write_out = Object.assign({}, new_tvl, { locked_value: new_tvl.locked }, previous_tvl ? { previous: previous_tvl } : {})
+    let tvl_out = Object.assign({}, new_tvl, { locked_value: new_tvl.locked }, previous_tvl ? { previous: previous_tvl }: {} )
 
-    fs.writeFileSync(`public/tvl/${new_tvl.token.toLowerCase()}.json`, JSON.stringify(write_out, null, 2));
+    let write_out = JSON.stringify(tvl_out, null, 2)
+    
+    fs.writeFileSync(`public/tvl/${new_tvl.token.toLowerCase()}.json`, write_out);
 
-    await s3.upload({
-        Bucket: 'beta.scewpt.com',
-        Key:`tvl/${new_tvl.token.toLowerCase()}.json`,
-        Body: JSON.stringify(write_out),
+    let increment_type = 'tvl'
+    let increment_token = new_tvl.token.toLowerCase()
+    let increment_out = write_out
+
+    let s3object = {        
+        Key:`${increment_type}/${increment_token}.json`,
+        Bucket: 'beta.scewpt.com',        
+    }
+
+    let redirect = await s3.headObject(s3object).promise()    
+    console.log('redirect', redirect)
+    let nv = 0
+    try {
+        nv = parseInt(redirect.WebsiteRedirectLocation.split('/').pop().split('.')[0]) + 1
+        if ( isNaN(nv) ) {
+            nv = 0
+        }
+    } catch (err) {
+        console.log('going with zero')
+    }
+     
+    let next_version_location = `${increment_type}/${increment_token}/${nv}.json`
+
+    console.log('new version:', nv)
+    console.log('new version location:', next_version_location)
+    
+    await s3.upload(Object.assign({}, s3object, {        
+        ACL: 'public-read',
+        Body: increment_out,
+        ContentType: 'application/json',
+        WebsiteRedirectLocation: '/' + next_version_location        
+    })).promise();    
+
+    await s3.upload({    
+        Bucket: 'beta.scewpt.com',    
+        Key: next_version_location,
+        Body: increment_out,
         ContentType: 'application/json',
         ACL: 'public-read'
-    }).promise();
+    }).promise();    
 
     await ddb.putItem({
         TableName: table,
@@ -194,6 +233,7 @@ function delay(time) {
 
     await browser.close();
     setTimeout( () => {
+        console.log('calling exit')
         exit()
     }, 1000)    
 })();
