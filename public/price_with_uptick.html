@@ -5,98 +5,83 @@
 </head>
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400&display=swap" rel="stylesheet">
 <link href="assets/site.css" rel="stylesheet">
 <script type="text/javascript" src="common.js"></script>
+<script type="text/javascript" type="module" src="defiprice.js"></script>
 <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
 <style>
-:root {
-    font-family: 'Raleway', sans-serif;          
-    --up-color: green;  
-    --down-color: red;  
-}
-.up {
-    color: var(--up-color);
-}
-.down {
-    color: var(--down-color);
-}    
+    :root {
+        font-family: 'Raleway', sans-serif;          
+        --up-color: green;  
+        --down-color: red;  
+    }
+    .up {
+        color: var(--up-color);
+    }
+    .down {
+        color: var(--down-color);
+    }
+    .symbol {
+        min-width: 75px;
+        padding-left: 4px;
+    }
+    .id {
+        font-weight: 200;
+        font-size: 11px;
+        white-space: nowrap;
+        overflow: hidden;    
+        text-overflow: ellipsis;
+        display: inline-block;
+        width: 23px;
+        cursor: pointer;   
+        position: absolute; 
+        top: 46px;
+    }
+    .logowrap {
+        padding: 1px;
+        position: relative;
+    }
+    .logo {
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+    }
+    .copied::after {
+        font-size: small;
+        content: "📋";
+        position: absolute;
+        top: 40px;
+        left: -12px;
+    }
+    table {
+        border-spacing: 0px;
+        position: relative;
+    }
+    table:first-of-type {
+        margin-top: 36px;
+    }
+    table:not(first-of-type) {
+        margin-top: 12px;
+    }    
+    table:first-of-type::before {
+        font-weight: lighter;
+        font-size: smaller;
+        font-family: 'Inter', sans-serif;
+        content: attr(timestamp);
+        position: absolute;
+        left: -50px;
+        top: -24px;
+    }
+    .price {
+        padding-left: 12px;
+    }
 </style>
-<template id="price_table">
-    <table>
-        <tbody>
-            <tr>
-                <td>Price</td>
-                <td class="price pretty"></td>
-            </tr>
-            <tr>
-                <td>Symbol</td>
-                <td class="symbol"></td>
-            </tr>
-            <tr>
-                <td>Id</td>
-                <td class="id"></td>
-            </tr>
-        </tbody>
-    </table>
-</template>
 <body>
-    <script>
-        
-        const skier = { price: "⛷️", symbol: getParameterByName('symbol') || 'SNOB', id: "⛷️" };
-
-        document.addEventListener('price', (e) => {
-            console.log('price update:', e.detail);
-            let pe = document.querySelector('#price-' + e.detail.symbol.toLocaleLowerCase())
-
-            let previous_price = pe.querySelector('.price').innerHTML;
-
-            pe.querySelector('.price').innerHTML = e.detail.price.toFixed(4);
-            pe.querySelector('.symbol').innerHTML = e.detail.symbol;
-            pe.querySelector('.id').innerHTML = e.detail.id; 
-            
-            if ( previous_price ) {
-                console.log('previous price:', previous_price );
-                if ( parseFloat(previous_price) < e.detail.price) {
-                    pe.querySelector('.price').classList.remove('down')
-                    pe.querySelector('.price').classList.add('up')
-                } else {
-                    pe.querySelector('.price').classList.remove('up')
-                    pe.querySelector('.price').classList.add('down')
-                }               
-            } else {
-                pe.querySelector('.price').classList.remove('up')
-                pe.querySelector('.price').classList.remove('down')
-            }
-
-        })
-
-        fetch(`/price/${skier.symbol.toLowerCase()}.json`).then( (response) => { 
-            console.log('headers:', response.headers);  
-            let price_table = document.querySelector('#price_table').content.cloneNode(true);
-            price_table.firstElementChild.setAttribute('id', `price-${skier.symbol.toLocaleLowerCase()}`)
-            document.body.appendChild(price_table);                                        
-            return response.json();
-        }).then( (info) => {
-            if ( info.previous ) {
-                document.dispatchEvent(new CustomEvent('price', {
-                    detail: info.previous
-                }))
-                setTimeout( () => {
-                    document.dispatchEvent(new CustomEvent('price', {
-                        detail: info
-                    }))                
-                }, 1000)                
-            } else {
-                document.dispatchEvent(new CustomEvent('price', {
-                    detail: info
-                }))
-            }         
-        }).catch( (err) => {
-            document.dispatchEvent(new CustomEvent('price', {
-                detail: skier
-            }))
-        });        
-    </script>
+    <defi-price symbol="wavax"></defi-price>
+    <defi-price symbol="png"></defi-price>
+    <defi-price symbol="wbtc"></defi-price>
+    <defi-price symbol="link"></defi-price>
+    <defi-price symbol="snob"></defi-price>    
 </body>
 </html>
