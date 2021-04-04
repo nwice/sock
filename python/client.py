@@ -51,7 +51,7 @@ common_addr = {
     '0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925': 'approval',
     '0x4c209b5fc8ad50758f13e2e1088ba56a560dff690a1c6fef26394f4c03821c4f': 'mint',
     '0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c': 'deposit',
-    '0x90890809c654f11d6e72a28fa60149770a0d11ec6c92319d6ceb2bb0a4ea1a15': 'deposit 2',
+    '0x90890809c654f11d6e72a28fa60149770a0d11ec6c92319d6ceb2bb0a4ea1a15': 'transfer deposit',
     '0x9e71bc8eea02a63969f509818f2dafb9254532904319f9dbda79b67bd34a5f3d': 'stake',
     '0xe2403640ba68fed3a2f88b7557551d1993f84b99bb10ff833f0cf8db0c5e0486': 'reward',
     '0x803c5a12f6bde629cea32e63d4b92d1b560816a6fb72e939d3c89e1cab650417': 'bridge', #chainbridge
@@ -60,7 +60,7 @@ common_addr = {
     '0xb0e0a660b4e50f26f0b7ce75c24655fc76cc66e3334a54ff410277229fa10bd4': 'unkknon 5',
     '0xe3afa8cd238a27a8f92ebe755184336b9fb0d4c364820aa99de0c94770d73242': 'pangolin something',
     '0x05af636b70da6819000c49f85b21fa82081c632069bb626f30932034099107d8': 'unknown 6',
-    '0xdbb69440df8433824a026ef190652f29929eb64b4d1d5d2a69be8afe3e6eaed8': 'unknown',
+    '0xdbb69440df8433824a026ef190652f29929eb64b4d1d5d2a69be8afe3e6eaed8': 'bridge deposit',
     '0xc7606d21ac05cd309191543e409f0845c016120563783d70e4f41419dc0ef234': 'unknown 2',
     '0x884edad9ce6fa2440d8a54cc123490eb96d2768479d49ff9c7366125a9424364': 'withdraw',
     '0x4ec90e965519d92681267467f775ada5bd214aa92c0dc93d90a5e880ce9ed026': 'claimed',
@@ -82,10 +82,13 @@ common_addr = {
     '0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9': 'pair created',
     '0xc6c1e0630dbe9130cc068028486c0d118ddcea348550819defd5cb8c257f8a38': 'token swap',
     '0x277d5afb43bf7105f031c47c411e874903f073633432bbe9f5b50c848a0349e1': 'tokens vested',
-    '0x03580ee9f53a62b7cb409a2cb56f9be87747dd15017afc5cef6eef321e4fb2c5': 'bridge add relay'    
+    '0x03580ee9f53a62b7cb409a2cb56f9be87747dd15017afc5cef6eef321e4fb2c5': 'bridge add relay',
+    '0xdec2bacdd2f05b59de34da9b523dff8be42e5e38e818c82fdb0bae774387a724': 'delegate votes changed',
+    '0x3134e8a2e6d97e929a7e54011ea5485d7d196dd5f0ba4d4ef95803e8e3fc257f': 'delegate changed',
 }
 
 defi_addr = {
+    '0x5a9710f3f23053573301c2ab5024d0a43a461e80': 'olive master chef',
 
     '0x9E4AAbd2B3E60Ee1322E94307d0776F2c8e6CFbb': 'elk router',    
     '0xAA8A33E7bcADb52ab4f43152682e483607faC83F': 'elk stake avax/elk',
@@ -115,6 +118,8 @@ defi_addr = {
     '0x14ec55f8b4642111a5af4f5ddc56b7be867eb6cc': 'ice_strategy',
     '0x1ec206a9dd85625e1940cd2b0c8e14a894d2e9ac': 'ice_strategy 2',
     '0xc9a51fb9057380494262fd291aed74317332c0a2': 'ice_avax_png 2',
+
+    '0x6B41E5c07F2d382B921DE5C34ce8E2057d84C042': 'snowball s3d',
 
     '0xC9cD088fD5C17d5cbFd1ff331fa6A48F2f5D9Cb1': 'snowball sPGL avax/snob',
     '0xa75af2e0ea2bbda6dc6921b4ee3bb051309d28c9': 'snowball sPGL sushi/avax',
@@ -161,15 +166,21 @@ defi_addr = {
     '0xf105fb50fc6ddd8a857bbecd296c8a630e8ca857': 'pangolin pair png/sushi',
     '0xD765B31399985f411A9667330764f62153b42C76': 'pangolin pair png/dai',
 
+    '0x0b9753d73e1c62933e913e9c2c94f2ffa8236f6c': 'pangolin pair pefi/snob',
     '0xa1c2c3b6b120cbd4cec7d2371ffd4a931a134a32': 'pangolin pair avax/snob',
     '0x0a63179a8838b5729e79d239940d7e29e40a0116': 'pangolin pair avax/spore',
     '0x5122524af267567897cf56ab4389ce20a08194fa': 'pangolin pair snob/spore',
     '0x7692c5f0c87b928981112c4ce5d51c8301acc88c': 'pangolin pair avax/bamboo',
-    
+
+    '0xDF8bFA6c5C8578CdE19D58d6EFf0B39aB2415d83': 'yieldyak pair avax/yak',    
     '0xF0BDE208A05CC0a056B5FAE1a78212Adf7A4AFfe': 'yieldyak pair avax/bambooV1',
     '0x37A83906a69d6236DBcB4d8257D8f62d1f3BBcD5': 'yieldyak pair avax/bamboo',
     '0x7f3BB8dB336ff50120E290e5C8eC78B20f619D01': 'yieldyak pair avax/com',
     '0xB58535A99e2D615df6Ff00AD091D01310Daabda3': 'yieldyak pair avax/uni',
+    '0x141bE6e009a0D9a5c0d4e557c0636e97B3de2a7B': 'yieldyak pair zero/zusdc',
+
+    '0xDcEDF06Fd33E1D7b6eb4b309f779a0e9D3172e44': 'yieldyak middleman',
+    '0xff8c578f2950c7a497e4c32813f21e1f52d2e7ee': 'yieldyak middleman avax/snob',
     
     '0x171356c0dc284df6bb9e1dad8161b41af97f9116': 'merkle airdrop',
 
@@ -214,6 +225,7 @@ defi_addr = {
     '0x4cea032b4b3f59f31d6d52071258ee0d42b6cc7e': 'zero pair zero/zusdc',
     '0x59a566660024e8f7168cf9e578397e88cd6ba843': 'zero pair zero/zusdt',
     '0x982716379b2372d06df5c461e2c79b24ea80c370': 'zero pair zero/zsushi',
+    '0x2A053B0818C5529C89b10AC819Db1C5C439cCEC4': 'zero pair zero/zbtc',
  
     '0x0540E4EE0C5CdBA347C2f0E011ACF8651bB70Eb9': 'crypto seals',    
     
@@ -244,6 +256,7 @@ defi_addr = {
     '0x61925434024a8b0ab7ea9ff44e1af7a106cfdbfd': 'panda pair bamboo/link',
     '0x2036b7453814dc785Ab76486f2aA4d3BCDB33a04': 'panda pair bamboo/wbtc',
     '0xa6ff3f71392743c6bc60ff1f308db56e3424172f': 'panda pair bamboo/png',
+    '0xb5bD08f034F77874c114c3b0dB80Dd1Fbdda07b2': 'panda pair bamboo/spore',
     '0x11f793f10b4c50c20a7efaf82ea6d8d0aa6beb5e': 'panda pair dai/wbtc',
     '0x083e14c8c0e122e374e4c6ff2169d8db7e6728be': 'panda pair eth/wbtc',
     '0x2545b379dcbb673e36c612cfdb8d6f1d61480bca': 'panda pair usdt/wbtc'

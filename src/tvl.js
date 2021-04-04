@@ -137,9 +137,10 @@ function delay(time) {
             let account = pair.accounts[y][Object.keys(pair.accounts[y])[0]].toLowerCase()
             if ( account_type == 'pool' || account_type == 'stake') {
                 const page = await browser.newPage()
-                await page.goto('https://info.pangolin.exchange/#/account/' + account.toLowerCase())
-                let some_time = 90000
-                console.log('diver in:', some_time / 1000, 'sec(s)');
+		let url = 'https://pango-info.scewpt.com/account/' + account.toLowerCase()
+                await page.goto(url)
+                let some_time = 60000
+                console.log(url, 'diver in:', some_time / 1000, 'sec(s)');
                 await delay(some_time);
                 const liquidity = await page.evaluate(() => {
                     let l = 0;
@@ -203,14 +204,21 @@ function delay(time) {
             nv = 0
         }
     } catch (err) {
-        console.log('going with zero')
+        console.log('zero file?')
+        nv = 0
     }
      
     let next_version_location = `${increment_type}/${increment_token}/${nv}.json`
-
-    console.log('new version:', nv)
-    console.log('new version location:', next_version_location)
+    let tvl_location = `snob/tvl`
+    console.log('new version:', nv, 'new version location:', next_version_location)
     
+    await s3.upload(Object.assign({}, s3object, {        
+        ACL: 'public-read',
+        Key: tvl_location,
+        Body: new_tvl.locked.toFixed(2),
+        ContentType: 'text/plain'
+    })).promise();
+
     await s3.upload(Object.assign({}, s3object, {        
         ACL: 'public-read',
         Body: increment_out,

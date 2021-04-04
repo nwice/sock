@@ -99,7 +99,7 @@ function delay(time) {
     }
 
     let redirect = await s3.headObject(s3object).promise()    
-    console.log('redirect', redirect)
+    console.log('redirect', redirect.WebsiteRedirectLocation)
     let nv = 0
     try {
         nv = parseInt(redirect.WebsiteRedirectLocation.split('/').pop().split('.')[0]) + 1
@@ -107,7 +107,8 @@ function delay(time) {
             nv = 0
         }        
     } catch (err) {
-        console.log('going with zero')
+        console.log('zero file?')
+        nv = 0
     }
      
     let next_version_location = `${increment_type}/${increment_token}/${nv}.json`

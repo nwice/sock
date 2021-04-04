@@ -24,11 +24,11 @@ window.prettyDiff = (n) => {
     } else if ( n / 1000000 >= 1 ) {
         return parseInt(n / 1000000) + '.' + parseInt((n % 1000000) / 10000) + 'M'
     } else if ( n / 1000 >= 100 ) {
-        return parseInt(n / 1000) + 'K'
+        return parseInt(n / 1000) + ' K'
     } else if ( n / 1000 >= 10 ) {
-        return parseInt(n / 1000) + 'K'
+        return parseInt(n / 1000) + '.' + parseInt((n % 1000) / 100) + 'K'
     } else if ( n / 1000 >= 1 ) {
-        return parseInt(n / 100 ) + 'K'
+        return parseInt(n / 100 ) + '.' + parseInt((n % 100) / 10) + 'K'
     } else if ( parseInt(n) == 0 ) {
         return ''
     } else if ( n < 1000 ) {
