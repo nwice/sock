@@ -104,7 +104,7 @@ function delay(time) {
             },
             {
                 token0: player('avax'), token1: player('sushi'),
-                accounts: [{ stake: '0x14ec55f8B4642111A5aF4f5ddc56B7bE867eB6cC'}, {pool: '0x751089F1bf31B13Fa0F0537ae78108088a2253BF?'}]
+                accounts: [{ stake: '0x14ec55f8B4642111A5aF4f5ddc56B7bE867eB6cC'}, {pool: '0x751089F1bf31B13Fa0F0537ae78108088a2253BF'}]
             }        
         ]}, 
         player('snob'), { timestamp: new Date().getTime() }
@@ -140,7 +140,7 @@ function delay(time) {
 		let url = 'https://pango-info.scewpt.com/account/' + account.toLowerCase()
                 await page.goto(url)
                 let some_time = 60000
-                console.log(url, 'diver in:', some_time / 1000, 'sec(s)');
+                console.log('url:', url, 'diver in:', some_time / 1000, 'sec(s)');
                 await delay(some_time);
                 const liquidity = await page.evaluate(() => {
                     let l = 0;

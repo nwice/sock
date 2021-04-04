@@ -6,9 +6,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap" rel="stylesheet">
-<script src="https://cdn.zingchart.com/zingchart.min.js"></script>
 <link href="assets/site.css" rel="stylesheet">
 <script type="text/javascript" src="common.js"></script>
+<script src="https://cdn.zingchart.com/zingchart.min.js"></script>
 <style>
 :root {
     font-family: 'Raleway', sans-serif;          
@@ -27,15 +27,15 @@
         <tbody>
             <tr>
                 <td>Price</td>
-                <td class="price"></td>
+                <td class="price pretty"></td>
             </tr>
             <tr>
-                <td>Token</td>
-                <td class="token"></td>
+                <td>Symbol</td>
+                <td class="symbol"></td>
             </tr>
             <tr>
-                <td>Hash</td>
-                <td class="hash"></td>
+                <td>Id</td>
+                <td class="id"></td>
             </tr>
         </tbody>
     </table>
@@ -43,17 +43,17 @@
 <body>
     <script>
         
-        const skier = { price: "⛷️", token: getParameterByName('token') || 'SNOB', hash: "⛷️" };
+        const skier = { price: "⛷️", symbol: getParameterByName('symbol') || 'SNOB', id: "⛷️" };
 
         document.addEventListener('price', (e) => {
             console.log('price update:', e.detail);
-            let pe = document.querySelector('#price-' + e.detail.token.toLocaleLowerCase())
+            let pe = document.querySelector('#price-' + e.detail.symbol.toLocaleLowerCase())
 
             let previous_price = pe.querySelector('.price').innerHTML;
 
-            pe.querySelector('.price').innerHTML = e.detail.price;
-            pe.querySelector('.token').innerHTML = e.detail.token;
-            pe.querySelector('.hash').innerHTML = e.detail.hash; 
+            pe.querySelector('.price').innerHTML = e.detail.price.toFixed(4);
+            pe.querySelector('.symbol').innerHTML = e.detail.symbol;
+            pe.querySelector('.id').innerHTML = e.detail.id; 
             
             if ( previous_price ) {
                 console.log('previous price:', previous_price );
@@ -71,12 +71,13 @@
 
         })
 
-        fetch(`/price/${skier.token.toLowerCase()}.json`).then(function (response) {   
+        fetch(`/price/${skier.symbol.toLowerCase()}.json`).then( (response) => { 
+            console.log('headers:', response.headers);  
             let price_table = document.querySelector('#price_table').content.cloneNode(true);
-            price_table.firstElementChild.setAttribute('id', `price-${skier.token.toLocaleLowerCase()}`)
+            price_table.firstElementChild.setAttribute('id', `price-${skier.symbol.toLocaleLowerCase()}`)
             document.body.appendChild(price_table);                                        
             return response.json();
-        }).then(function (info) {
+        }).then( (info) => {
             if ( info.previous ) {
                 document.dispatchEvent(new CustomEvent('price', {
                     detail: info.previous
@@ -91,7 +92,7 @@
                     detail: info
                 }))
             }         
-        }).catch(function(err) {
+        }).catch( (err) => {
             document.dispatchEvent(new CustomEvent('price', {
                 detail: skier
             }))
