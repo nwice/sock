@@ -4,73 +4,12 @@
 <title>Circulating Supply With Uptick</title> 
 </head>
 <link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400&display=swap" rel="stylesheet">
 <link href="assets/site.css" rel="stylesheet">
 <script type="text/javascript" src="common.js"></script>
+<script type="text/javascript" type="module" src="defisupply.js"></script>
 <style>
 </style>
-<template id="supply_table">
-    <table>
-        <tbody>
-            <tr>
-                <td>Circulating Supply</td>
-                <td class="right circulating"></td>
-            </tr>
-            <tr>
-                <td>Max Supply</td>
-                <td class="right total"></td>
-            </tr>
-        </tbody>
-    </table>
-</template>
-<body>
-    <script>
-        function getParameterByName(name, url = window.location.href) {
-            name = name.replace(/[\[\]]/g, '\\$&');
-            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-                results = regex.exec(url);
-            if (!results) return null;
-            if (!results[2]) return '';
-            return decodeURIComponent(results[2].replace(/\+/g, ' '));
-        }
-
-        const skier = { circulating: "⛷️", token: getParameterByName('token') || 'SNOB', total: 18000000 };        
-
-        console.log(skier);
-
-        document.addEventListener('supply', (e) => {
-            let pe = document.querySelector('#supply-' + e.detail.token.toLowerCase())
-            pe.querySelector('.circulating').innerHTML = prettyNumber(e.detail.circulating);
-            pe.querySelector('.total').innerHTML = prettyNumber(e.detail.total);
-        })        
-
-        fetch(`/supply/${skier.token.toLowerCase()}.json`).then(function (response) {
-            let t = document.querySelector('#supply_table').content.cloneNode(true);
-            t.firstElementChild.setAttribute('id', `supply-${skier.token.toLowerCase()}`);
-            document.body.appendChild(t);
-            return response.json();
-        }).then(function (info) {
-            console.log(info)
-            if ( info.previous ) {
-                document.dispatchEvent(new CustomEvent('supply', {
-                    detail: info.previous
-                }))
-                setTimeout( () => {
-                    document.dispatchEvent(new CustomEvent('supply', {
-                        detail: info
-                    }))                
-                }, 1000)                
-            } else {
-                document.dispatchEvent(new CustomEvent('supply', {
-                    detail: info
-                }))
-            }            
-        }).catch(function(err) {
-            console.log(err)
-            document.dispatchEvent(new CustomEvent('supply', {
-                detail: skier
-            }))
-        });        
-    </script>
-</body>
+<body></body>
 </html>

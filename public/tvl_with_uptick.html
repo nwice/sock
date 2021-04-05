@@ -48,6 +48,10 @@ tr td:last-child::after {
 .hidden  {
     display: none;
 }
+body > table {
+    width: 325px;
+    display: inline-block;
+}
 body {
     text-align: center;
 }
@@ -88,7 +92,7 @@ body {
     <script>
 
         const tokenlink = (token) => {
-            return `<a target="_blank" href="https://info.pangolin.exchange/#/token/${token.token}"><img class="token" src="assets/avalanche-tokens/${token.hash}/logo.png"></a>`
+            return `<a target="_blank" href="https://info.pangolin.exchange/#/token/${token.symbol}"><img class="token" src="assets/avalanche-tokens/${token.id}/logo.png"></a>`
         }        
 
         const tick = (el, v, clear) => {
@@ -114,14 +118,14 @@ body {
 
         document.addEventListener('tvl', (e) => {
             console.log('tvl:', e.detail);
-            let tqs = `tvl-${e.detail.token.toLowerCase()}`;
+            let tqs = `tvl-${e.detail.symbol.toLowerCase()}`;
             let tab = document.querySelector('#' + tqs)     
             
             tick(tab.querySelector('.total'), e.detail.locked, e.detail.clear)
 
             e.detail.pairs?.forEach(p => {
                 let tk = Object.keys(p).filter(k => k.startsWith('token'));
-                let qs = 'pair-' + tk.map(k => { return p[k].token.toLowerCase()}).sort().join('-')
+                let qs = 'pair-' + tk.map(k => { return p[k].symbol.toLowerCase()}).sort().join('-')
                 let row = tab.querySelector('#' + qs);
                 if ( !row ) {
                     let r = document.querySelector('#tvl_row').content.cloneNode(true)    
@@ -140,11 +144,11 @@ body {
 
         })
 
-        const skier = { locked: "⛷️", token: getParameterByName('token') || 'SNOB' };
+        const skier = { locked: "⛷️", symbol: getParameterByName('token') || 'SNOB' };
 
-        fetch(`/tvl/${skier.token.toLowerCase()}.json`).then(function (response) {
+        fetch(`/tvl/${skier.symbol.toLowerCase()}.json`).then(function (response) {
             let t = document.querySelector('#tvl_table').content.cloneNode(true);
-            t.firstElementChild.setAttribute('id', `tvl-${skier.token.toLowerCase()}`);
+            t.firstElementChild.setAttribute('id', `tvl-${skier.symbol.toLowerCase()}`);
             document.body.appendChild(t);            
             return response.json();
         }).then(function (info) {
