@@ -47,11 +47,12 @@ function delay(time) {
 (async () => {
 
     let data = await s3.getObject({
-        Bucket: 'beta.scewpt.com',
+        Bucket: 'powder.network',
         Key: `price/snob.json`
     }).promise()
     let content = await data.Body.toString();
     let price = JSON.parse(content);
+    console.log('price:', price)
     delete price.previous
 
     const browser = await puppeteer.launch({
