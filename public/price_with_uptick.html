@@ -54,34 +54,68 @@
         top: 40px;
         left: -12px;
     }
-    table {
-        border-spacing: 0px;
-        position: relative;
-    }
-    table:first-of-type {
-        margin-top: 36px;
-    }
-    table:not(first-of-type) {
-        margin-top: 12px;
+    body {
+        padding-top: 48px;
+        display: flex;
+        flex-wrap: wrap;
+    }   
+    body {
+        margin: 0 0 100px 140px;
     }    
-    table:first-of-type::before {
-        font-weight: lighter;
-        font-size: smaller;
-        font-family: 'Inter', sans-serif;
-        content: attr(timestamp);
-        position: absolute;
-        left: -50px;
-        top: -24px;
+    body >  table  {
+        width: 210px;
+        margin: 25px;
     }
+    @media only screen and (max-width: 1200px) {
+        body {
+            margin: 0 0 100px 100px;
+        }    
+        body >  table  {
+            width: 180px;
+            margin: 10px;
+        }        
+    }
+    @media only screen and (max-width: 800px) {
+        body {
+            margin: 0 0 100px 50px;
+            background-color: aqua;
+        }    
+        body >  table  {
+            width: 150px;
+            margin: 5px;
+        }        
+    }    
+     
     .price {
         padding-left: 12px;
     }
+    .timestamp {
+        transform: translateX(40px) translateY(-40px);        
+    }
+    .timestamp::after {
+        font-size: small;
+        content: " beta";
+        text-shadow: .333px .333px black;
+        color:#ff0000;
+    }        
 </style>
 <body>
-    <defi-price symbol="wavax"></defi-price>
-    <defi-price symbol="png"></defi-price>
-    <defi-price symbol="wbtc"></defi-price>
-    <defi-price symbol="link"></defi-price>
-    <defi-price symbol="snob"></defi-price>    
+    <div style="position:absolute">        
+        <div class="timestamp"></div>
+        <defi-price symbol="snob"></defi-price>    
+        <defi-price symbol="wavax"></defi-price>
+        <defi-price symbol="png"></defi-price>
+        <defi-price symbol="eth"></defi-price>
+        <defi-price symbol="wbtc"></defi-price>
+        <defi-price symbol="link"></defi-price>        
+        <defi-price symbol="pefi"></defi-price>    
+        <defi-price symbol="sushi"></defi-price>
+        <defi-price symbol="uni"></defi-price>
+        <defi-price symbol="aave"></defi-price>
+        <defi-price symbol="yfi"></defi-price>
+        <defi-price symbol="sfi"></defi-price>
+        <defi-price symbol="shit"></defi-price>        
+        <defi-price symbol="bamboo-v2"></defi-price>
+    </div>
 </body>
 </html>

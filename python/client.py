@@ -85,6 +85,7 @@ common_addr = {
     '0x03580ee9f53a62b7cb409a2cb56f9be87747dd15017afc5cef6eef321e4fb2c5': 'bridge add relay',
     '0xdec2bacdd2f05b59de34da9b523dff8be42e5e38e818c82fdb0bae774387a724': 'delegate votes changed',
     '0x3134e8a2e6d97e929a7e54011ea5485d7d196dd5f0ba4d4ef95803e8e3fc257f': 'delegate changed',
+    '0xde88a922e0d3b88b24e9623efeb464919c6bf9f66857a65e2bfcf2ce87a9433d': 'calculate and distribute'
 }
 
 defi_addr = {

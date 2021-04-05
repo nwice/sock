@@ -1,10 +1,6 @@
 * {
     font-size: large;    
 }
-body > table {
-    max-width: 500px;
-    margin: auto;
-}
 .header {
     border-bottom: 1pt solid black;
 }
