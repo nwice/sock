@@ -7,6 +7,10 @@ AWS.config.update({ region: 'us-east-1' });
 
 const s3 = new AWS.S3();
 
+const sleep = (time) => {
+    return new Promise((resolve) => setTimeout(resolve, time));
+}
+
 //const endpoint = 'https://beta.scewpt.com/subgraphs/name/dasconnor/pangolindex'
 const endpoint = 'https://graph-node.avax.network/subgraphs/name/dasconnor/pangolindex'
 const query_block = gql`query getUser($userId: String!) {
@@ -117,14 +121,21 @@ let load = [
         id: '0xaeb044650278731ef3dc244692ab9f64c78ffaea'
     }
 
+    console.log('step 1')
+
     let stablepair_uint = await s3d.methods.balanceOf('0xB12531a2d758c7a8BF09f44FC88E646E1BF9D375').call()
     let stablepairlocked = stablepair_uint / 1e18    
     new_tvl.pairs[0].accounts[0].locked = stablepairlocked    
     new_tvl.pairs[0].locked = stablepairlocked
 
     let ap = player('wavax').price
+
+    console.log('step 2')
+
+    await sleep(1000)
     
     let tvl_sum = await Promise.all(new_tvl.pairs.filter(p => p.locked === undefined).map( async (pair) => {
+        console.log('step 3')
         let pair_sum = await Promise.all(pair.accounts.filter(a => a.locked === undefined).map( async (account_type) => {
             let at = Object.keys(account_type)[0]
             let an = account_type[at]
@@ -133,13 +144,19 @@ let load = [
             account_type.locked = av;
             return av;
         })).then(inner_resolve => {
-            return inner_resolve.reduce((a, b) => a + b, 0)            
+            return inner_resolve.reduce((a, b) => a + b, 0)
+        }).catch( inner_err => {
+            console.log('inner err:', inner_err)    
         });
         pair.locked = pair_sum;
         return pair_sum;
     })).then(resolve => {
         return resolve.reduce((a, b) => a + b, 0)            
+    }).catch( err => {
+        console.log('err:', err)
     });
+
+    console.log('step 3')
     tvl_sum += stablepairlocked
     Object.assign(new_tvl, { locked_value: tvl_sum, locked: tvl_sum })
 
