@@ -54,7 +54,7 @@ var s3d = new web3.eth.Contract(tokenABI, '0xdE1A11C331a0E45B9BA8FeE04D4B51A745f
 
 let load = [
     { symbol: 'wavax' }, { symbol: 'link' }, { symbol: 'eth' }, { symbol: 'png' }, { symbol: 'snob' }, 
-    { symbol: 'sushi' }, { symbol: 'usdt' }, { symbol: 'dai' }
+    { symbol: 'sushi' }, { symbol: 'usdt' }, { symbol: 'dai' }, { symbol: 'wbtc' }
 ];
 
 (async () => {     
@@ -82,8 +82,12 @@ let load = [
                 accounts: [{ contract: '0xdE1A11C331a0E45B9BA8FeE04D4B51A745f1e4A4'}]                 
             },            
             {
+                token0: player('wavax'), token1: player('wbtc'),
+                accounts: [{ pool: '0x39BE35904f52E83137881C0AC71501Edf0180181'}]
+            },            
+            {
                 token0: player('wavax'), token1: player('usdt'),
-                accounts: [{ stake: '0x74db28797957a52a28963f424daf2b10226ba04c'}]
+                accounts: [{ stake: '0x74db28797957a52a28963f424daf2b10226ba04c'}, {pool: '0x3fcFBCB4b368222fCB4d9c314eCA597489FE8605'}]
             },
             {
                 token0: player('wavax'), token1: player('link'),
@@ -184,8 +188,7 @@ let load = [
         WebsiteRedirectLocation: '/' + next_version_location        
     })).promise();    
 
-    await s3.upload({    
-        Bucket: 'beta.scewpt.com',    
+    await s3.upload({
         Key: next_version_location,
         Body: increment_out,
         ContentType: 'application/json',

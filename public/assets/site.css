@@ -1,9 +1,6 @@
 * {
     font-size: large;    
 }
-.header {
-    border-bottom: 1pt solid black;
-}
 .center {
     text-align: center;
 }
@@ -13,11 +10,9 @@
 .token {
     height: 24px;
     width: 24px;
+    border-radius: 24px;
 }
-.head {
-    margin: 5px 15px 10px 15px;
-}
-.inline {
+.tokenlink {
     display: inline-block;
     margin: 0 20px 0 20px;
 }

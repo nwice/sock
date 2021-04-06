@@ -8,11 +8,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap" rel="stylesheet">
 <link href="assets/site.css" rel="stylesheet">
 <script type="text/javascript" src="common.js"></script>
+<script type="text/javascript" type="module" src="defitvl.js"></script>
 <style>
 :root {
     font-family: 'Raleway', sans-serif;    
     --up: "📈";  
     --down: "📉";  
+}
+.tvlhead {
+    margin: 5px 15px 10px 15px;
 }
 .up::before {
     content: var(--up);
@@ -56,135 +60,7 @@ body {
     text-align: center;
 }
 </style>
-<template id="tvl_row">
-    <tr>
-        <td class="center tokens"></td>
-        <td class="right pretty"></td>
-    </tr>
-</template>
-<template id="tvl_table">
-    <table>
-        <thead>
-            <tr class="header">
-                <td>
-                    <div class="center head">Total Value Locked</div>
-                </td>
-                <td class="total right pretty"></td>
-            </tr>
-        </thead>
-        <tbody>
-
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="2" class="center" style="position:relative">
-                    <div class="arrows hidden">
-                        <button id="previous">⬅</button>
-                        <button id="next">➡</button>                        
-                    </div>
-                    <span class="timestamp"></span>
-                </td>
-            </tr>            
-        </tfoot>
-    </table>
-</template>
 <body>
-    <script>
-
-        const tokenlink = (token) => {
-            return `<a target="_blank" href="https://info.pangolin.exchange/#/token/${token.symbol}"><img class="token" src="assets/avalanche-tokens/${token.id}/logo.png"></a>`
-        }        
-
-        const tick = (el, v, clear) => {
-            let prior = el.innerHTML.replace(/[^\d.-]/g, '');
-            el.innerHTML = prettyNumber(v)
-            el.classList.remove('up');            
-            el.classList.remove('down');
-            if ( !isNaN(parseFloat(prior)) && !clear ) {
-                let plus_minus = ''
-                if ( parseFloat(prior) > v ) {
-                    el.classList.add('down')
-                    plus_minus += '-'
-                } else if ( parseFloat(prior) < v ) {
-                    el.classList.add('up')
-                    plus_minus += '+'
-                }
-                let pd = prettyDiff(Math.abs(parseFloat(prior) - v))
-                el.setAttribute('tick', pd.length > 0 ? plus_minus + pd: '' );
-            } else {
-                el.removeAttribute('tick')
-            }
-        }
-
-        document.addEventListener('tvl', (e) => {
-            console.log('tvl:', e.detail);
-            let tqs = `tvl-${e.detail.symbol.toLowerCase()}`;
-            let tab = document.querySelector('#' + tqs)     
-            
-            tick(tab.querySelector('.total'), e.detail.locked, e.detail.clear)
-
-            e.detail.pairs?.forEach(p => {
-                let tk = Object.keys(p).filter(k => k.startsWith('token'));
-                let qs = 'pair-' + tk.map(k => { return p[k].symbol.toLowerCase()}).sort().join('-')
-                let row = tab.querySelector('#' + qs);
-                if ( !row ) {
-                    let r = document.querySelector('#tvl_row').content.cloneNode(true)    
-                    r.firstElementChild.setAttribute('id', qs);
-                    tk.forEach(k => {
-                        r.firstElementChild.querySelector('.tokens').innerHTML += '<div class="inline">' + tokenlink(p[k]) + '</div>'
-                    })
-                    tab.querySelector('tbody').appendChild(r);
-                    row = tab.querySelector('#' + qs);
-                }
-                let row_td = row.querySelectorAll('td');
-                tick(row_td[1], p.locked, e.detail.clear)
-            })
-            let tmp = new Date(e.detail.timestamp)?.toLocaleTimeString() || '';
-            tab.querySelector('.timestamp').innerHTML = tmp != 'Invalid Date' ? tmp : '';
-
-        })
-
-        const skier = { locked: "⛷️", symbol: getParameterByName('token') || 'SNOB' };
-
-        fetch(`/tvl/${skier.symbol.toLowerCase()}.json`).then(function (response) {
-            let t = document.querySelector('#tvl_table').content.cloneNode(true);
-            t.firstElementChild.setAttribute('id', `tvl-${skier.symbol.toLowerCase()}`);
-            document.body.appendChild(t);            
-            return response.json();
-        }).then(function (info) {
-            if ( info.previous ) {
-                document.querySelector('.arrows').classList.remove('hidden')
-                let previous_button = document.querySelector('#previous')
-                let next_button = document.querySelector('#next')                
-                previous_button.addEventListener('click', () => {                    
-                    document.dispatchEvent(new CustomEvent('tvl', {
-                        detail: Object.assign(info.previous, { clear: true })
-                    }))
-                    previous_button.setAttribute('disabled', 'disabled')
-                    next_button.removeAttribute('disabled')
-                });
-                next_button.addEventListener('click', () => {                    
-                    document.dispatchEvent(new CustomEvent('tvl', {
-                        detail: Object.assign(info, { clear: false })
-                    }))
-                    next_button.setAttribute('disabled', 'disabled')
-                    previous_button.removeAttribute('disabled')
-                });    
-                previous_button.click();
-                setTimeout( () => {
-                    next_button.click();                    
-                }, 666 * 2)
-            } else {
-                document.dispatchEvent(new CustomEvent('tvl', {
-                    detail: Object.assign(info, { clear: true })
-                }))
-            }
-        }).catch(function (err) {
-            console.log(err)
-            document.dispatchEvent(new CustomEvent('tvl', {
-                detail: skier
-            }))
-        });        
-    </script>
+    <defi-tvl symbol="snob"></defi-tvl>
 </body>
 </html>

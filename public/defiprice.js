@@ -63,8 +63,6 @@ const clipboard = (e) => {
     );            
 }
 
-const skier = { price: "⛷️", symbol: getParameterByName('symbol') || 'SNOB', id: "⛷️", dex: 'png'};
-
 const load = (symbol) => {
     fetch(`/price/${symbol.toLowerCase()}.json`).then( (res) => { 
         let redirect = res.headers.get('x-amz-website-redirect-location')
@@ -93,7 +91,7 @@ const load = (symbol) => {
         }))
     }).catch( (err) => {
         document.dispatchEvent(new CustomEvent('price', {
-            detail: skier
+            detail: { price: "⛷️", symbol: getParameterByName('symbol') || 'SNOB', id: "⛷️", dex: 'png'}
         }))
     });    
 }
