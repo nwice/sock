@@ -63,13 +63,13 @@ const clipboard = (e) => {
     );            
 }
 
-const load = (symbol) => {
-    fetch(`/price/${symbol.toLowerCase()}.json`).then( (res) => { 
+const load = (symbol, dex) => {
+    fetch(`/dex/${dex}/price/${symbol.toLowerCase()}.json`).then( (res) => { 
         let redirect = res.headers.get('x-amz-website-redirect-location')
         if ( redirect ) {
             let rn = redirect.split('/').pop()
             rn = parseInt(rn.substring(0, rn.length - 5)) - 1
-            let previous_url = `/price/${symbol.toLowerCase()}/${rn}.json`;
+            let previous_url = `/dex/${dex}/price/${symbol}/${rn}.json`;
             return fetch(previous_url).then( (res2) => { 
                 return res2.json()
             }).then( (previous) => {
@@ -123,6 +123,6 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
         let price_table = template.content.cloneNode(true);
         price_table.firstElementChild.setAttribute('id', `price-${this.symbol.toLowerCase()}-${this.dex.toLowerCase()}`)
         document.body.appendChild(price_table);
-        load(this.symbol.toLowerCase())            
+        load(this.symbol.toLowerCase(), this.dex.toLowerCase() )            
     }
 });        

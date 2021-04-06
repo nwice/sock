@@ -19,6 +19,8 @@ const s3props = {
     ContentType: 'application/json',
 }
 
+let function_type = 'price';
+
 const publish = (p, previous) => {
   ddb.putItem({
     TableName: table,
@@ -29,23 +31,15 @@ const publish = (p, previous) => {
     }
   });
 
-  let increment_type = 'price';
+  
   let increment_symbol = p.symbol.toLowerCase();
+  let increment_dex = p.dex.toLowerCase();
   let increment_out = JSON.stringify(p, null, 2);
 
-  let path = `${increment_type}/${increment_symbol}.json`.toLowerCase()
-  fs.writeFileSync('public/' + path.toLowerCase(), increment_out)  
-
   let s3objects = [{
-    Key: `dex/${p.dex}/${increment_type}/${increment_symbol}.json`,
+    Key: `dex/${increment_dex}/${function_type}/${increment_symbol}.json`,
     Bucket: bucket,
   }]
-  if ( p.dex === 'png' ) {
-    s3objects.push({
-      Key: `${increment_type}/${increment_symbol}.json`,
-      Bucket: bucket,
-    })
-  }
   s3objects.forEach(s3object => {
     s3.headObject(s3object, (err, redirect) => {
       let nv = 0
@@ -75,7 +69,12 @@ const publish = (p, previous) => {
   })
 }
 
-const endpoint = 'https://pango-info.scewpt.com/subgraphs/name/dasconnor/pangolindex'
+const dexes = [
+  { symbol: 'png', endpoint: 'https://pango-info.scewpt.com/subgraphs/name/dasconnor/pangolindex'},
+  { symbol: 'yts', endpoint: 'https://graph.yetiswap.app/subgraphs/name/yetiswap/yetiswap2'},
+  { symbol: 'elk', endpoint: 'https://avax-graph.elk.finance/subgraphs/name/elkfinance/elkdex-avax'}
+];
+
 const priceql = gql`{  
   pairs(skip: 0) {
     token0Price
@@ -94,9 +93,9 @@ const priceql = gql`{
     }
     totalSupply   
   }
-}
-`
-const avax = '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7'
+}`
+
+const wavax = '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7'
 const usdt = '0xde3a24028580884448a5397872046a019649b084'
 
 const get_price = (pair, id) => {
@@ -119,53 +118,60 @@ const prices = []
 
 const now = new Date().getTime();
 
-const base = { dex: 'png', timestamp: now }
+(async () => {
+  await Promise.all(dexes.map( async (d) => {
+    let priceData = await request(d.endpoint, priceql, {})
+    console.log('pairs length:', priceData.pairs.length)
+    let base = { dex: d.symbol, timestamp: now };
+    
+    priceData.pairs.forEach(p => {
+      p.token0.tradeVolume = parseFloat(p.token0.tradeVolume)
+      p.token1.tradeVolume = parseFloat(p.token1.tradeVolume)
+    })
+    let basepair = priceData.pairs.filter(p => { return pair_contains(p, wavax) && pair_contains(p, usdt) })[0];
+    let avaxprice = get_price(
+      basepair,
+      usdt
+    )
 
-request(endpoint, priceql, {}).then(priceData => {
-  console.log('pairs length:', priceData.pairs.length)
-  priceData.pairs.forEach(p => {
-    p.token0.tradeVolume = parseFloat(p.token0.tradeVolume)
-    p.token1.tradeVolume = parseFloat(p.token1.tradeVolume)
-  })
-  let basepair = priceData.pairs.filter(p => { return pair_contains(p, avax) && pair_contains(p, usdt) })[0];
-  let avaxprice = get_price(
-    basepair,
-    usdt
-  )
+    prices.push(Object.assign({}, base, get_token(basepair, wavax), { price: avaxprice }))
+    prices.push(Object.assign({}, base, get_token(basepair, usdt), { price: get_price(basepair, wavax) * avaxprice }))
 
-  prices.push(Object.assign({}, base, get_token(basepair, avax), { price: avaxprice }))
-  prices.push(Object.assign({}, base, get_token(basepair, usdt), { price: get_price(basepair, avax) * avaxprice }))
-
-  priceData.pairs.filter(p => { return p != basepair && pair_contains(p, avax) }).forEach(p => {
-    let notavax = get_token(p, avax, true)
-    prices.push(Object.assign({}, base, notavax, { price: get_price(p, avax) * avaxprice }))
-  })
-  prices.filter(p => !master_skip_hash.includes(p.id)).forEach(p => {
-    console.log('id:', p.id, 'symbol:', p.symbol, 'price:', p.price, 'tradeVolume:', p.tradeVolume)
-    dynamo_client.query({
-      TableName: table,
-      Select: 'ALL_ATTRIBUTES',
-      Limit: 1,
-      ScanIndexForward: false,
-      KeyConditionExpression: '#id = :id',
-      FilterExpression: "#dex = :dex",
-      ExpressionAttributeValues: {
-        ':id': p.id,
-        ':dex': p.dex
-      },
-      ExpressionAttributeNames: {
-        '#id': 'id',
-        '#dex': 'dex',
-      }
-    }, (err, data) => {
-      if (err) {
-        console.log('token query error:', JSON.stringify(err, null, 2));
-      } else if (data.Items.length > 0 && data.Items[0].price == p.price) {
-        console.log('ignore:', p.symbol, 'price:', p.price)
-      } else {
-        console.log('publish:', p.symbol, 'price:', p.price, 'previous:', data.Items.length > 0 ? new Date(data.Items[0].timestamp).toLocaleDateString() : null)
-        publish(p, data.Items.length > 0 ? data.Items[0] : null)
-      }
-    });
-  })
-})
+    priceData.pairs.filter(p => { return p != basepair && pair_contains(p, wavax) }).forEach(p => {
+      let notavax = get_token(p, wavax, true)
+      prices.push(Object.assign({}, base, notavax, { price: get_price(p, wavax) * avaxprice }))
+    })
+    prices.filter(p => !master_skip_hash.includes(p.id)).forEach(p => {
+      console.log('id:', p.id, 'dex:', p.dex, 'symbol:', p.symbol, 'price:', p.price, 'tradeVolume:', p.tradeVolume)    
+      dynamo_client.query({
+        TableName: table,
+        Select: 'ALL_ATTRIBUTES',
+        Limit: 1,
+        ScanIndexForward: false,
+        KeyConditionExpression: '#id = :id',
+        FilterExpression: "#dex = :dex",
+        ExpressionAttributeValues: {
+          ':id': p.id,
+          ':dex': p.dex
+        },
+        ExpressionAttributeNames: {
+          '#id': 'id',
+          '#dex': 'dex',
+        }
+      }, (err, data) => {
+        if (err) {
+          console.log('token query error:', JSON.stringify(err, null, 2));
+        } else {
+          let path = `dex/${p.dex}/${function_type}/${p.symbol}.json`.toLowerCase()          
+          fs.writeFileSync('public/' + path.toLowerCase(), JSON.stringify(p, null, 2) )          
+          if (data.Items.length > 0 && data.Items[0].price == p.price) {
+            console.log('price ignore:', p.symbol, 'price:', p.price)
+          } else {
+            console.log('volume:', p.tradeVolume, 'publish:', p.symbol, 'price:', p.price, 'previous:', data.Items.length > 0 ? new Date(data.Items[0].timestamp).toLocaleDateString() : null)
+            //publish(p, data.Items.length > 0 ? data.Items[0] : null)
+          }
+        }
+      });
+    })
+  }))
+})();

@@ -85,7 +85,9 @@ common_addr = {
     '0x03580ee9f53a62b7cb409a2cb56f9be87747dd15017afc5cef6eef321e4fb2c5': 'bridge add relay',
     '0xdec2bacdd2f05b59de34da9b523dff8be42e5e38e818c82fdb0bae774387a724': 'delegate votes changed',
     '0x3134e8a2e6d97e929a7e54011ea5485d7d196dd5f0ba4d4ef95803e8e3fc257f': 'delegate changed',
-    '0xde88a922e0d3b88b24e9623efeb464919c6bf9f66857a65e2bfcf2ce87a9433d': 'calculate and distribute'
+    '0xde88a922e0d3b88b24e9623efeb464919c6bf9f66857a65e2bfcf2ce87a9433d': 'calculate and distribute',
+    '0x9cfa33fa3a49e361ae868b5f1262b6e8d3eeaa1cbe5c0f5589ddf4b4a9576bb1': 'transfer',
+    '0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0': 'ownership transfer'
 }
 
 defi_addr = {
@@ -260,7 +262,9 @@ defi_addr = {
     '0xb5bD08f034F77874c114c3b0dB80Dd1Fbdda07b2': 'panda pair bamboo/spore',
     '0x11f793f10b4c50c20a7efaf82ea6d8d0aa6beb5e': 'panda pair dai/wbtc',
     '0x083e14c8c0e122e374e4c6ff2169d8db7e6728be': 'panda pair eth/wbtc',
-    '0x2545b379dcbb673e36c612cfdb8d6f1d61480bca': 'panda pair usdt/wbtc'
+    '0x2545b379dcbb673e36c612cfdb8d6f1d61480bca': 'panda pair usdt/wbtc',
+
+    '0xbfc3C72Bab7252341dC90A1E85797Ebd8C79c338': 'olive pair usdt/avax',
 }
 
 nft_addr = {

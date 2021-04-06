@@ -62,13 +62,13 @@ let load = [
     const players = await Promise.all(load.map(async (p) => {
         let data = await s3.getObject({
             Bucket: 'powder.network',
-            Key: `price/${p.symbol.toLowerCase()}.json`
+            Key: `dex/png/price/${p.symbol.toLowerCase()}.json`
         }).promise()
         let content = await data.Body.toString();
         let loaded_p = JSON.parse(content);
 
         return Object.assign({}, p, loaded_p)
-    }))
+    }));
     
     const player = (symbol) => {
         return players.filter(p => { return symbol.toLowerCase() == p.symbol.toLowerCase() })[0]
@@ -174,26 +174,26 @@ let load = [
     let tvl_location = `snob/tvl`
     console.log('new version:', nv, 'new version location:', next_version_location)
     
-    await s3.upload(Object.assign({}, s3object, {        
-        ACL: 'public-read',
+    await s3.upload(Object.assign({}, s3object, {  
+        Bucket: 'beta.scewpt.com',      
         Key: tvl_location,
         Body: new_tvl.locked.toFixed(2),
-        ContentType: 'text/plain'
+        ContentType: 'text/plain',
+        ACL: 'public-read',
     })).promise();
 
     await s3.upload(Object.assign({}, s3object, {        
-        ACL: 'public-read',
         Body: increment_out,
         ContentType: 'application/json',
-        WebsiteRedirectLocation: '/' + next_version_location        
+        WebsiteRedirectLocation: '/' + next_version_location,
+        ACL: 'public-read',
     })).promise();    
 
-    await s3.upload({
+    await s3.upload(Object.assign({}, s3object, {
         Key: next_version_location,
         Body: increment_out,
         ContentType: 'application/json',
-        ACL: 'public-read'
-    }).promise();
-
+        ACL: 'public-read',
+    })).promise();
     exit()
 })();
