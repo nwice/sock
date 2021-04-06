@@ -16,9 +16,9 @@ template.innerHTML = `
 `    
 
 document.addEventListener('price', (e) => {
-    console.log('event detail:', e.detail)
     let qs = `price-${e.detail.symbol.toLocaleLowerCase()}-${e.detail.dex.toLocaleLowerCase()}`
     let table = document.querySelector('#' + qs);
+
     if ( !table.querySelector('.logowrap img') ) {
         let logo = new Image()
         logo.classList.add('logo')
@@ -46,8 +46,13 @@ document.addEventListener('price', (e) => {
     } else {
         table.querySelector('.price').classList.remove('up')
         table.querySelector('.price').classList.remove('down')
-    }      
-    document.querySelector('.timestamp').innerHTML = new Date(e.detail.timestamp).toLocaleTimeString();    
+    }    
+    let ts = document.querySelector('.timestamp').getAttribute('timestamp')  
+    if ( ts == null || e.detail.timestamp > parseFloat(ts) ) {
+        console.log('yes!');
+        document.querySelector('.timestamp').setAttribute('timestamp', e.detail.timestamp)  
+        document.querySelector('.timestamp').innerHTML = new Date().toLocaleTimeString();            
+    } 
 })
 
 const clipboard = (e) => {

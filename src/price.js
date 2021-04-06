@@ -72,7 +72,9 @@ const publish = (p, previous) => {
 const dexes = [
   { symbol: 'png', endpoint: 'https://pango-info.scewpt.com/subgraphs/name/dasconnor/pangolindex'},
   { symbol: 'yts', endpoint: 'https://graph.yetiswap.app/subgraphs/name/yetiswap/yetiswap2'},
-  { symbol: 'elk', endpoint: 'https://avax-graph.elk.finance/subgraphs/name/elkfinance/elkdex-avax'}
+  { symbol: 'elk', endpoint: 'https://avax-graph.elk.finance/subgraphs/name/elkfinance/elkdex-avax'},
+  { symbol: 'com', endpoint: 'https://graph.avagraph.live/subgraphs/name/complusnetwork/subgraph-ava'},
+  { symbol: 'zero', endpoint: 'https://zero-graph.0.exchange/subgraphs/name/zeroexchange/zerograph', stable: '0x474bb79c3e8e65dcc6df30f9de68592ed48bbfdb'}
 ];
 
 const priceql = gql`{  
@@ -128,14 +130,14 @@ const now = new Date().getTime();
       p.token0.tradeVolume = parseFloat(p.token0.tradeVolume)
       p.token1.tradeVolume = parseFloat(p.token1.tradeVolume)
     })
-    let basepair = priceData.pairs.filter(p => { return pair_contains(p, wavax) && pair_contains(p, usdt) })[0];
+    let basepair = priceData.pairs.filter(p => { return pair_contains(p, wavax) && pair_contains(p, d.stable ? d.stable : usdt) })[0];
     let avaxprice = get_price(
       basepair,
-      usdt
+      d.stable ? d.stable : usdt
     )
 
     prices.push(Object.assign({}, base, get_token(basepair, wavax), { price: avaxprice }))
-    prices.push(Object.assign({}, base, get_token(basepair, usdt), { price: get_price(basepair, wavax) * avaxprice }))
+    prices.push(Object.assign({}, base, get_token(basepair, d.stable ? d.stable : usdt), { price: get_price(basepair, wavax) * avaxprice }))
 
     priceData.pairs.filter(p => { return p != basepair && pair_contains(p, wavax) }).forEach(p => {
       let notavax = get_token(p, wavax, true)
