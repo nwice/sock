@@ -7,8 +7,7 @@ AWS.config.update({ region: 'us-east-1' });
 
 const s3 = new AWS.S3();
 
-//https://beta.scewpt.com/subgraphs/name/dasconnor/pangolindex
-//https://graph-node.avax.network/subgraphs/name/dasconnor/pangolindex
+//const endpoint = 'https://beta.scewpt.com/subgraphs/name/dasconnor/pangolindex'
 const endpoint = 'https://graph-node.avax.network/subgraphs/name/dasconnor/pangolindex'
 const query_block = gql`query getUser($userId: String!) {
     user(id: $userId) {

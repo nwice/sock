@@ -170,7 +170,7 @@ const now = new Date().getTime();
             console.log('price ignore:', p.symbol, 'price:', p.price)
           } else {
             console.log('volume:', p.tradeVolume, 'publish:', p.symbol, 'price:', p.price, 'previous:', data.Items.length > 0 ? new Date(data.Items[0].timestamp).toLocaleDateString() : null)
-            //publish(p, data.Items.length > 0 ? data.Items[0] : null)
+            publish(p, data.Items.length > 0 ? data.Items[0] : null)
           }
         }
       });
