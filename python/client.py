@@ -174,6 +174,7 @@ defi_addr = {
     '0x0a63179a8838b5729e79d239940d7e29e40a0116': 'pangolin pair avax/spore',
     '0x5122524af267567897cf56ab4389ce20a08194fa': 'pangolin pair snob/spore',
     '0x7692c5f0c87b928981112c4ce5d51c8301acc88c': 'pangolin pair avax/bamboo',
+    '0x605424527cFB662Fe65b2e08Bc62e558f3b9400e': 'pangolin pair avax/elk',
 
     '0xDF8bFA6c5C8578CdE19D58d6EFf0B39aB2415d83': 'yieldyak pair avax/yak',    
     '0xF0BDE208A05CC0a056B5FAE1a78212Adf7A4AFfe': 'yieldyak pair avax/bambooV1',
@@ -182,6 +183,11 @@ defi_addr = {
     '0xB58535A99e2D615df6Ff00AD091D01310Daabda3': 'yieldyak pair avax/uni',
     '0x141bE6e009a0D9a5c0d4e557c0636e97B3de2a7B': 'yieldyak pair zero/zusdc',
 
+    '0x9C36eca9309f0CeB5818da889E47D3c3E2ba9F32': 'yieldyak pair avax/wbtc',
+    '0xfDffdf6Dc4FB30BeDE8af0f78D42c5468F37324B': 'yieldyak pair olive/avax',
+
+    '0xdAaA1Ba6839a7F04061dA8805De5800B152Def2F': 'yieldyak middleman 3',
+    '0x68761Ed6263DDfee85A3f5078cFacd8ad26dEAD0': 'yieldyak middleman 2',
     '0xDcEDF06Fd33E1D7b6eb4b309f779a0e9D3172e44': 'yieldyak middleman',
     '0xff8c578f2950c7a497e4c32813f21e1f52d2e7ee': 'yieldyak middleman avax/snob',
     
@@ -245,7 +251,9 @@ defi_addr = {
     '0x09fdcfb64c3a89d2a604dc3827b49d72b900d1e7': 'panda treasury 4',
     '0x856155edcd4af131301b11b5c96ad29ed22ad4fd': 'panda treasury 5',
     '0x124737ce6a43a98caaf095accb9a9d6fccbb0e73': 'panda treasury 6',
+    '0x466b32051bd71dd4acfaa5ba1a543696be59604c': 'panda treasury 7',
 
+    '0xfd0d5013621bbefc89a7cdfb38ba48280e93ad66': 'panda pair avax/png',
     '0xb3ec35716877c27fe677fc2f8b2bdf9c0a72bf61': 'panda pair avax/eth',
     '0xBc31baFfcc81f7fD8Cc1715fbB8a5f51c862AbcC': 'panda pair avax/sushi',        
     '0xd8c9ed5257b84ca0b93b321967fbdab400bc8162': 'panda pair avax/uni',    
@@ -264,7 +272,15 @@ defi_addr = {
     '0x083e14c8c0e122e374e4c6ff2169d8db7e6728be': 'panda pair eth/wbtc',
     '0x2545b379dcbb673e36c612cfdb8d6f1d61480bca': 'panda pair usdt/wbtc',
 
+
+    '0x0c45FB63001b56a21e29c7dcc1727bfDA273a368': 'olive router',
+    '0x57cc32Cd7F5a531953E9af25e1C9394093428082': 'olive treasury',
+    '0x76fbce48d9dce3d04bfac318d1fdeb3a78e903a9': 'olive pair avax/eth',
     '0xbfc3C72Bab7252341dC90A1E85797Ebd8C79c338': 'olive pair usdt/avax',
+    '0xF54a719215622f602FCA5BF5a6509734C3574a4c': 'olive pair usdt/olive',
+    '0xd3566eC8Cdf8cb4E66B9F958ddb47E225C51E58b': 'olive pair dai/usdt',
+    '0x57cc32cd7f5a531953e9af25e1c9394093428082': 'olive pair avax/olive',
+    '0x79C1B4Ee613F29a8c0aae563Ef445317D99a6906': 'olive pair avax/wbtc',
 }
 
 nft_addr = {
@@ -273,7 +289,8 @@ nft_addr = {
     '0x58e5d5a525e3b40bc15abaa38b5882678db1ee68befd2f60bafe3a7fd06db9e3': 'bought punk',
     '0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0': 'ownership transferred',
     '0x5b859394fabae0c1ba88baffe67e751ab5248d2e879028b8c8d6897b0519f56a': 'punk bid entered',
-    '0x6f30e1ee4d81dcc7a8a478577f65d2ed2edb120565960ac45fe7c50551c87932': 'punk bid withdrawn'
+    '0x6f30e1ee4d81dcc7a8a478577f65d2ed2edb120565960ac45fe7c50551c87932': 'punk bid withdrawn',
+    '0xb13f3a5a9746619771c98306d0b4e02bf179a21c6f6032c7b22913b933a8fe64': 'snowie bought'
 }
 
 known_addr = {}
