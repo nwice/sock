@@ -1,18 +1,18 @@
-const template = document.createElement('template');
-template.innerHTML = `
-    <table>
-        <tbody>
-            <tr>
-                <td rowspan="2" class="logowrap">
-                    <span class="id" onClick="clipboard(this)"></span>
-                </td>
-                <td class="price pretty"></td>
-            </tr>
-            <tr>
-                <td class="symbol"></td>
-            </tr>
-        </tbody>
-    </table>
+const defiprice = document.createElement('template');
+defiprice.innerHTML = `
+<table>
+    <tbody>
+        <tr>
+            <td rowspan="2" class="logowrap">
+                <span class="id" onClick="clipboard(this)"></span>
+            </td>
+            <td class="price pretty"></td>
+        </tr>
+        <tr>
+            <td class="symbol"></td>
+        </tr>
+    </tbody>
+</table>
 `    
 
 document.addEventListener('price', (e) => {
@@ -67,7 +67,7 @@ const clipboard = (e) => {
     );            
 }
 
-const load = (symbol, dex) => {
+const priceload = (symbol, dex) => {
     fetch(`/dex/${dex}/price/${symbol.toLowerCase()}.json`).then( (res) => { 
         let redirect = res.headers.get('x-amz-website-redirect-location')
         if ( redirect ) {
@@ -124,9 +124,65 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
     }
 
     connectedCallback() {       
-        let price_table = template.content.cloneNode(true);
+        let price_table = defiprice.content.cloneNode(true);
         price_table.firstElementChild.setAttribute('id', `price-${this.symbol.toLowerCase()}-${this.dex.toLowerCase()}`)
-        document.body.appendChild(price_table);
-        load(this.symbol.toLowerCase(), this.dex.toLowerCase() )            
+        this.appendChild(price_table);
+        priceload(this.symbol.toLowerCase(), this.dex.toLowerCase() )            
     }
-});        
+});
+
+window.addEventListener('load', () => {
+    let style = document.createElement('style');
+    style.appendChild(document.createTextNode(`
+.up {
+    color: var(--up-color);
+}
+.down {
+    color: var(--down-color);
+}
+.symbol {
+    min-width: 75px;
+    padding-left: 4px;
+}
+.id {
+    font-weight: 200;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;    
+    text-overflow: ellipsis;
+    display: inline-block;
+    width: 23px;
+    cursor: pointer;   
+    position: absolute; 
+    top: 46px;
+}
+.logowrap {
+    padding: 1px;
+    position: relative;
+}
+.logo {
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+}
+.copied::after {
+    font-size: small;
+    content: "📋";
+    position: absolute;
+    top: 40px;
+    left: -12px;
+}   
+.price {
+    padding-left: 12px;
+}
+.timestamp {
+    transform: translateX(40px) translateY(-40px);        
+}
+.timestamp::after {
+    font-size: small;
+    content: " beta";
+    text-shadow: .333px .333px black;
+    color:#ff0000;
+}`));
+document.head.appendChild(style)
+});

@@ -2,83 +2,29 @@
 <html>
 <head>
     <title>Snowball Network Header</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
 
     <script type="module" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"></script>
+
     <script src="common.js"></script>
     
-    <script type="module" src="snobheader.js"></script>
+    <script type="module" src="defiheader.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Encode+Sans&display=swap');
-        :root {
-            --mdc-typography-font-family: "Encode Sans", sans-serif, monospace;
-            --logo-image: url(assets/images/Logo_Light@2x.png);
-            --header-bg-color: #222741;
-            --header-link-color: rgba(255, 255, 255, 0.8);
-            --header-link-color-hover:  rgb(51, 169, 255);
-            --body-bg-color: rgb(27, 31, 50);
-        }
-        html[data-theme='light'] {
-            --logo-image: url(assets/images/Logo_Dark@2x.png);
-            --header-bg-color: #fff;
-            --body-bg-color: gray;            
-            --header-link-color: rgba(0, 0, 0, 0.85);
-        }
 
-        @media screen and (min-width: 450px) {
-            html {
-                --fontsize: 19.6px;
-                --header-padding: 150px;
-            }
-        }
-
-        .logo {
-            background-image: var(--logo-image);
-            height: 80px;
-            width: 240px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-        .menu {
-            width: 100%;            
-        }
-        .mdc-top-app-bar {
-            padding-left: var(--header-padding);
-            padding-right: var(--header-padding);
-            background-color: var(--header-bg-color);
-            color: var(--header-color);
-        }
-        .mdc-top-app-bar a {
-            font-weight: 700;
-            font-size: var(--fontsize);
-            color: var(--header-link-color);
-            text-decoration: none;            
-        }
-        .mdc-top-app-bar a:hover {
-            color: var(--header-link-color-hover)
-        }
-
-        body,
-        html {
-            margin: 0;
-        }
         main {            
             background-color: var(--body-bg-color);
             padding-top: 95px;
         }       
-        .mdc-top-app-bar--fixed .mdc-top-app-bar__row {
-            height: 95px;
-        }
-        ion-icon {
-            font-size: 20px;
-        }
     </style>    
 </head>
 <body class="mdc-typography">
-    <snob-header></snob-header>
+    <defi-header></defi-header>
     <!--
     <div class="mdc-dialog">
         <div class="mdc-dialog__container">

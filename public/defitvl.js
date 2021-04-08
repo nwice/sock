@@ -1,5 +1,5 @@
-const template = document.createElement('template');
-template.innerHTML = `
+const defitvl = document.createElement('template');
+defitvl.innerHTML = `
 <table>
     <thead>
         <tr class="header">
@@ -23,8 +23,8 @@ template.innerHTML = `
     </tfoot>
 </table>
 `
-const template2 = document.createElement('template');
-template2.innerHTML = `
+const defitvl_tr = document.createElement('template');
+defitvl_tr.innerHTML = `
 <tr>
     <td class="center tokens"></td>
     <td class="right pretty"></td>
@@ -68,12 +68,12 @@ document.addEventListener('tvl', (e) => {
         let qs = 'pair-' + tk.map(k => { return p[k].symbol.toLowerCase()}).sort().join('-')
         let row = tab.querySelector('#' + qs);
         if ( !row ) {
-            let r = template2.content.cloneNode(true)    
-            r.firstElementChild.setAttribute('id', qs);
+            let tr = defitvl_tr.content.cloneNode(true)    
+            tr.firstElementChild.setAttribute('id', qs);
             tk.forEach(k => {
-                r.firstElementChild.querySelector('.tokens').innerHTML += '<div class="tokenlink">' + tokenlink(p[k]) + '</div>'
+                tr.firstElementChild.querySelector('.tokens').innerHTML += `<defi-price class="tokenlink" symbol="${p[k].symbol}"></defi-price>`
             })
-            tab.querySelector('tbody').appendChild(r);
+            tab.querySelector('tbody').appendChild(tr);
             row = tab.querySelector('#' + qs);
         }
         let row_td = row.querySelectorAll('td');
@@ -84,7 +84,7 @@ document.addEventListener('tvl', (e) => {
 
 })        
 
-const load = (symbol) => {
+const tvlload = (symbol) => {
     fetch(`/tvl/${symbol.toLowerCase()}.json`).then( (res) => { 
         let redirect = res.headers.get('x-amz-website-redirect-location')
         if ( redirect ) {
@@ -154,9 +154,9 @@ window.customElements.define('defi-tvl', class DefiTvl extends HTMLElement {
     }
 
     connectedCallback() {       
-        let tvl_table = template.content.cloneNode(true);
+        let tvl_table = defitvl.content.cloneNode(true);
         tvl_table.firstElementChild.setAttribute('id', `tvl-${this.symbol.toLowerCase()}`)
         document.body.appendChild(tvl_table);
-        load(this.symbol.toLowerCase())            
+        tvlload(this.symbol.toLowerCase())            
     }
 });        

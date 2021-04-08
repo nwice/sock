@@ -1,23 +1,55 @@
-* {
-    font-size: large;    
+@import url('https://fonts.googleapis.com/css2?family=Encode+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Raleway&display=swap');
+
+:root {
+    --mdc-typography-font-family: "Encode Sans", sans-serif, monospace;
+    --logo-image: url(assets/images/Logo_Light@2x.png);
+    --header-bg-color: #222741;
+    --header-link-color: rgba(255, 255, 255, 0.8);
+    --header-link-color-hover:  rgb(51, 169, 255);
+    --body-bg-color: rgb(27, 31, 50);
+    --up: "⬆️";  
+    --down: "⬇️";
+    --up-color: green;  
+    --down-color: red;  
 }
+
+html[data-theme='light'] {
+    --logo-image: url(assets/images/Logo_Dark@2x.png);
+    --header-bg-color: #fff;
+    --body-bg-color: gray;            
+    --header-link-color: rgba(0, 0, 0, 0.85);
+}
+
+@media screen and (min-width: 450px) {
+    html {
+        --header-fontsize: 19.6px;
+        --header-padding: 150px;
+    }
+}
+
+@media screen and (min-width: 750px) {
+    html {
+        --header-fontsize: 40px;
+        --header-padding: 150px;
+    }
+}
+
+body,
+html {
+    margin: 0;
+}
+
 .center {
     text-align: center;
 }
 .right {
     text-align:right;
 }
-.token {
-    height: 24px;
-    width: 24px;
-    border-radius: 24px;
-}
-.tokenlink {
-    display: inline-block;
-    margin: 0 20px 0 20px;
-}
+
 .pretty {
     font-family: 'Inter', sans-serif;
     font-weight: 500;
-}    
+}
+    
 
