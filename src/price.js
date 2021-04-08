@@ -45,16 +45,16 @@ const publish = (p, previous) => {
       let nv = 0
       try {
         nv = parseInt(redirect.WebsiteRedirectLocation.split('/').pop().split('.')[0]) + 1
-        if (isNaN(nv)) {
+        if (isNaN(nv) || nv < 0) {
           nv = 0
         }
       } catch (err2) {
-        console.log('zero file:', err2)
+        console.log('zero file:', s3object.Key)
         nv = 0
       }          
 
       let next_version_location = s3object.Key.substring(0, s3object.Key.length - 5).concat(`/${nv}.json`)      
-      console.log('new version:', nv, 'new version location:', next_version_location)
+      //console.log('new version:', nv, 'new version location:', next_version_location)
 
       s3.upload(Object.assign({}, s3props, s3object, {        
         Body: increment_out,
@@ -77,8 +77,8 @@ const dexes = [
   { symbol: 'zero', endpoint: 'https://zero-graph.0.exchange/subgraphs/name/zeroexchange/zerograph', stable: '0x474bb79c3e8e65dcc6df30f9de68592ed48bbfdb'}
 ];
 
-const priceql = gql`{  
-  pairs(skip: 0) {
+const priceql = gql`query getPairs($skip: Int!) {  
+  pairs(skip: $skip) {
     token0Price
     token0 {
       id
@@ -122,29 +122,37 @@ const now = new Date().getTime();
 
 (async () => {
   await Promise.all(dexes.map( async (d) => {
-    let priceData = await request(d.endpoint, priceql, {})
-    console.log('pairs length:', priceData.pairs.length)
-    let base = { dex: d.symbol, timestamp: now };
+    let skip = 0
+    let pairs = []
+    while ( skip % 100 == 0 ) {
+      let priceData = await request(d.endpoint, priceql, { skip })
+      pairs = [...pairs,...priceData.pairs]
+      console.log('pairs length:', priceData.pairs.length)
+      skip = priceData.pairs.length
+    }    
     
-    priceData.pairs.forEach(p => {
+    let base = { dex: d.symbol, timestamp: now };
+    pairs.forEach(p => {
       p.token0.tradeVolume = parseFloat(p.token0.tradeVolume)
       p.token1.tradeVolume = parseFloat(p.token1.tradeVolume)
     })
-    let basepair = priceData.pairs.filter(p => { return pair_contains(p, wavax) && pair_contains(p, d.stable ? d.stable : usdt) })[0];
+    let basepair = pairs.filter(p => { return pair_contains(p, wavax) && pair_contains(p, d.stable ? d.stable : usdt) })[0];
     let avaxprice = get_price(
       basepair,
       d.stable ? d.stable : usdt
     )
 
+    console.log('dex:', d.symbol, 'avaxprice:', avaxprice);
+
     prices.push(Object.assign({}, base, get_token(basepair, wavax), { price: avaxprice }))
     prices.push(Object.assign({}, base, get_token(basepair, d.stable ? d.stable : usdt), { price: get_price(basepair, wavax) * avaxprice }))
 
-    priceData.pairs.filter(p => { return p != basepair && pair_contains(p, wavax) }).forEach(p => {
+    pairs.filter(p => { return p != basepair && pair_contains(p, wavax) }).forEach(p => {
       let notavax = get_token(p, wavax, true)
       prices.push(Object.assign({}, base, notavax, { price: get_price(p, wavax) * avaxprice }))
     })
     prices.filter(p => !master_skip_hash.includes(p.id)).forEach(p => {
-      console.log('id:', p.id, 'dex:', p.dex, 'symbol:', p.symbol, 'price:', p.price, 'tradeVolume:', p.tradeVolume)    
+      //console.log('id:', p.id, 'dex:', p.dex, 'symbol:', p.symbol, 'price:', p.price, 'tradeVolume:', p.tradeVolume)    
       dynamo_client.query({
         TableName: table,
         Select: 'ALL_ATTRIBUTES',
@@ -163,15 +171,21 @@ const now = new Date().getTime();
       }, (err, data) => {
         if (err) {
           console.log('token query error:', JSON.stringify(err, null, 2));
+          exit()
+        }
+
+        let previous = null
+        if (data && data.Items && data.Items.length > 0) {
+          previous = data.Items[0]; 
+        }
+
+        let path = `dex/${p.dex}/${function_type}/${p.symbol}.json`.toLowerCase()          
+        fs.writeFileSync('public/' + path.toLowerCase(), JSON.stringify(p, null, 2) )          
+        if (previous && previous.price == p.price) {
+          console.log('ignoring dex:', p.dex, 'symbol:', p.symbol, 'price:', p.price)
         } else {
-          let path = `dex/${p.dex}/${function_type}/${p.symbol}.json`.toLowerCase()          
-          fs.writeFileSync('public/' + path.toLowerCase(), JSON.stringify(p, null, 2) )          
-          if (data.Items.length > 0 && data.Items[0].price == p.price) {
-            console.log('price ignore:', p.symbol, 'price:', p.price)
-          } else {
-            console.log('volume:', p.tradeVolume, 'publish:', p.symbol, 'price:', p.price, 'previous:', data.Items.length > 0 ? new Date(data.Items[0].timestamp).toLocaleDateString() : null)
-            publish(p, data.Items.length > 0 ? data.Items[0] : null)
-          }
+          console.log('dex:', p.dex, 'symbol:', p.symbol, 'price:', p.price, 'previous:', previous ? new Date(previous.timestamp).toLocaleTimeString() : null);
+          publish(p, previous)
         }
       });
     })

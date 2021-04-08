@@ -35,7 +35,6 @@ document.addEventListener('price', (e) => {
     table.querySelector('.id').innerHTML = e.detail.id; 
         
     if ( previous_price ) {
-        console.log('previous price:', previous_price );
         if ( parseFloat(previous_price) < e.detail.price) {
             table.querySelector('.price').classList.remove('down')
             table.querySelector('.price').classList.add('up')

@@ -77,7 +77,7 @@ document.addEventListener('tvl', (e) => {
             row = tab.querySelector('#' + qs);
         }
         let row_td = row.querySelectorAll('td');
-        tick(row_td[1], p.locked, e.detail.clear)
+        tick(row_td[1], p.locked.toFixed(0), e.detail.clear)
     })
     let tmp = new Date(e.detail.timestamp)?.toLocaleTimeString() || '';
     tab.querySelector('.timestamp').innerHTML = tmp != 'Invalid Date' ? tmp : '';

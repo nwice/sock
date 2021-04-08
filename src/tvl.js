@@ -7,10 +7,6 @@ AWS.config.update({ region: 'us-east-1' });
 
 const s3 = new AWS.S3();
 
-const sleep = (time) => {
-    return new Promise((resolve) => setTimeout(resolve, time));
-}
-
 //const endpoint = 'https://beta.scewpt.com/subgraphs/name/dasconnor/pangolindex'
 const endpoint = 'https://graph-node.avax.network/subgraphs/name/dasconnor/pangolindex'
 const query_block = gql`query getUser($userId: String!) {
@@ -63,10 +59,12 @@ let load = [
 (async () => {     
 
     const players = await Promise.all(load.map(async (p) => {
+        console.log('get:', p.symbol)
         let data = await s3.getObject({
             Bucket: 'powder.network',
             Key: `dex/png/price/${p.symbol.toLowerCase()}.json`
         }).promise()
+        console.log(data)
         let content = await data.Body.toString();
         let loaded_p = JSON.parse(content);
 
@@ -76,6 +74,8 @@ let load = [
     const player = (symbol) => {
         return players.filter(p => { return symbol.toLowerCase() == p.symbol.toLowerCase() })[0]
     }
+
+    console.log('player:', player('snob'))
 
     let new_tvl = Object.assign({
         pairs: [
@@ -129,36 +129,33 @@ let load = [
     new_tvl.pairs[0].locked = stablepairlocked
 
     let ap = player('wavax').price
-
-    console.log('step 2')
-
-    await sleep(1000)
     
     let tvl_sum = await Promise.all(new_tvl.pairs.filter(p => p.locked === undefined).map( async (pair) => {
-        console.log('step 3')
         let pair_sum = await Promise.all(pair.accounts.filter(a => a.locked === undefined).map( async (account_type) => {
             let at = Object.keys(account_type)[0]
             let an = account_type[at]
+            console.log('account:', an.toLowerCase())
             let av = await userLiquidity(an, pair.token0.symbol, pair.token1.symbol, ap)
-            console.log('account:', an, 'value:', av)
+            console.log('value:', av)
             account_type.locked = av;
             return av;
         })).then(inner_resolve => {
             return inner_resolve.reduce((a, b) => a + b, 0)
-        }).catch( inner_err => {
-            console.log('inner err:', inner_err)    
-        });
+        })
         pair.locked = pair_sum;
         return pair_sum;
     })).then(resolve => {
         return resolve.reduce((a, b) => a + b, 0)            
-    }).catch( err => {
-        console.log('err:', err)
-    });
-
-    console.log('step 3')
+    })
+    
     tvl_sum += stablepairlocked
+
+    if ( tvl_sum < 12500000 ) {
+        throw 'Value To Low!'
+    }
     Object.assign(new_tvl, { locked_value: tvl_sum, locked: tvl_sum })
+
+    console.log('tvl sum:', tvl_sum);
 
     let write_out = JSON.stringify(new_tvl, null, 2);
 
@@ -188,8 +185,9 @@ let load = [
      
     let next_version_location = `${increment_type}/${increment_symbol}/${nv}.json`
     let tvl_location = `snob/tvl`
+
     console.log('new version:', nv, 'new version location:', next_version_location)
-    
+
     await s3.upload(Object.assign({}, s3object, {  
         Bucket: 'beta.scewpt.com',      
         Key: tvl_location,
@@ -212,4 +210,5 @@ let load = [
         ACL: 'public-read',
     })).promise();
     exit()
+    
 })();

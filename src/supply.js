@@ -36,7 +36,7 @@ function delay(time) {
     await Promise.all(supplies.map( async (supply) => {
         let data = await s3.getObject({
             Bucket: 'powder.network',
-            Key: `price/${supply.symbol.toLowerCase()}.json`
+            Key: `dex/png/price/${supply.symbol.toLowerCase()}.json`
         }).promise();
 
         let content = await data.Body.toString();
