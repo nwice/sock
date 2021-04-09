@@ -87,7 +87,8 @@ common_addr = {
     '0x3134e8a2e6d97e929a7e54011ea5485d7d196dd5f0ba4d4ef95803e8e3fc257f': 'delegate changed',
     '0xde88a922e0d3b88b24e9623efeb464919c6bf9f66857a65e2bfcf2ce87a9433d': 'calculate and distribute',
     '0x9cfa33fa3a49e361ae868b5f1262b6e8d3eeaa1cbe5c0f5589ddf4b4a9576bb1': 'transfer',
-    '0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0': 'ownership transfer'
+    '0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0': 'ownership transfer',
+    '0x43fb02998f4e03da2e0e6fff53fdbf0c40a9f45f145dc377fc30615d7d7a8a64': 'remove liquidity one'
 }
 
 defi_addr = {

@@ -2,6 +2,19 @@ const fs = require('fs');
 const { request, gql } = require('graphql-request');
 const AWS = require('aws-sdk');
 const { exit } = require('process');
+const Web3 = require('web3');
+
+const web3 = new Web3('wss://api.avax.network/ext/bc/C/ws');
+const nowish = new Date().getTime();
+
+var tokenABI = [{ 
+  "constant": true, 
+  "inputs": [{ "name": "_owner", "type": "address" }], 
+  "name": "balanceOf", 
+  "outputs": [{ "name": "balance", "type": "uint256" }], 
+  "payable": false, 
+  "type": "function" 
+}];
 
 AWS.config.update({ region: 'us-east-1' });
 
@@ -30,7 +43,6 @@ const publish = (p, previous) => {
       console.log('put error:', err);
     }
   });
-
   
   let increment_symbol = p.symbol.toLowerCase();
   let increment_dex = p.dex.toLowerCase();
@@ -70,6 +82,13 @@ const publish = (p, previous) => {
 }
 
 const dexes = [
+  { symbol: 'olive', tokens: [{ lp: '0xF54a719215622f602FCA5BF5a6509734C3574a4c', token: {
+    "dex": "olive",
+    "timestamp": nowish,
+    "id": "0x617724974218a18769020a70162165a539c07e8a",
+    "name": "OliveCash Token",
+    "symbol": "OLIVE"
+    }}]},
   { symbol: 'png', endpoint: 'https://pango-info.scewpt.com/subgraphs/name/dasconnor/pangolindex'},
   { symbol: 'yts', endpoint: 'https://graph.yetiswap.app/subgraphs/name/yetiswap/yetiswap2'},
   { symbol: 'elk', endpoint: 'https://avax-graph.elk.finance/subgraphs/name/elkfinance/elkdex-avax'},
@@ -116,41 +135,52 @@ const pair_contains = (pair, id) => {
   return pair.token0.id === id || pair.token1.id === id
 }
 
-const prices = []
-
-const now = new Date().getTime();
+const prices = [];
 
 (async () => {
-  await Promise.all(dexes.map( async (d) => {
+  for (var x = 0; x < dexes.length; x++) {
+    let d = dexes[x]
     let skip = 0
     let pairs = []
-    while ( skip % 100 == 0 ) {
-      let priceData = await request(d.endpoint, priceql, { skip })
-      pairs = [...pairs,...priceData.pairs]
-      console.log('pairs length:', priceData.pairs.length)
-      skip = priceData.pairs.length
-    }    
-    
-    let base = { dex: d.symbol, timestamp: now };
-    pairs.forEach(p => {
-      p.token0.tradeVolume = parseFloat(p.token0.tradeVolume)
-      p.token1.tradeVolume = parseFloat(p.token1.tradeVolume)
-    })
-    let basepair = pairs.filter(p => { return pair_contains(p, wavax) && pair_contains(p, d.stable ? d.stable : usdt) })[0];
-    let avaxprice = get_price(
-      basepair,
-      d.stable ? d.stable : usdt
-    )
+    if ( d.endpoint ) {
+      while ( skip % 100 == 0 ) {
+        let priceData = await request(d.endpoint, priceql, { skip })
+        pairs = [...pairs,...priceData.pairs]
+        console.log('pairs length:', priceData.pairs.length)
+        skip = priceData.pairs.length
+      }
+      let base = { dex: d.symbol, timestamp: nowish };
+      pairs.forEach(p => {
+        p.token0.tradeVolume = parseFloat(p.token0.tradeVolume)
+        p.token1.tradeVolume = parseFloat(p.token1.tradeVolume)
+      });
+      let basepair = pairs.filter(p => { return pair_contains(p, wavax) && pair_contains(p, d.stable ? d.stable : usdt) })[0];
+      let avaxprice = get_price(
+        basepair,
+        d.stable ? d.stable : usdt
+      )
 
-    console.log('dex:', d.symbol, 'avaxprice:', avaxprice);
-
-    prices.push(Object.assign({}, base, get_token(basepair, wavax), { price: avaxprice }))
-    prices.push(Object.assign({}, base, get_token(basepair, d.stable ? d.stable : usdt), { price: get_price(basepair, wavax) * avaxprice }))
-
-    pairs.filter(p => { return p != basepair && pair_contains(p, wavax) }).forEach(p => {
-      let notavax = get_token(p, wavax, true)
-      prices.push(Object.assign({}, base, notavax, { price: get_price(p, wavax) * avaxprice }))
-    })
+      console.log('dex:', d.symbol, 'avaxprice:', avaxprice);
+  
+      prices.push(Object.assign({}, base, get_token(basepair, wavax), { price: avaxprice }))
+      prices.push(Object.assign({}, base, get_token(basepair, d.stable ? d.stable : usdt), { price: get_price(basepair, wavax) * avaxprice }))
+  
+      pairs.filter(p => { return p != basepair && pair_contains(p, wavax) }).forEach(p => {
+        let notavax = get_token(p, wavax, true)
+        prices.push(Object.assign({}, base, notavax, { price: get_price(p, wavax) * avaxprice }))
+      })      
+    } else {
+      for (var x = 0; x < d.tokens.length; x++) {
+        let t0 = new web3.eth.Contract(tokenABI, usdt);
+        let t1 = new web3.eth.Contract(tokenABI, d.tokens[x].token.id);
+        let t1supply = await t1.methods.balanceOf(d.tokens[x].lp).call()        
+        let t0supply = await t0.methods.balanceOf(d.tokens[x].lp).call()        
+        let wtf = Object.assign({}, d.tokens[x].token, { price: t0supply / t1supply * 1e12 })        
+        prices.push(
+          wtf
+        );
+      }
+    }  
     prices.filter(p => !master_skip_hash.includes(p.id)).forEach(p => {
       //console.log('id:', p.id, 'dex:', p.dex, 'symbol:', p.symbol, 'price:', p.price, 'tradeVolume:', p.tradeVolume)    
       dynamo_client.query({
@@ -189,5 +219,6 @@ const now = new Date().getTime();
         }
       });
     })
-  }))
+  }
+  exit(0)
 })();

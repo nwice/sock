@@ -6,7 +6,6 @@ AWS.config.update({ region: 'us-east-1' });
 
 const s3 = new AWS.S3();
 
-
 let nowish = new Date().getTime()
 
 let supplies = [{
