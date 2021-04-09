@@ -22,7 +22,7 @@ const s3 = new AWS.S3();
 
 const bucket = 'powder.network'
 
-const master_skip_hash = ['0xa40903b205881e4a4da16121e2625d3997c4322d', '0x0362d330f94fae853d5c462e57357f7ef7c2ea1d', '0x212ae83a676d3cc71ee111fdaa7aa0b0cd63001c', '0x64ea9156199161b0c54825c2f117cd71dbde859c'];
+const master_skip_hash = ['0x67e1e9195e3e3eebc862b83af9abe1fa24d108f5', '0xa40903b205881e4a4da16121e2625d3997c4322d', '0x0362d330f94fae853d5c462e57357f7ef7c2ea1d', '0x212ae83a676d3cc71ee111fdaa7aa0b0cd63001c', '0x64ea9156199161b0c54825c2f117cd71dbde859c'];
 
 const s3props = {
     ACL: 'public-read',
@@ -175,12 +175,8 @@ const prices = [];
         if (isNaN(nv) || nv < 0) {
           nv = 0
         }          
-      } catch (err) {
-        console.log('error:', err)
-      }
+      } catch (err) {}
 
-      console.log('previous:', previous.price )
-      
       if (previous.price != p.price) {
         let next_version_location = s3object.Key.substring(0, s3object.Key.length - 5).concat(`/${nv}.json`)      
         console.log('new version location:', next_version_location, 'price:', p.price, 'previous:', previous.price)
