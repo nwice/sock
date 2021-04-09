@@ -1,71 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Price</title> 
+<title>Snowball Network Price</title> 
 </head>
 <link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+<script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+
+<script type="module" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"></script>
+
 <link href="assets/site.css" rel="stylesheet">
+
 <script type="text/javascript" src="common.js"></script>
+
+<script type="text/javascript" type="module" src="defiheader.js"></script>
 <script type="text/javascript" type="module" src="defiprice.js"></script>
-<script src="https://cdn.zingchart.com/zingchart.min.js"></script>
-<style>
 
-    body {
-        padding-top: 48px;
-        display: flex;
-        flex-wrap: wrap;
-    }   
-    body {
-        margin: 0 0 100px 140px;
-    }    
-    body >  table  {
-        width: 210px;
-        margin: 25px;
-    }
-    @media only screen and (max-width: 1200px) {
-        body {
-            margin: 0 0 100px 100px;
-        }    
-        body >  table  {
-            width: 180px;
-            margin: 10px;
-        }        
-    }
-    @media only screen and (max-width: 800px) {
-        body {
-            margin: 0 0 100px 50px;
-        }    
-        body >  table  {
-            width: 150px;
-            margin: 5px;
-        }        
-    }    
-
-     
-</style>
-<body>
-    <div style="position:absolute">        
-        <div class="timestamp"></div>
-        <defi-price symbol="snob"></defi-price>    
-        <defi-price symbol="wavax"></defi-price>
-        <defi-price symbol="png"></defi-price>
-        <defi-price symbol="eth"></defi-price>
-        <defi-price symbol="wbtc"></defi-price>
-        <defi-price symbol="link"></defi-price>        
-        <defi-price symbol="pefi"></defi-price>    
-        <defi-price symbol="sushi"></defi-price>
-        <defi-price symbol="uni"></defi-price>
-        <defi-price symbol="aave"></defi-price>
-        <defi-price symbol="yfi"></defi-price>
-        <defi-price symbol="sfi"></defi-price>
-        <defi-price symbol="yts" dex="yts"></defi-price>
-        <defi-price symbol="elk" dex="elk"></defi-price>
-        <defi-price symbol="com" dex="com"></defi-price>
-        <defi-price symbol="zero" dex="zero"></defi-price>
-        <defi-price symbol="bamboo-v2"></defi-price>
-        <defi-price symbol="shit"></defi-price>        
-    </div>
+<body class="mdc-typography">    
+    <defi-header></defi-header>
+    <main></main>
+    <script>
+        let prices = []
+        if ( getParameterByName('symbol') ) {
+            let oneoff = { symbol: getParameterByName('symbol')}
+            if ( getParameterByName('dex') ) {
+                oneoff.dex = getParameterByName('dex')
+            }
+            prices.push(oneoff)
+        } else {
+            prices = [
+            { symbol: 'snob'}, { symbol: 'wavax'}, { symbol: 'png'}, { symbol: 'wbtc'},
+            { symbol: 'eth'}, { symbol: 'link'}, { symbol: 'pefi'}, { symbol: 'sushi'},
+            { symbol: 'uni'}, { symbol: 'aave'}, { symbol: 'yfi'}, { symbol: 'sfi'}, 
+            { symbol: 'yts', dex: 'yts'}, { symbol: 'elk', dex: 'elk'}, { symbol: 'com', dex: 'com'}, 
+            { symbol: 'zero', dex: 'zero'}, { symbol: 'bamboo-v2'}, { symbol: 'shit'}
+            ]
+        }
+        prices.forEach(p => {
+            let dp = document.createElement('defi-price')
+            dp.setAttribute('symbol', p.symbol)
+            if ( p.dex ) {
+                dp.setAttribute('dex', p.dex)
+            }
+            document.querySelector('body > main').appendChild(dp)
+        })
+    </script>
 </body>
 </html>

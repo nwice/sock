@@ -19,64 +19,10 @@
 <script type="text/javascript" type="module" src="defiheader.js"></script>
 <script type="text/javascript" type="module" src="defitvl.js"></script>
 
-<style>
-.token {
-    height: 24px;
-    width: 24px;
-    border-radius: 24px;
-}
-.tokenlink {
-    display: inline-block;
-    margin: 0 20px 0 20px;
-}
-
-.tvlhead {
-    margin: 5px 15px 10px 15px;
-}
-.up::before {
-    content: var(--up);
-    position: absolute;
-    right: -22px;
-}
-.down::before {
-    content: var(--down);
-    position: absolute;
-    right: -22px;
-}
-tr td {
-    position: relative;
-}
-tr td.up:last-child::after {
-    top: 6px;
-}
-tr td.down:last-child::after {
-    top: 9px;
-}
-tr td:last-child::after {
-    position: absolute;
-    font-size: x-small;
-    right: -56px;
-    content:  attr(tick)
-}    
-.arrows {
-    position: absolute;
-    right: 0;
-    top: 0;
-    margin-right: -20px;
-}
-.hidden  {
-    display: none;
-}
-body {
-    text-align: center;
-}
-body table:first-of-type {
-    padding-top: 95px;
-}
-
-</style>
 <body class="mdc-typography">
     <defi-header symbol="snob"></defi-header>
-    <defi-tvl symbol="snob"></defi-tvl>
+    <main>
+        <defi-tvl symbol="snob"></defi-tvl>
+    </main>    
 </body>
 </html>

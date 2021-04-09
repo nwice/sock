@@ -26,14 +26,10 @@ defitvl.innerHTML = `
 const defitvl_tr = document.createElement('template');
 defitvl_tr.innerHTML = `
 <tr>
-    <td class="center tokens"></td>
+    <td class="center pairtokens"></td>
     <td class="right pretty"></td>
 </tr>
 `
-
-const tokenlink = (token) => {
-    return `<a target="_blank" href="https://info.pangolin.exchange/#/token/${token.symbol}"><img class="token" src="assets/avalanche-tokens/${token.id}/logo.png"></a>`
-}        
 
 const tick = (el, v, clear) => {
     let prior = el.innerHTML.replace(/[^\d.-]/g, '');
@@ -54,95 +50,71 @@ const tick = (el, v, clear) => {
     } else {
         el.removeAttribute('tick')
     }
-}
-
-document.addEventListener('tvl', (e) => {
-    console.log('tvl:', e.detail);
-    let tqs = `tvl-${e.detail.symbol.toLowerCase()}`;
-    let tab = document.querySelector('#' + tqs)     
-    
-    tick(tab.querySelector('.total'), e.detail.locked, e.detail.clear)
-
-    e.detail.pairs?.forEach(p => {
-        let tk = Object.keys(p).filter(k => k.startsWith('token'));
-        let qs = 'pair-' + tk.map(k => { return p[k].symbol.toLowerCase()}).sort().join('-')
-        let row = tab.querySelector('#' + qs);
-        if ( !row ) {
-            let tr = defitvl_tr.content.cloneNode(true)    
-            tr.firstElementChild.setAttribute('id', qs);
-            tk.forEach(k => {
-                tr.firstElementChild.querySelector('.tokens').innerHTML += `<defi-price class="tokenlink" symbol="${p[k].symbol}"></defi-price>`
-            })
-            tab.querySelector('tbody').appendChild(tr);
-            row = tab.querySelector('#' + qs);
-        }
-        let row_td = row.querySelectorAll('td');
-        tick(row_td[1], p.locked.toFixed(0), e.detail.clear)
-    })
-    let tmp = new Date(e.detail.timestamp)?.toLocaleTimeString() || '';
-    tab.querySelector('.timestamp').innerHTML = tmp != 'Invalid Date' ? tmp : '';
-
-})        
-
-const tvlload = (symbol) => {
-    fetch(`/tvl/${symbol.toLowerCase()}.json`).then( (res) => { 
-        let redirect = res.headers.get('x-amz-website-redirect-location')
-        if ( redirect ) {
-            let rn = redirect.split('/').pop()
-            rn = parseInt(rn.substring(0, rn.length - 5)) - 1
-            let previous_url = `/tvl/${symbol.toLowerCase()}/${rn}.json`;
-            return fetch(previous_url).then( (res2) => { 
-                return res2.json()
-            }).then( (previous) => {
-                document.querySelector('.arrows').classList.remove('hidden')
-                let previous_button = document.querySelector('#previous')
-                let next_button = document.querySelector('#next')                
-                previous_button.addEventListener('click', () => {                    
-                    document.dispatchEvent(new CustomEvent('tvl', {
-                        detail: Object.assign(previous, { clear: true })
-                    }))
-                    previous_button.setAttribute('disabled', 'disabled')
-                    next_button.removeAttribute('disabled')
-                });    
-                previous_button.click();
-                return res.json();                
-            })                
-        } else {
-            return res.json();            
-        }
-    }).then( (info) => {
-
-        if ( !document.querySelector('.arrows').classList.contains('hidden') ) {
-            let previous_button = document.querySelector('#previous')
-            let next_button = document.querySelector('#next')            
-            next_button.addEventListener('click', () => {                    
-                document.dispatchEvent(new CustomEvent('tvl', {
-                    detail: Object.assign(info, { clear: false })
-                }))
-                next_button.setAttribute('disabled', 'disabled')
-                previous_button.removeAttribute('disabled')
-            });
-            setTimeout( () => {
-                next_button.click()
-            }, 666 * 2)            
-
-        } else {
-            document.dispatchEvent(new CustomEvent('tvl', {
-                detail: info
-            }))
-        }
-    }).catch( (err) => {
-        console.log('tvl error:', err)
-        document.dispatchEvent(new CustomEvent('tvl', {
-            detail: { circulating: "⛷️", symbol: getParameterByName('symbol') || 'SNOB', total: 18000000 }
-        }))
-    });
-};
+}        
 
 window.customElements.define('defi-tvl', class DefiTvl extends HTMLElement {
 
     constructor() {
         super();        
+    }
+
+    tvlload() {
+        fetch(`/tvl/${this.symbol.toLowerCase()}.json`).then( (res) => { 
+            let redirect = res.headers.get('x-amz-website-redirect-location')
+            if ( redirect && getParameterByName('noticks') == null ) {
+                let rn = redirect.split('/').pop()
+                rn = parseInt(rn.substring(0, rn.length - 5)) - 1
+                let previous_url = `/tvl/${this.symbol.toLowerCase()}/${rn}.json`;
+                return fetch(previous_url).then( (res2) => { 
+                    return res2.json()
+                }).then( (previous) => {
+                    document.querySelector('.arrows').classList.remove('hidden')
+                    let previous_button = document.querySelector('#previous')
+                    let next_button = document.querySelector('#next')                
+                    previous_button.addEventListener('click', () => {                    
+                        document.dispatchEvent(new CustomEvent('tvl', {
+                            detail: Object.assign(previous, { clear: true })
+                        }))
+                        previous_button.setAttribute('disabled', 'disabled')
+                        next_button.removeAttribute('disabled')
+                    });    
+                    previous_button.click();
+                    return res.json();                
+                })                
+            } else {
+                return res.json();            
+            }
+        }).then( (info) => {
+    
+            if ( !document.querySelector('.arrows').classList.contains('hidden') ) {
+                let previous_button = document.querySelector('#previous')
+                let next_button = document.querySelector('#next')            
+                next_button.addEventListener('click', () => {                    
+                    document.dispatchEvent(new CustomEvent('tvl', {
+                        detail: Object.assign(info, { clear: false })
+                    }))
+                    next_button.setAttribute('disabled', 'disabled')
+                    previous_button.removeAttribute('disabled')
+                });
+                setTimeout( () => {
+                    next_button.click()
+                }, 666 * 2)            
+    
+            } else {
+                document.dispatchEvent(new CustomEvent('tvl', {
+                    detail: info
+                }))
+            }
+        }).catch( (err) => {
+            console.log('tvl error:', err)
+            document.dispatchEvent(new CustomEvent('tvl', {
+                detail: { circulating: "⛷️", symbol: getParameterByName('symbol') || 'SNOB', total: 18000000 }
+            }))
+        });
+    } 
+
+    listento() {
+        return `tvl-${e.detail.symbol.toLowerCase()}`;
     }
 
     get symbol() {
@@ -152,11 +124,43 @@ window.customElements.define('defi-tvl', class DefiTvl extends HTMLElement {
     set symbol(ns) {
         this.setAttribute('symbol', ns);
     }
+    
+    get symbol() {
+        return this.getAttribute('symbol');
+    }
+      
+    set symbol(ns) {
+        this.setAttribute('symbol', ns);
+    }
 
     connectedCallback() {       
-        let tvl_table = defitvl.content.cloneNode(true);
-        tvl_table.firstElementChild.setAttribute('id', `tvl-${this.symbol.toLowerCase()}`)
-        document.body.appendChild(tvl_table);
-        tvlload(this.symbol.toLowerCase())            
+        this.appendChild(defitvl.content.cloneNode(true));
+        document.addEventListener('tvl', (e) => {
+            console.log('tvl:', e.detail);
+            let table = this.firstElementChild;
+            
+            tick(table.querySelector('.total'), e.detail.locked, e.detail.clear)        
+            
+            e.detail.pairs?.forEach(p => {
+                let tk = Object.keys(p).filter(k => k.startsWith('token'));
+                let qs = 'pair-' + tk.map(k => { return p[k].symbol.toLowerCase()}).sort().join('-')
+                let row = table.querySelector('#' + qs);
+                if ( !row ) {
+                    let tr = defitvl_tr.content.cloneNode(true)    
+                    tr.firstElementChild.setAttribute('id', qs);
+                    tk.forEach(k => {
+                        tr.firstElementChild.querySelector('.pairtokens').innerHTML += `<defi-price class="tokenlink" symbol="${p[k].symbol}"></defi-price>`
+                    })
+                    table.querySelector('tbody').appendChild(tr);
+                    row = table.querySelector('#' + qs);
+                }
+                let row_td = row.querySelectorAll(':scope > td');
+                tick(row_td[1], p.locked.toFixed(0), e.detail.clear)
+            })
+            let tmp = new Date(e.detail.timestamp)?.toLocaleTimeString() || '';
+            table.querySelector('.timestamp').innerHTML = tmp != 'Invalid Date' ? tmp : '';
+        
+        })        
+        this.tvlload(this.symbol.toLowerCase())        
     }
 });        

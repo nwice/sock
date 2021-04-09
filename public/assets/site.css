@@ -1,55 +1,226 @@
 @import url('https://fonts.googleapis.com/css2?family=Encode+Sans&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Raleway&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
 
 :root {
     --mdc-typography-font-family: "Encode Sans", sans-serif, monospace;
-    --logo-image: url(assets/images/Logo_Light@2x.png);
-    --header-bg-color: #222741;
-    --header-link-color: rgba(255, 255, 255, 0.8);
+    
+    --mdc-theme-primary:  white;
+    --logo-image: url(/assets/images/Logo_Light@2x.png);
+
+    --button-bg-color: rgba(255, 255, 255, 0.05);
+    --button-bg-hover-color: lighten(--button-bg-color, 20%);
+    --button-color:  rgb(51, 169, 255);
+    --button-border-color:  rgb(51, 169, 255);
+
     --header-link-color-hover:  rgb(51, 169, 255);
-    --body-bg-color: rgb(27, 31, 50);
+    --header-link-color: rgba(255, 255, 255, 0.8);    
+    --header-bg-color: #222741;
+
+    --bg-color: rgb(27, 31, 50);
     --up: "⬆️";  
     --down: "⬇️";
     --up-color: green;  
-    --down-color: red;  
+    --down-color: red;      
 }
 
 html[data-theme='light'] {
-    --logo-image: url(assets/images/Logo_Dark@2x.png);
+    --mdc-theme-primary: rgb(27, 31, 50);
+    --logo-image: url(/assets/images/Logo_Dark@2x.png);
+
+    --button-bg-color: rgba(255, 255, 255, 0.05);
+
     --header-bg-color: #fff;
-    --body-bg-color: gray;            
-    --header-link-color: rgba(0, 0, 0, 0.85);
+    --button-bg-hover-color: darken(20%);
+    --bg-color: rgba(255, 255, 255, 0.05);
+    --header-link-color: rgba(0, 0, 0, 0.85);    
 }
 
 @media screen and (min-width: 450px) {
-    html {
-        --header-fontsize: 19.6px;
-        --header-padding: 150px;
-    }
+    html { --header-fontsize: 20px; --header-padding: 50px; }
 }
 
 @media screen and (min-width: 750px) {
-    html {
-        --header-fontsize: 40px;
-        --header-padding: 150px;
-    }
+    html { --header-fontsize: 20px; --header-padding: 100px; }
+}
+
+@media screen and (min-width: 1050px) {
+    html { --header-fontsize: 20px; --header-padding: 125px;}
+}
+
+@media screen and (min-width: 1350px) {
+    html { --header-fontsize: 20px; --header-padding: 150px; }
+}
+
+@media screen and (min-width: 1650px) {
+    html { --header-fontsize: 20px; --header-padding: 175px; }
+}
+
+header .mdc-button--outlined:not(:disabled) {
+    background-color: var(--button-bg-color) !important; 
+    color: var(--button-color) !important;     
+    border-color: var(--button-border-color) !important; 
+    cursor: pointer;
 }
 
 body,
 html {
     margin: 0;
 }
-
-.center {
-    text-align: center;
+ion-icon {
+    font-size: 20px;
 }
-.right {
-    text-align:right;
+body {
+    background-color: var(--bg-color);
+    color: var(--mdc-theme-primary);
+    margin-left: auto;
+    margin-right: auto;
+}
+main {
+    padding-top: 95px;    
+    display: flex;
+    flex-wrap: wrap;
+    padding-left: var(--header-padding);
+    padding-right: var(--header-padding);
 }
 
-.pretty {
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
+main > defi-tvl {
+    margin: auto;
 }
-    
 
+main > defi-price > table {
+    width: 200px;
+}
+main > defi-price {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+nav {
+    flex-grow: 2;    
+    display: flex;
+    align-content: space-around;
+}
+defi-price >  table  {
+    margin: 5px 10px 5px 10px;
+}
+.siteicon {
+    background-image: var(--logo-image);
+    height: 80px;
+    width: 240px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.mdc-top-app-bar {
+    padding-left: var(--header-padding);
+    padding-right: var(--header-padding);
+    background-color: var(--header-bg-color);
+    color: var(--mdc-theme-primary);
+}
+.mdc-top-app-bar a {
+    font-weight: 700;
+    font-size: var(--header-fontsize);
+    color: var(--header-link-color);
+    text-decoration: none;            
+}
+.mdc-top-app-bar a:hover {
+    color: var(--header-link-color-hover)
+}
+
+.mdc-top-app-bar--fixed .mdc-top-app-bar__row {
+    height: 91px;
+}
+
+
+.up {
+    color: var(--up-color);
+}
+.down {
+    color: var(--down-color);
+}
+.symbol {
+    min-width: 75px;
+    padding-left: 4px;
+}
+.pricetd {
+    width: 100%;
+    padding-left: 8px;
+}
+.hash {
+    font-weight: 200;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;    
+    text-overflow: ellipsis;
+    display: inline-block;
+    width: 23px;
+    cursor: pointer;   
+    position: absolute; 
+    top: 46px;
+}
+.logowrap {    
+    padding: 6px 2px 2px 2px;
+    position: relative;
+}
+.pricelogo {    
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+}
+.copied::after {
+    font-size: small;
+    content: "📋";
+    position: absolute;
+    top: 40px;
+    left: -12px;
+}
+.pairtokens > defi-price {
+    display: inline-block;
+}
+.token {
+    height: 24px;
+    width: 24px;
+    border-radius: 24px;
+}
+.tvlhead {
+    margin: 5px 15px 10px 15px;
+    font-size: x-large;
+    font-weight: bolder;
+}
+.up::after {
+    content: var(--up);
+    position: absolute;
+    right: -22px;
+}
+.down::after {
+    content: var(--down);
+    position: absolute;
+    right: -22px;
+}
+
+tr.pricing td {
+    position: relative;
+}
+tr.pricing td.up:last-child::after {
+    top: 6px;
+}
+tr.pricing td.down:last-child::after {
+    top: 9px;
+}
+tr.pricing td:last-child::after {
+    position: absolute;
+    font-size: x-small;
+    right: -56px;
+    content:  attr(tick)
+}    
+.arrows {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin-right: -20px;
+}
+
+.center { text-align: center; }
+.right { text-align:right; }
+.pretty { font-family: 'Inter', sans-serif; font-weight: 600; } 
+.hidden  { display: none; }

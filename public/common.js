@@ -37,3 +37,16 @@ window.prettyDiff = (n) => {
         return n
     }
 }
+
+window.clippy = (e) => {
+    console.log('e:', e)
+    navigator.clipboard.writeText(e.innerHTML).then( () => {
+            e.parentNode.logowrap.classList.add('copied')
+            setTimeout( () => {
+                e.parentNode.classList.remove('copied')
+            }, 500)
+        }, (err) => {
+            console.error('clipboard error:', err);
+        }
+    );            
+}
