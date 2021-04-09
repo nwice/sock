@@ -290,7 +290,8 @@ nft_addr = {
     '0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0': 'ownership transferred',
     '0x5b859394fabae0c1ba88baffe67e751ab5248d2e879028b8c8d6897b0519f56a': 'punk bid entered',
     '0x6f30e1ee4d81dcc7a8a478577f65d2ed2edb120565960ac45fe7c50551c87932': 'punk bid withdrawn',
-    '0xb13f3a5a9746619771c98306d0b4e02bf179a21c6f6032c7b22913b933a8fe64': 'snowie bought'
+    '0xb13f3a5a9746619771c98306d0b4e02bf179a21c6f6032c7b22913b933a8fe64': 'snowie bought',
+    '0xf5583cf59ac1840eeb914cec3b173e238b6f7127c8417e22b19852c9de5dbb3f': 'snowie not longer for sale',
 }
 
 known_addr = {}

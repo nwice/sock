@@ -7,6 +7,8 @@ AWS.config.update({ region: 'us-east-1' });
 
 const s3 = new AWS.S3();
 
+const nowish = new Date().getTime();
+
 //const endpoint = 'https://beta.scewpt.com/subgraphs/name/dasconnor/pangolindex'
 const endpoint = 'https://graph-node.avax.network/subgraphs/name/dasconnor/pangolindex'
 const query_block = gql`query getUser($userId: String!) {
@@ -34,6 +36,7 @@ const userLiquidity = async (account, symbol0, symbol1, avaxprice) => {
             return [symbol0, symbol1].includes(lp.pair.token0.symbol) && [symbol0, symbol1].includes(lp.pair.token1.symbol)
         })[0] 
         let mv = lp.liquidityTokenBalance / lp.pair.totalSupply * lp.pair.reserveUSD
+        console.log('userLiquidity:', mv)
         return mv * avaxprice
     });
 }
@@ -86,7 +89,7 @@ let load = [
             },            
             {
                 token0: player('wavax'), token1: player('wbtc'),
-                accounts: [{ pool: '0x39BE35904f52E83137881C0AC71501Edf0180181'}]
+                accounts: [{ pool: '0x39be35904f52e83137881c0ac71501edf0180181'}]
             },            
             {
                 token0: player('wavax'), token1: player('usdt'),
@@ -113,7 +116,7 @@ let load = [
                 accounts: [{ stake: '0x14ec55f8B4642111A5aF4f5ddc56B7bE867eB6cC'}, {pool: '0x751089F1bf31B13Fa0F0537ae78108088a2253BF'}]
             }        
         ]}, 
-        player('snob'), { timestamp: new Date().getTime() }
+        player('snob'), { timestamp: nowish }
     );
 
     new_tvl.pairs[0].token2 = {
