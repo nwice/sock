@@ -75,7 +75,7 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
     }
 
     maybefirst(price) {
-        this.hash = price.id
+        this.hash = price.hash
         this.symbol = price.symbol
     }
 
