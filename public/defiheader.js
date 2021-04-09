@@ -4,11 +4,13 @@ defiheader.innerHTML = `
     <div class="mdc-top-app-bar__row">
         <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">                        
             <div class="siteicon"></div>
-            <p style="font-size:small;padding-left:2px">v0.3</p>
-
             <nav class="menu">
 
-                <a href="/stablevault/">StableVault</a>
+                <a href="/tvl">TVL</a>
+                
+                <a href="/price">Pricing</a>
+
+                <!---
 
                 <a href="/compound/">Compound</a>
 
@@ -17,6 +19,7 @@ defiheader.innerHTML = `
                 <a href="/governance/">Governance</a>
 
                 <a href="/earn/">FAQ</a>
+                --->
 
             </nav>            
 

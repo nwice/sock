@@ -19,8 +19,11 @@
 <script type="text/javascript" type="module" src="defiprice.js"></script>
 
 <body class="mdc-typography">    
-    <defi-header></defi-header>
-    <main></main>
+    <defi-header></defi-header>    
+    <main>
+        <section style="text-align:center"><h1>* Warning (don't hurt yourself)</h1></section>
+        <section class="pricing"></section>
+    </main>
     <script>
         let prices = []
         if ( getParameterByName('symbol') ) {
@@ -44,7 +47,7 @@
             if ( p.dex ) {
                 dp.setAttribute('dex', p.dex)
             }
-            document.querySelector('body > main').appendChild(dp)
+            document.querySelector('body > main > section.pricing').appendChild(dp)
         })
     </script>
 </body>

@@ -30,7 +30,7 @@ html[data-theme='light'] {
     --button-bg-color: rgba(255, 255, 255, 0.05);
 
     --header-bg-color: #fff;
-    --button-bg-hover-color: darken(20%);
+    --button-bg-hover-color: darken(--button-bg-color, 20%);
     --bg-color: rgba(255, 255, 255, 0.05);
     --header-link-color: rgba(0, 0, 0, 0.85);    
 }
@@ -55,11 +55,24 @@ html[data-theme='light'] {
     html { --header-fontsize: 20px; --header-padding: 175px; }
 }
 
+.siteicon {
+    background-image: var(--logo-image);
+    height: 80px;
+    width: 240px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
 header .mdc-button--outlined:not(:disabled) {
     background-color: var(--button-bg-color) !important; 
     color: var(--button-color) !important;     
     border-color: var(--button-border-color) !important; 
     cursor: pointer;
+}
+
+header .mdc-button--outlined:not(:disabled):hover {
+    background-color: var(--button-bg-hover-color) !important; 
 }
 
 body,
@@ -69,48 +82,48 @@ html {
 ion-icon {
     font-size: 20px;
 }
-body {
+
+body {    
     background-color: var(--bg-color);
     color: var(--mdc-theme-primary);
-    margin-left: auto;
-    margin-right: auto;
 }
+
 main {
-    padding-top: 95px;    
+    padding-top: 95px;
+}
+
+defi-tvl > table {
+    margin-left:auto; 
+    margin-right:auto;    
+}
+
+main > section.pricing {
     display: flex;
     flex-wrap: wrap;
-    padding-left: var(--header-padding);
-    padding-right: var(--header-padding);
+    margin-left: var(--header-padding);
 }
 
-main > defi-tvl {
-    margin: auto;
+table td {
+    text-align:left;
 }
 
-main > defi-price > table {
+defi-price > table {
     width: 200px;
 }
-main > defi-price {
-    display: flex;
-    flex-wrap: wrap;
+
+defi-tvl defi-price > table  {
+    margin: 20px;
 }
 
 nav {
     flex-grow: 2;    
-    display: flex;
-    align-content: space-around;
 }
-defi-price >  table  {
-    margin: 5px 10px 5px 10px;
+
+nav a {
+    display: inline-block;
+    margin-left: 40px;
 }
-.siteicon {
-    background-image: var(--logo-image);
-    height: 80px;
-    width: 240px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}
+
 .mdc-top-app-bar {
     padding-left: var(--header-padding);
     padding-right: var(--header-padding);
