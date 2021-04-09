@@ -236,6 +236,7 @@ defi_addr = {
     '0x59a566660024e8f7168cf9e578397e88cd6ba843': 'zero pair zero/zusdt',
     '0x982716379b2372d06df5c461e2c79b24ea80c370': 'zero pair zero/zsushi',
     '0x2A053B0818C5529C89b10AC819Db1C5C439cCEC4': 'zero pair zero/zbtc',
+    '0x5Bb52840DA88cEed069ba610787C40Ed425BB311': 'zero pair zero/zuni',
  
     '0x0540E4EE0C5CdBA347C2f0E011ACF8651bB70Eb9': 'crypto seals',    
     
