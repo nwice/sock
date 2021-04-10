@@ -98,6 +98,8 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
                             resolve(res.json());
                         }, 666 * 2);
                     })
+                }).catch( err => {
+                    return res.json();    
                 })
             } else {
                 return res.json();

@@ -113,8 +113,9 @@ defi-price > table {
     margin: 10px 0;
 }
 
-defi-tvl defi-price > table  {
-    margin: 10px 0;
+defi-tvl defi-price > table {
+    width: 150px;
+    margin: 0;
 }
 
 nav {

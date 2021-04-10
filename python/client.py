@@ -213,7 +213,8 @@ defi_addr = {
     '0xfcE7264Ca738f21CA01FFEDd35C15fe849c22F71': 'yeti stake yts/png',
     '0xd2fa9b7396c2944a897337a00059f4bee8601712': 'yeti stake avax/usdt',
 
-    '0x07099b26f36fcb7e086d5a879ec1261271319829': 'yeti pair avax/yeti',
+    '0xF1E800Ab9D0D1F6eaFf54E00Ad19710c41b154f2': 'yeti pair yts/usdt'
+    '0x07099b26f36fcb7e086d5a879ec1261271319829': 'yeti pair avax/yts',
     '0x9182a23099903c75681416b63f5d0a17f5eb387a': 'yeti pair avax/eth',
     '0x6c2038f09212dac0ad30be822f0eecfb29064814': 'yeti pair avax/usdt',
     '0x94231f103882033B6103785675038347693f9cd8': 'yeti pair yts/png',
