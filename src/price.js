@@ -2,7 +2,7 @@ import fs from 'fs';
 import { request, gql } from 'graphql-request';
 import Web3 from 'web3';
 import { versioning } from './versioning.js';
-import { dexes, tokens } from './sconfig.js';
+import { dexes, tokens } from './statemachine.js';
 import { exit } from 'process';
 
 const abi = JSON.parse(fs.readFileSync('public/abi.json'));
@@ -73,6 +73,7 @@ await Promise.all(Object.keys(dexes).map(k => {
       basepair,
       dex.stable ? dex.stable : tokens.usdt
     )
+    console.log('avaxprice:', avaxprice)
 
     prices.push(
       Object.assign({}, base, get_token(basepair, tokens.wavax), { price: avaxprice }, { dex: dex_name })
@@ -83,8 +84,10 @@ await Promise.all(Object.keys(dexes).map(k => {
 
     pairs.filter(p => { return p != basepair && pair_contains(p, tokens.wavax) }).forEach(p => {
       let notavax = get_token(p, tokens.wavax, true)
+      let price = Object.assign({}, base, notavax, { price: get_price(p, tokens.wavax) * avaxprice }, { dex: dex_name })
+      //console.trace('price:', price)
       prices.push(
-        Object.assign({}, base, notavax, { price: get_price(p, tokens.wavax) * avaxprice }, { dex: dex_name })
+        price
       )
     })      
   } else {
@@ -93,7 +96,8 @@ await Promise.all(Object.keys(dexes).map(k => {
       let t1 = new web3.eth.Contract(abi, dex.tokens[y].token.id);
       let t1supply = await t1.methods.balanceOf(dex.tokens[y].pair.id).call()        
       let t0supply = await t0.methods.balanceOf(dex.tokens[y].pair.id).call()        
-      prices.push(Object.assign({}, dex.tokens[y].token, { price: t0supply / t1supply * 1e12 }, { dex: dex_name }));
+      let dex_specific = Object.assign({}, dex.tokens[y].token, { price: t0supply / t1supply * 1e12 }, { dex: dex_name })
+      prices.push(dex_specific);
     }
   }
 }));
@@ -108,8 +112,10 @@ const price_different = (p, previous) => {
 }
 
 prices.filter(p => !master_skip.map(msi => msi.toLowerCase()).includes(p.id.toLowerCase())).forEach(async (p) => {
-  versioning(p, 'price', price_different)
+  versioning(p, `dex/${p.dex}/price/${p.symbol}.json`.toLowerCase(), price_different)
 })
+
 setTimeout( () => {
+  console.log('prices length:', prices.length)
   exit(0) 
 }, 1000)

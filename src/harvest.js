@@ -1,84 +1,108 @@
 import { request, gql } from 'graphql-request';
+import { dexes, tokens } from './statemachine.js';
+import { versioning, getcurrent } from './versioning.js';
+import { exit } from 'process';
 
 const endpoint = 'https://graph-node.avax.network/subgraphs/name/dasconnor/pangolindex'
+
 const query_swaps = gql`query getSwaps($to: String!, $skip: Int!) {
-    swaps(skip: $skip, where: { to: $to }, orderBy: timestamp, orderDirection: asc) {
-      timestamp
-      from
-      amount0In
-      amount1In
-      amount0Out
-      amount1Out
-      transaction {
+  swaps(skip: $skip, where: { to: $to }, orderBy: timestamp, orderDirection: asc) {
+    timestamp
+    from
+    amount0In
+    amount1In
+    amount0Out
+    amount1Out
+    transaction {
+      id
+    }
+    pair {
+      id
+      token0 {
+        symbol
         id
       }
-      pair {
-        token0 {
-          symbol
-        }
-        token1 {
-          symbol
-        }      
-      }    
-    }
-  }`;
+      token1 {
+        symbol
+        id
+      }      
+    }    
+  }
+}`;
 
 const query_block = gql`query pairHourData($pair: String!, $ts: Int!) {
-    pairHourDatas(first: 1, orderBy:hourStartUnix, orderDirection: desc,  where: { pair: $pair, hourStartUnix_lte: $ts}) {    
-      id
-      hourStartUnix
-      reserve0
-      reserve1
+  pairHourDatas(first: 1, orderBy:hourStartUnix, orderDirection: desc,  where: { pair: $pair, hourStartUnix_lte: $ts}) {    
+    id
+    hourStartUnix
+    reserve0
+    reserve1
+    pair {
+      token0 {
+        symbol
+      }
+      token1 {
+        symbol
+      }      
+    }    
+  }
+}`;
+
+const force = async (pair, ts) => {
+  let response = {}
+  while ( response.pairHourDatas === undefined ) {    
+    try {
+        response = await request(endpoint, query_block, { pair: pair.id, ts: parseInt(ts)})
+    } catch (err) {
+        console.log('pricing error:', err);
     }
-  }`;
+  }
+  return response
+};
 
-let rewardusdt = '0xe8acf438b10a2c09f80aef3ef2858f8e758c98f9';
-let all_total = 0;
-
-const history = (strategy) => {
-  let total = 0;
-  let skip = 0;
+const history = async (strategy, dex_name) => {
+  let path = `dex/${dex_name}/harvest/${strategy.id}.json`.toLowerCase()
+  let current = await getcurrent(path)
+  let skip = current.version * 2
   let swaps = []
   while (skip == 0 || skip % 100 == 0) {
-      //console.log('skip:', skip)            
-      let response = await request(endpoint, query_swaps, { to: strategy.to, skip });
+      console.log('skip:', skip, 'id:', strategy.id)            
+      let response = await request(endpoint, query_swaps, { to: strategy.id, skip });
       if (!response.swaps) break;
       swaps = [...swaps,...response.swaps]
-      skip += response.swaps.length
-  }
-  //console.log('total swaps:', swaps.length);
-  for (var y = 0; y < swaps.length; y++) {
-      await new Promise(resolve => setTimeout(resolve, 500));               
-      let swap = swaps[y];
-      if ( swap.pair.token0.symbol === 'PNG' ) {
-          //console.log('y:', y)
-          let pricing_response = {}
-          while ( !pricing_response.pairHourDatas ) {
-              try {
-                  pricing_response = await request(endpoint, query_block, { pair, ts: parseInt(swap.timestamp)});
-              } catch (err) {
-                  console.log('pricing error:', err);
-              }
-          }
-          let png_price = pricing_response.pairHourDatas[0].reserve1 / pricing_response.pairHourDatas[0].reserve0                
-          let addto = swap.amount0In * png_price
-          let dated = new Date(parseInt(swap.timestamp) * 1000)
-          console.log(`${strategy.pair} png price:`, png_price, 'add to:', addto, 'date:', dated.toLocaleDateString() + ' ' + dated.toLocaleTimeString())
-          total += addto                
+      skip = skip + response.swaps.length
+  }  
+  console.log('total harvest swaps length:', swaps.length)
+  for (var y = 0; y < swaps.length; y+=2) {
+      let harvest = { claim: swaps[y], reinvest: swaps[y+1] };
+      await new Promise(resolve => setTimeout(resolve, 250));                           
+      let claim_pricing = await force( { id: strategy.priced }, harvest.claim.timestamp)
+      harvest.claim.pair.token0.price = parseFloat(claim_pricing.pairHourDatas[0].reserve1) / parseFloat(claim_pricing.pairHourDatas[0].reserve0)      
+      console.log('claim pricing:', harvest.claim.pair.token0.price)      
+      harvest.claim.amount0InUSD = harvest.claim.pair.token0.price * parseFloat(harvest.claim.amount0In)
+      harvest.claim.pair.token1.price = harvest.claim.amount0InUSD / parseFloat(harvest.claim.amount1Out)
+      console.log('split pricing:', harvest.claim.pair.token1.price)      
+      if ( harvest.claim.pair.id == harvest.reinvest.pair.id ) {
+        harvest.reinvest.pair.token0.price = harvest.claim.pair.token0.price
+        harvest.reinvest.pair.token1.price = harvest.claim.pair.token1.price
+      } else if (harvest.claim.pair.token1.id === harvest.reinvest.pair.token0.id) {
+        harvest.reinvest.pair.token0.price = harvest.claim.pair.token1.price
+        harvest.reinvest.pair.token1.price = harvest.reinvest.pair.token0.price * parseFloat(harvest.reinvest.amount0In) / parseFloat(harvest.reinvest.amount1Out)
+        console.log('reinvest pricing:', harvest.reinvest.pair.token1.price, 'symbol:', harvest.reinvest.pair.token1.symbol)      
+      } else if (harvest.claim.pair.token1.id === harvest.reinvest.pair.token1.id) {
+        harvest.reinvest.pair.token1.price = harvest.claim.pair.token1.price
+        harvest.reinvest.pair.token0.price = harvest.reinvest.pair.token1.price * parseFloat(harvest.reinvest.amount1In) / parseFloat(harvest.reinvest.amount0Out)
+        console.log('reinvest pricing:', harvest.reinvest.pair.token0.price, 'symbol:', harvest.reinvest.pair.token0.symbol)      
+      } else {
+        console.log('no match:', JSON.stringify(harvest))
+        exit(0)
       }
+      harvest.reinvest.amount1OutUSD = harvest.reinvest.pair.token0.price * parseFloat(harvest.reinvest.amount0In)
+      await versioning(harvest, path)
   }
 }
 
-(async () => {
-    for (var x = 0; x < strategies.length; x++) {
-        let strategy = strategies[x];
-    
-        console.log(`${strategy.pair} total:`, total)
-        all_total += total
-    }    
-    console.log('all total:', all_total)
-})();
-
-
-
-strategies.forEach( async (strategy)
+await Promise.all(Object.keys(dexes).map(k => { return {dex_name: k, dex: dexes[k]}}).filter(d => Array.isArray(d.dex.strategies) ).map(async dex_obj => {
+  for (var x = 0; x < dex_obj.dex.strategies.length; x++) {
+    await history(dex_obj.dex.strategies[x], dex_obj.dex_name);
+  }  
+}));
