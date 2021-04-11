@@ -21,11 +21,6 @@
     --down: "⬇️";
 }
 
-.nada {
-    --up-color: green;  
-    --down-color: red;      
-}
-
 html[data-theme='light'] {
     --mdc-theme-primary: rgb(27, 31, 50);
     --logo-image: url(/assets/images/Logo_Dark@2x.png);
@@ -165,7 +160,12 @@ nav a {
     width: 100%;
     padding-left: 8px;
 }
-.hash {
+.logowrap > img {    
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+}
+.logowrap > span {
     font-weight: 200;
     font-size: 11px;
     white-space: nowrap;
@@ -180,11 +180,6 @@ nav a {
 .logowrap {    
     padding: 6px 2px 2px 2px;
     position: relative;
-}
-.pricelogo {    
-    border-radius: 50%;
-    width: 48px;
-    height: 48px;
 }
 .copied::after {
     font-size: small;

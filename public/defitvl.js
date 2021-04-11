@@ -7,6 +7,8 @@ defitvl.innerHTML = `
                 <div class="center tvlhead">Total Value Locked</div>
             </td>
             <td class="total right pretty"></td>
+            <td class="1hour">1 hour</td>
+            <td class="1day">1 day</td>
         </tr>
     </thead>
     <tbody></tbody>
@@ -19,6 +21,8 @@ defitvl.innerHTML = `
                 </div>
                 <span class="timestamp"></span>
             </td>
+            <td class="1hour"></td>
+            <td class="1day"></td>
         </tr>            
     </tfoot>
 </table>
@@ -63,7 +67,7 @@ window.customElements.define('defi-tvl', class DefiTvl extends HTMLElement {
             let redirect = res.headers.get('x-amz-website-redirect-location')
             if ( redirect && getParameterByName('noticks') == null ) {
                 let rn = redirect.split('/').pop()
-                rn = parseInt(rn.substring(0, rn.length - 5)) - 1
+                rn = parseInt(rn.substring(0, rn.length - 5)) - 6
                 let previous_url = `/tvl/${this.symbol.toLowerCase()}/${rn}.json`;
                 return fetch(previous_url).then( (res2) => { 
                     return res2.json()
