@@ -19,6 +19,9 @@
     --bg-color: rgb(27, 31, 50);
     --up: "⬆️";  
     --down: "⬇️";
+}
+
+.nada {
     --up-color: green;  
     --down-color: red;      
 }

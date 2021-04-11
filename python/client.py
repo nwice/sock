@@ -88,7 +88,10 @@ common_addr = {
     '0xde88a922e0d3b88b24e9623efeb464919c6bf9f66857a65e2bfcf2ce87a9433d': 'calculate and distribute',
     '0x9cfa33fa3a49e361ae868b5f1262b6e8d3eeaa1cbe5c0f5589ddf4b4a9576bb1': 'transfer',
     '0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0': 'ownership transfer',
-    '0x43fb02998f4e03da2e0e6fff53fdbf0c40a9f45f145dc377fc30615d7d7a8a64': 'remove liquidity one'
+    '0x43fb02998f4e03da2e0e6fff53fdbf0c40a9f45f145dc377fc30615d7d7a8a64': 'remove liquidity one',
+    '0xb1233017d63154bc561d57c16f7b6a55e2e1acd7fcac94045a9f35fb31a850ca': 'minting',
+    '0x12cb4648cf3058b17ceeb33e579f8b0bc269fe0843f3900b8e24b6c54871703c': 'unknown x',
+    '0x2499a5330ab0979cc612135e7883ebc3cd5c9f7a8508f042540c34723348f632': 'purchase'
 }
 
 defi_addr = {
@@ -99,7 +102,8 @@ defi_addr = {
     '0x8b763519d3e634533b4039491e09f5774281e4b4': 'elk stake elk/png',
     '0xfEbf47CF89F766E6c24317b17F862bA5d4d82f8c': 'elk pair avax/elk ',
     '0xfEbf47CF89F766E6c24317b17F862bA5d4d82f8c': 'elk pair elk/dai ',
-    '0x266ed42866b3d2d418C87EbF8b58f22add0E6F8e': 'elk pair elk/png',    
+    '0x266ed42866b3d2d418C87EbF8b58f22add0E6F8e': 'elk pair elk/png',  
+    '0x53e3d3e77b3ed38fdc5156f6ef761d85012850c2': 'elk pair elk/usdt',  
     '0xd661a38708e6544f2d32e302e6e893a97be7314c': 'elk snowball elk/eth',
     '0xF31a76d123dd6b10008F2f096AB0AafBd508A2de': 'elk snowball elk/dai',
 
@@ -121,7 +125,7 @@ defi_addr = {
     '0x621207093d2e65bf3ac55dd8bf0351b980a63815': 'ice_avax_png',
     '0x14ec55f8b4642111a5af4f5ddc56b7be867eb6cc': 'ice_strategy',
     '0x1ec206a9dd85625e1940cd2b0c8e14a894d2e9ac': 'ice_strategy 2',
-    '0xc9a51fb9057380494262fd291aed74317332c0a2': 'ice_avax_png 2',
+    '0xc9a51fb9057380494262fd291aed74317332c0a2': 'snowball owner',
 
     '0x6B41E5c07F2d382B921DE5C34ce8E2057d84C042': 'snowball s3d',
 
@@ -169,6 +173,7 @@ defi_addr = {
     '0x53b37b9a6631c462d74d65d61e1c056ea9daa637': 'pangolin pair png/eth',    
     '0xf105fb50fc6ddd8a857bbecd296c8a630e8ca857': 'pangolin pair png/sushi',
     '0xD765B31399985f411A9667330764f62153b42C76': 'pangolin pair png/dai',
+    '0xa465e953F9f2a00b2C1C5805560207B66A570093': 'pangolin pair png/yfi',
 
     '0x0b9753d73e1c62933e913e9c2c94f2ffa8236f6c': 'pangolin pair pefi/snob',
     '0xa1c2c3b6b120cbd4cec7d2371ffd4a931a134a32': 'pangolin pair avax/snob',
@@ -176,17 +181,21 @@ defi_addr = {
     '0x5122524af267567897cf56ab4389ce20a08194fa': 'pangolin pair snob/spore',
     '0x7692c5f0c87b928981112c4ce5d51c8301acc88c': 'pangolin pair avax/bamboo',
     '0x605424527cFB662Fe65b2e08Bc62e558f3b9400e': 'pangolin pair avax/elk',
+    '0x271d62b3cd770f02e08f5fc83dbf9b551ee212ca': 'pangolin pair bamboo/avax',
 
+    '0xa019F49464FCD206d080060CBbCB1A089441a732': 'yieldyak pair avax/eth',
     '0xDF8bFA6c5C8578CdE19D58d6EFf0B39aB2415d83': 'yieldyak pair avax/yak',    
     '0xF0BDE208A05CC0a056B5FAE1a78212Adf7A4AFfe': 'yieldyak pair avax/bambooV1',
     '0x37A83906a69d6236DBcB4d8257D8f62d1f3BBcD5': 'yieldyak pair avax/bamboo',
     '0x7f3BB8dB336ff50120E290e5C8eC78B20f619D01': 'yieldyak pair avax/com',
     '0xB58535A99e2D615df6Ff00AD091D01310Daabda3': 'yieldyak pair avax/uni',
     '0x141bE6e009a0D9a5c0d4e557c0636e97B3de2a7B': 'yieldyak pair zero/zusdc',
+    '0xfd410034f88B99E4BeE8Bd7B51Fa323B6678Bf73': 'yieldyak pair xcom/avax',
 
     '0x9C36eca9309f0CeB5818da889E47D3c3E2ba9F32': 'yieldyak pair avax/wbtc',
     '0xfDffdf6Dc4FB30BeDE8af0f78D42c5468F37324B': 'yieldyak pair olive/avax',
 
+    '0xFa3fF5201C97c54Dd34EE8F21643c28B4De74807': 'yieldyak middleman 4',
     '0xdAaA1Ba6839a7F04061dA8805De5800B152Def2F': 'yieldyak middleman 3',
     '0x68761Ed6263DDfee85A3f5078cFacd8ad26dEAD0': 'yieldyak middleman 2',
     '0xDcEDF06Fd33E1D7b6eb4b309f779a0e9D3172e44': 'yieldyak middleman',
@@ -213,7 +222,7 @@ defi_addr = {
     '0xfcE7264Ca738f21CA01FFEDd35C15fe849c22F71': 'yeti stake yts/png',
     '0xd2fa9b7396c2944a897337a00059f4bee8601712': 'yeti stake avax/usdt',
 
-    '0xF1E800Ab9D0D1F6eaFf54E00Ad19710c41b154f2': 'yeti pair yts/usdt'
+    '0xF1E800Ab9D0D1F6eaFf54E00Ad19710c41b154f2': 'yeti pair yts/usdt',
     '0x07099b26f36fcb7e086d5a879ec1261271319829': 'yeti pair avax/yts',
     '0x9182a23099903c75681416b63f5d0a17f5eb387a': 'yeti pair avax/eth',
     '0x6c2038f09212dac0ad30be822f0eecfb29064814': 'yeti pair avax/usdt',
@@ -278,6 +287,7 @@ defi_addr = {
 
     '0x0c45FB63001b56a21e29c7dcc1727bfDA273a368': 'olive router',
     '0x57cc32Cd7F5a531953E9af25e1C9394093428082': 'olive treasury',
+    '0xcdee5108413e80af6c84bdd3ab0d328a3d63dda4': 'olive treasury 2',
     '0x76fbce48d9dce3d04bfac318d1fdeb3a78e903a9': 'olive pair avax/eth',
     '0xbfc3C72Bab7252341dC90A1E85797Ebd8C79c338': 'olive pair usdt/avax',
     '0xF54a719215622f602FCA5BF5a6509734C3574a4c': 'olive pair usdt/olive',
