@@ -1,6 +1,6 @@
 node ./src/tvl.js
 
-aws s3 cp ./public/tvl_with_uptick.html s3://beta.scewpt.com/tvl --acl public-read --content-type "text/html; charset=utf-8"
+aws s3 cp ./public/tvl_with_chart.html s3://beta.scewpt.com/tvl --acl public-read --content-type "text/html; charset=utf-8"
 aws s3 cp ./public/tvl_with_chart.html s3://powder.network/tvl --acl public-read --content-type "text/html; charset=utf-8"
 aws s3 cp ./public/tvl_with_chart.html s3://analytics.snowball.network/tvl --acl public-read --content-type "text/html; charset=utf-8"
 

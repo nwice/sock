@@ -136,6 +136,7 @@ defi_addr = {
 
     '0xe54ca86531e17ef3616d22ca28b0d458b6c89106': 'pangolin router',
 
+    '0x01897e996eefff65ae9999c02d1d8d7e9e0c0352': 'pangolin stake avax/wbtc',
     '0xa16381eae6285123c323a665d4d99a6bcfaac307': 'pangolin stake avax/eth',
     '0x797cbcf107519f4b279fc5db372e292cdf7e6956': 'pangolin stake axax/yfi',    
     '0x18c8e1346d26824063706242adb391ddb16c293e': 'pangolin stake avax/sled',
@@ -288,6 +289,7 @@ defi_addr = {
     '0x0c45FB63001b56a21e29c7dcc1727bfDA273a368': 'olive router',
     '0x57cc32Cd7F5a531953E9af25e1C9394093428082': 'olive treasury',
     '0xcdee5108413e80af6c84bdd3ab0d328a3d63dda4': 'olive treasury 2',
+    
     '0x76fbce48d9dce3d04bfac318d1fdeb3a78e903a9': 'olive pair avax/eth',
     '0xbfc3C72Bab7252341dC90A1E85797Ebd8C79c338': 'olive pair usdt/avax',
     '0xF54a719215622f602FCA5BF5a6509734C3574a4c': 'olive pair usdt/olive',
