@@ -62,7 +62,9 @@ const force = async (pair, ts) => {
 const history = async (strategy, dex_name) => {
   let path = `dex/${dex_name}/harvest/${strategy.id}.json`.toLowerCase()
   let current = await getcurrent(path)
-  let skip = current.version * 2
+  let increment = strategy.single  ? 1 : 2;
+  console.log('increment:', increment)
+  let skip = current.version * increment
   let swaps = []
   while (skip == 0 || skip % 100 == 0) {
       console.log('skip:', skip, 'id:', strategy.id)            
@@ -72,31 +74,30 @@ const history = async (strategy, dex_name) => {
       skip = skip + response.swaps.length
   }  
   console.log('total harvest swaps length:', swaps.length)
-  for (var y = 0; y < swaps.length; y+=2) {
-      let harvest = { claim: swaps[y], reinvest: swaps[y+1] };
-      await new Promise(resolve => setTimeout(resolve, 250));                           
+  for (var y = 0; y < swaps.length; y+=increment) {
+      let harvest = { claim: swaps[y] };
+      await new Promise(resolve => setTimeout(resolve, 100));
       let claim_pricing = await force( { id: strategy.priced }, harvest.claim.timestamp)
       harvest.claim.pair.token0.price = parseFloat(claim_pricing.pairHourDatas[0].reserve1) / parseFloat(claim_pricing.pairHourDatas[0].reserve0)      
-      console.log('claim pricing:', harvest.claim.pair.token0.price)      
-      harvest.claim.amount0InUSD = harvest.claim.pair.token0.price * parseFloat(harvest.claim.amount0In)
-      harvest.claim.pair.token1.price = harvest.claim.amount0InUSD / parseFloat(harvest.claim.amount1Out)
-      console.log('split pricing:', harvest.claim.pair.token1.price)      
-      if ( harvest.claim.pair.id == harvest.reinvest.pair.id ) {
-        harvest.reinvest.pair.token0.price = harvest.claim.pair.token0.price
-        harvest.reinvest.pair.token1.price = harvest.claim.pair.token1.price
-      } else if (harvest.claim.pair.token1.id === harvest.reinvest.pair.token0.id) {
-        harvest.reinvest.pair.token0.price = harvest.claim.pair.token1.price
-        harvest.reinvest.pair.token1.price = harvest.reinvest.pair.token0.price * parseFloat(harvest.reinvest.amount0In) / parseFloat(harvest.reinvest.amount1Out)
-        console.log('reinvest pricing:', harvest.reinvest.pair.token1.price, 'symbol:', harvest.reinvest.pair.token1.symbol)      
-      } else if (harvest.claim.pair.token1.id === harvest.reinvest.pair.token1.id) {
-        harvest.reinvest.pair.token1.price = harvest.claim.pair.token1.price
-        harvest.reinvest.pair.token0.price = harvest.reinvest.pair.token1.price * parseFloat(harvest.reinvest.amount1In) / parseFloat(harvest.reinvest.amount0Out)
-        console.log('reinvest pricing:', harvest.reinvest.pair.token0.price, 'symbol:', harvest.reinvest.pair.token0.symbol)      
+      
+      harvest.claim.amountUSD = harvest.claim.pair.token0.price * parseFloat(harvest.claim.amount0In)
+      harvest.claim.pair.token1.price = harvest.claim.amountUSD / parseFloat(harvest.claim.amount1Out)
+      console.log(harvest.claim.pair.token0.symbol, 'price:', harvest.claim.pair.token0.price, harvest.claim.pair.token1.symbol, 'price:', harvest.claim.pair.token1.price, 'usd:', harvest.claim.amountUSD)      
+      if ( strategy.single ) {
       } else {
-        console.log('no match:', JSON.stringify(harvest))
-        exit(0)
-      }
-      harvest.reinvest.amount1OutUSD = harvest.reinvest.pair.token0.price * parseFloat(harvest.reinvest.amount0In)
+        harvest.reinvest = swaps[y+1];
+        if (harvest.claim.pair.token1.id === harvest.reinvest.pair.token0.id) {
+          harvest.reinvest.pair.token0.price = harvest.claim.pair.token1.price
+          harvest.reinvest.pair.token1.price = harvest.reinvest.pair.token0.price * parseFloat(harvest.reinvest.amount0In) / parseFloat(harvest.reinvest.amount1Out)
+          harvest.reinvest.amountUSD = harvest.reinvest.pair.token0.price * parseFloat(harvest.reinvest.amount0In)
+          console.log('1 reinvest:', harvest.reinvest.pair.token1.symbol, 'price:', harvest.reinvest.pair.token1.price, 'usd:', harvest.reinvest.amountUSD)
+        } else if (harvest.claim.pair.token1.id === harvest.reinvest.pair.token1.id) {
+          harvest.reinvest.pair.token1.price = harvest.claim.pair.token1.price
+          harvest.reinvest.pair.token0.price = harvest.reinvest.pair.token1.price * parseFloat(harvest.reinvest.amount1In) / parseFloat(harvest.reinvest.amount0Out)          
+          harvest.reinvest.amountUSD = harvest.reinvest.pair.token1.price * parseFloat(harvest.reinvest.amount1In)
+          console.log('2 reinvest:', harvest.reinvest.pair.token0.symbol, 'price:', harvest.reinvest.pair.token0.price, 'usd:', harvest.reinvest.amountUSD)
+        }        
+      }      
       await versioning(harvest, path)
   }
 }
