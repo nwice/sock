@@ -1,6 +1,6 @@
 cd /home/ubuntu/sock/
-aws s3 cp --recursive ./public/ s3://powder.network/  --acl public-read --content-type "text/javascript" --exclude "*" --include "*.js" 
 
+aws s3 cp --recursive ./public/ s3://powder.network/  --acl public-read --content-type "text/javascript" --exclude "*" --include "*.js" 
 aws s3 cp public/assets/site.css s3://powder.network/assets/site.css --acl public-read --content-type "text/css"
 
 aws s3 cp ./public/header.html s3://beta.scewpt.com/index --acl public-read --content-type "text/html; charset=utf-8"
