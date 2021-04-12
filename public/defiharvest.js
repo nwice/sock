@@ -1,7 +1,7 @@
 const defiharvest = document.createElement('template');
 defiharvest.innerHTML = `
 <table>
-    <thead><tr><th class="strategy">${this.strategy}</th></tr></thead>
+    <thead><tr><th class="strategy"></th></tr></thead>
 </table>
 `
 const defiharvest_tr = document.createElement('template');
@@ -15,6 +15,21 @@ window.customElements.define('defi-harvest', class DefiTvl extends HTMLElement {
 
     constructor() {
         super();        
+    }
+
+    static get observedAttributes() {
+        return ['dex', 'strategy'];
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        switch (name) {
+            case 'dex':
+                console.log('dex:', newValue);
+                break;            
+            case 'strategy':
+                console.log('strategy:', newValue);
+                break;
+        }
     }
 
     get strategy() {
@@ -35,6 +50,6 @@ window.customElements.define('defi-harvest', class DefiTvl extends HTMLElement {
       
     connectedCallback() {       
         this.appendChild(defiharvest.content.cloneNode(true));
-        
     }
-});        
+
+});

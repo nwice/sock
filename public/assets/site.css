@@ -78,6 +78,7 @@ body,
 html {
     margin: 0;
 }
+
 ion-icon {
     font-size: 20px;
 }
@@ -132,12 +133,14 @@ nav a {
     background-color: var(--header-bg-color);
     color: var(--mdc-theme-primary);
 }
+
 .mdc-top-app-bar a {
     font-weight: 700;
     font-size: var(--header-fontsize);
     color: var(--header-link-color);
     text-decoration: none;            
 }
+
 .mdc-top-app-bar a:hover {
     color: var(--header-link-color-hover)
 }
@@ -146,26 +149,35 @@ nav a {
     height: 91px;
 }
 
-
 .up {
     color: var(--up-color);
 }
+
 .down {
     color: var(--down-color);
 }
+
 .symbol {
     min-width: 75px;
     padding-left: 4px;
 }
+
 .pricetd {
     width: 100%;
     padding-left: 8px;
 }
+
 .logowrap > img {    
     border-radius: 50%;
     width: 48px;
     height: 48px;
 }
+
+defi-tvl defi-price .logowrap > img {
+    width: 36px;
+    height: 36px;
+}
+
 .logowrap > span {
     font-weight: 200;
     font-size: 11px;
@@ -178,61 +190,34 @@ nav a {
     position: absolute; 
     top: 46px;
 }
+
+defi-tvl defi-price .logowrap > span {
+    top: 36px;
+}
+
 .logowrap {    
     padding: 6px 2px 2px 2px;
     position: relative;
 }
-.copied::after {
-    font-size: small;
-    content: "📋";
-    position: absolute;
-    top: 40px;
-    left: -12px;
-}
+
 .pairtokens > defi-price {
     display: inline-block;
 }
+
 .token {
     height: 24px;
     width: 24px;
     border-radius: 24px;
 }
+
 .tvlhead {
     margin: 5px 15px 10px 15px;
     font-size: x-large;
     font-weight: bolder;
 }
-.up::after {
-    content: var(--up);
-    position: absolute;
-    right: -22px;
-}
-.down::after {
-    content: var(--down);
-    position: absolute;
-    right: -22px;
-}
 
 tr.pricing td {
     position: relative;
-}
-tr.pricing td.up:last-child::after {
-    top: 6px;
-}
-tr.pricing td.down:last-child::after {
-    top: 9px;
-}
-tr.pricing td:last-child::after {
-    position: absolute;
-    font-size: x-small;
-    right: -56px;
-    content:  attr(tick)
-}    
-.arrows {
-    position: absolute;
-    right: 0;
-    top: 0;
-    margin-right: -20px;
 }
 
 .center { text-align: center; }

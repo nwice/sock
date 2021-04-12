@@ -7,8 +7,9 @@ defitvl.innerHTML = `
                 <div class="center tvlhead">Total Value Locked</div>
             </td>
             <td class="total right pretty"></td>
-            <td class="1hour">1 hour</td>
-            <td class="1day">1 day</td>
+            <td class="1hour"></td>
+            <td class="1day"></td>
+            <td class="1week"></td>
         </tr>
     </thead>
     <tbody></tbody>
@@ -21,8 +22,9 @@ defitvl.innerHTML = `
                 </div>
                 <span class="timestamp"></span>
             </td>
-            <td class="1hour"></td>
-            <td class="1day"></td>
+            <td class="1hour">1 Hour</td>
+            <td class="1day">1 Day</td>
+            <td class="1day">1 Week</td>
         </tr>            
     </tfoot>
 </table>

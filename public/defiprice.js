@@ -26,9 +26,11 @@ const numberformat = (price) => {
 }
 
 window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
+    
     constructor() {
         super();
     }
+
     static get observedAttributes() {
         return ['id', 'symbol', 'price'];
     }
@@ -154,4 +156,5 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
         })
         this.loadprice()
     }
+    
 });

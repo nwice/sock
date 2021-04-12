@@ -3,7 +3,7 @@ template.innerHTML = `
     <table>
         <tbody>
             <tr>
-                <td rowspan="2" class="token"></td>            
+                <td rowspan="3" class="token"></td>            
                 <td>Circulating Supply</td>
                 <td class="right circulating pretty"></td>
             </tr>
@@ -11,6 +11,10 @@ template.innerHTML = `
                 <td>Max Supply</td>
                 <td class="right total pretty"></td>
             </tr>
+            <tr>
+                <td>Market Cap</td>
+                <td class="right cap pretty"></td>
+            </tr>            
         </tbody>
     </table>
 `
@@ -28,23 +32,13 @@ window.customElements.define('defi-supply', class DefiSupply extends HTMLElement
                 let rn = redirect.split('/').pop()
                 rn = parseInt(rn.substring(0, rn.length - 5)) - 1
                 let previous_url = `/supply/${this.symbol.toLowerCase()}/${rn}.json`;
-                return fetch(previous_url).then( (res2) => { 
-                    return res2.json()
-                }).then( (previous) => {
-                    document.dispatchEvent(new CustomEvent('supply', {
-                        detail: previous
-                    }))
-                    return new Promise( (resolve) => {
-                        setTimeout( () => {
-                            resolve(res.json());        
-                        }, 666 * 3 );
-                    })
-                })                
+                console.log('previous url:', previous_url);
+                return res.json();                
             } else {
                 return res.json();            
             }
         }).then( (info) => {
-            document.dispatchEvent(new CustomEvent(`supply-${this.symbol.toLowerCase()}`, {
+            document.dispatchEvent(new CustomEvent(`supply-${this.symbol.toLowerCase()}-${this.dex.toLowerCase()}`, {
                 detail: info
             }))
         }).catch( (err) => {
@@ -54,6 +48,13 @@ window.customElements.define('defi-supply', class DefiSupply extends HTMLElement
         });
     };
 
+    checkcap() {
+        if ( this.getAttribute('circulating') != null && this.getAttribute('price') != null  ) {
+            let mc = parseFloat(this.getAttribute('circulating')) * parseFloat(this.getAttribute('price'));
+            this.firstElementChild.querySelector('.cap').innerHTML = '$' + prettyNumber(mc)
+        }        
+    }
+
     get symbol() {
         return this.getAttribute('symbol');
     }
@@ -62,13 +63,43 @@ window.customElements.define('defi-supply', class DefiSupply extends HTMLElement
         this.setAttribute('symbol', ns);
     }
 
+    get dex() {
+        return this.getAttribute('dex');
+    }
+      
+    set dex(ns) {
+        this.setAttribute('dex', ns);
+    }
+
+    get price() {
+        return this.getAttribute('price');
+    }
+      
+    set price(np) {
+        this.setAttribute('price', np);
+    }
+
+    get circulating() {
+        return this.getAttribute('circulating');
+    }
+      
+    set circulating(np) {
+        this.setAttribute('circulating', np);
+    }    
+
     connectedCallback() {       
         this.appendChild(template.content.cloneNode(true));
         this.firstElementChild.querySelector('.token').innerHTML = `<defi-price symbol="${this.symbol.toLowerCase()}"></defi-price>`
-        document.addEventListener(`supply-${this.symbol.toLowerCase()}`, (e) => {
+        document.addEventListener(`supply-${this.symbol.toLowerCase()}-${this.dex.toLowerCase()}`, (e) => {
+            this.setAttribute('circulating', e.detail.circulating);
+            this.checkcap()
             this.firstElementChild.querySelector('.circulating').innerHTML = prettyNumber(e.detail.circulating);
             this.firstElementChild.querySelector('.total').innerHTML = prettyNumber(e.detail.total);
         })
+        document.addEventListener(`price-${this.symbol.toLowerCase()}-${this.dex.toLowerCase()}`, (e) => {
+            this.setAttribute('price', e.detail.price);
+            this.checkcap()
+        })        
         this.loadsupply()            
     }
-});        
+});
