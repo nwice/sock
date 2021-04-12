@@ -62,7 +62,7 @@ window.customElements.define('defi-tvl', class DefiTvl extends HTMLElement {
         super();        
     }
 
-    tvlload() {
+    loadtvl() {
         fetch(`/tvl/${this.symbol.toLowerCase()}.json`).then( (res) => { 
             let redirect = res.headers.get('x-amz-website-redirect-location')
             if ( redirect && getParameterByName('noticks') == null ) {
@@ -118,15 +118,7 @@ window.customElements.define('defi-tvl', class DefiTvl extends HTMLElement {
     } 
 
     listento() {
-        return `tvl-${e.detail.symbol.toLowerCase()}`;
-    }
-
-    get symbol() {
-        return this.getAttribute('symbol');
-    }
-      
-    set symbol(ns) {
-        this.setAttribute('symbol', ns);
+        return `tvl-${this.symbol.toLowerCase()}`;
     }
     
     get symbol() {
@@ -165,6 +157,6 @@ window.customElements.define('defi-tvl', class DefiTvl extends HTMLElement {
             table.querySelector('.timestamp').innerHTML = tmp != 'Invalid Date' ? tmp : '';
         
         })        
-        this.tvlload(this.symbol.toLowerCase())        
+        this.loadtvl()        
     }
 });        

@@ -78,7 +78,7 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
         this.symbol = price.symbol
     }
 
-    priceload() {
+    loadprice() {
         let location = `/dex/${this.dex.toLowerCase()}/price/${this.symbol.toLowerCase()}.json`;
         fetch(location).then((res) => {
             let redirect = res.headers.get('x-amz-website-redirect-location')
@@ -152,7 +152,6 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
         document.addEventListener(this.listento(), (e) => {
             this.setAttribute('price', e.detail.price)
         })
-
-        this.priceload()
+        this.loadprice()
     }
 });

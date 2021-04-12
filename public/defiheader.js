@@ -10,6 +10,10 @@ defiheader.innerHTML = `
                 
                 <a href="/price">Pricing</a>
 
+                <a href="/harvest">Harvest</a>
+
+                <a href="/supply">Supply</a>
+
                 <!---
 
                 <a href="/compound/">Compound</a>
@@ -63,6 +67,10 @@ window.customElements.define('defi-header', class DefiHeader extends HTMLElement
     connectedCallback() {       
         this.appendChild(defiheader.content.cloneNode(true), document.body.firstChild);
         document.querySelector('#theme').addEventListener('click', this.toggleMode);     
+        this.firstElementChild.querySelector('.siteicon').addEventListener('click', (e) => {
+            document.location.href = 'https://snowball.network';
+        });     
+
         this.toggleMode()
     }
 

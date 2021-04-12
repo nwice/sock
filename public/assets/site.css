@@ -60,6 +60,7 @@ html[data-theme='light'] {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+    cursor: pointer;
 }
 
 header .mdc-button--outlined:not(:disabled) {
@@ -91,7 +92,7 @@ main {
     width: 98%
 }
 
-defi-tvl > table {
+defi-tvl > table, defi-supply > table {
     margin-left:auto; 
     margin-right:auto;    
 }
