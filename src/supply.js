@@ -1,7 +1,7 @@
-const puppeteer = require('puppeteer');
-const fs = require('fs');
+import puppeteer from 'puppeteer';
+import fs from 'fs';
+import AWS from 'aws-sdk';
 
-var AWS = require('aws-sdk');
 AWS.config.update({ region: 'us-east-1' });
 
 const s3 = new AWS.S3();

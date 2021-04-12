@@ -18,6 +18,13 @@ const s3path = (path) => {
     }
 }
 
+const getversion = async (path, version) => {  
+    let versionpath = path.substring(0, path.length - 5) + `/${version}.json`
+    let data = await s3.getObject(s3path(versionpath)).promise()
+    let data_string = await data.Body.toString();
+    return JSON.parse(data_string)
+}
+
 const getcurrent = async (path) => {  
     let current = { version: 0 }
     try {
@@ -56,4 +63,4 @@ const versioning = async (o, path, conditional) => {
     }
 }
 
-export { versioning, getcurrent }
+export { versioning, getcurrent, getversion }

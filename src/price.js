@@ -111,8 +111,15 @@ const price_different = (p, previous) => {
   return true
 }
 
-prices.filter(p => !master_skip.map(msi => msi.toLowerCase()).includes(p.id.toLowerCase())).forEach(async (p) => {
-  versioning(p, `dex/${p.dex}/price/${p.symbol}.json`.toLowerCase(), price_different)
+const clean_symbol = (s) => {
+  if ( s.length == 2) {
+    return s.codePointAt(0).toString(16)
+  }
+  return s
+}
+
+prices.filter(p => !master_skip.map(msi => msi.toLowerCase()).includes(p.id.toLowerCase())).forEach(async (p) => {  
+  versioning(p, `dex/${p.dex}/price/${clean_symbol(p.symbol)}.json`.toLowerCase(), price_different)
 })
 
 setTimeout( () => {

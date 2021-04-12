@@ -1,8 +1,9 @@
-const fs = require('fs');
-const Web3 = require('web3');
-const { request, gql } = require('graphql-request');
-var AWS = require('aws-sdk');
-const { exit } = require('process');
+import fs from 'fs';
+import Web3 from 'web3'
+import AWS from 'aws-sdk';
+import { request, gql } from 'graphql-request';
+import { exit } from 'process';
+
 AWS.config.update({ region: 'us-east-1' });
 
 const s3 = new AWS.S3();

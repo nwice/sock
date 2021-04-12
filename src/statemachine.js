@@ -136,12 +136,12 @@ const dexes = {
             }        
         ],
         strategies: [
-            { id: '0x974Ef0bDA58C81F3094e124f530eF34fe70dc103', priced: png_usdt_pair },
-            { id: '0x6A803904b9eA0Fc982fBB077c7243c244Ae05a2d', priced: png_usdt_pair, single: true },
-            { id: '0x953853590b805A0E885A75A3C786D2aFfcEEA3Cf', priced: png_usdt_pair },
-            { id: '0x14ec55f8B4642111A5aF4f5ddc56B7bE867eB6cC', priced: png_usdt_pair },
-            { id: '0x74dB28797957a52a28963F424dAF2B10226ba04C', priced: png_usdt_pair },
-            { id: '0xA362A10Ba6b59eE113FAa00e41E01C0087dd9BA1', priced: png_usdt_pair }
+            { id: '0x974Ef0bDA58C81F3094e124f530eF34fe70dc103', priced: png_usdt_pair, nickname: 'avax-link'  },
+            { id: '0x6A803904b9eA0Fc982fBB077c7243c244Ae05a2d', priced: png_usdt_pair, single: true, nickname: 'avax-png' },
+            { id: '0x953853590b805A0E885A75A3C786D2aFfcEEA3Cf', priced: png_usdt_pair, nickname: 'avax-eth' },
+            { id: '0x14ec55f8B4642111A5aF4f5ddc56B7bE867eB6cC', priced: png_usdt_pair, nickname: 'avax-sushi' },
+            { id: '0x74dB28797957a52a28963F424dAF2B10226ba04C', priced: png_usdt_pair, nickname: 'avax-usdt' },
+            { id: '0xA362A10Ba6b59eE113FAa00e41E01C0087dd9BA1', priced: png_usdt_pair, nickname: 'avax-wbtc' }
         ],
         graphql: conor
     }),

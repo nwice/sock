@@ -7,6 +7,7 @@
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+
 <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
 
 <script type="module" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"></script>
@@ -22,8 +23,33 @@
 <body class="mdc-typography">
     <defi-header></defi-header>
     <main>
-        <defi-harvest dex="snob" strategy="0x14ec55f8b4642111a5af4f5ddc56b7be867eb6cc"></defi-harvest>        
-        <defi-harvest dex="snob" strategy="0x6a803904b9ea0fc982fbb077c7243c244ae05a2d"></defi-harvest>
+        <div style="display: flex; flex-direction: column;">
+            <a href="https://x-api.snowball.network/dex/snob/harvest/0x14ec55f8b4642111a5af4f5ddc56b7be867eb6cc.json">
+                0x14ec55f8b4642111a5af4f5ddc56b7be867eb6cc
+            </a>
+            <a href="https://x-api.snowball.network/dex/snob/harvest/0x6a803904b9ea0fc982fbb077c7243c244ae05a2d.json">
+                0x6a803904b9ea0fc982fbb077c7243c244ae05a2d
+            </a>            
+            <a href="https://x-api.snowball.network/dex/snob/harvest/0x74db28797957a52a28963f424daf2b10226ba04c.json">
+                0x74db28797957a52a28963f424daf2b10226ba04c
+            </a>            
+            <a href="https://x-api.snowball.network/dex/snob/harvest/0x74db28797957a52a28963f424daf2b10226ba04c.json">
+                0x74db28797957a52a28963f424daf2b10226ba04c
+            </a>            
+            <a href="https://x-api.snowball.network/dex/snob/harvest/0x953853590b805a0e885a75a3c786d2affceea3cf.json">
+                0x953853590b805a0e885a75a3c786d2affceea3cf
+            </a>            
+            <a href="https://x-api.snowball.network/dex/snob/harvest/0x974ef0bda58c81f3094e124f530ef34fe70dc103.json">
+                0x974ef0bda58c81f3094e124f530ef34fe70dc103
+            </a>            
+            <a href="https://x-api.snowball.network/dex/snob/harvest/0xa362a10ba6b59ee113faa00e41e01c0087dd9ba1.json">
+                0xa362a10ba6b59ee113faa00e41e01c0087dd9ba1
+            </a>                                    
+        </div>
+        <div>
+            <defi-harvest dex="snob" strategy="0x14ec55f8b4642111a5af4f5ddc56b7be867eb6cc"></defi-harvest>        
+            <defi-harvest dex="snob" strategy="0x6a803904b9ea0fc982fbb077c7243c244ae05a2d"></defi-harvest>    
+        </div>
     </main>    
 </body>
 </html>

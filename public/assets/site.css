@@ -4,7 +4,8 @@
 :root {
     --mdc-typography-font-family: "Encode Sans", sans-serif, monospace;
     
-    --mdc-theme-primary:  white;
+    --mdc-theme-primary: white;
+
     --logo-image: url(/assets/images/Logo_Light@2x.png);
 
     --button-bg-color: rgba(255, 255, 255, 0.05);
@@ -23,6 +24,7 @@
 
 html[data-theme='light'] {
     --mdc-theme-primary: rgb(27, 31, 50);
+
     --logo-image: url(/assets/images/Logo_Dark@2x.png);
 
     --button-bg-color: rgba(255, 255, 255, 0.05);
@@ -51,6 +53,11 @@ html[data-theme='light'] {
 
 @media screen and (min-width: 1650px) {
     html { --header-fontsize: 20px; --header-padding: 175px; }
+}
+
+a {
+    text-decoration: none;   
+    color: var(--button-bg-hover-color)
 }
 
 .siteicon {
@@ -93,6 +100,10 @@ main {
     width: 98%
 }
 
+defi-tvl defi-price {
+    display: inline-block;
+}
+
 defi-tvl > table, defi-supply > table {
     margin-left:auto; 
     margin-right:auto;    
@@ -102,10 +113,6 @@ main > section.pricing {
     display: flex;
     flex-wrap: wrap;
     margin-left: var(--header-padding);
-}
-
-table td {
-    text-align:left;
 }
 
 defi-price > table {
@@ -149,19 +156,6 @@ nav a {
     height: 91px;
 }
 
-.up {
-    color: var(--up-color);
-}
-
-.down {
-    color: var(--down-color);
-}
-
-.symbol {
-    min-width: 75px;
-    padding-left: 4px;
-}
-
 .pricetd {
     width: 100%;
     padding-left: 8px;
@@ -195,29 +189,10 @@ defi-tvl defi-price .logowrap > span {
     top: 36px;
 }
 
-.logowrap {    
-    padding: 6px 2px 2px 2px;
-    position: relative;
-}
-
-.pairtokens > defi-price {
-    display: inline-block;
-}
-
-.token {
-    height: 24px;
-    width: 24px;
-    border-radius: 24px;
-}
-
-.tvlhead {
+thead {
     margin: 5px 15px 10px 15px;
     font-size: x-large;
     font-weight: bolder;
-}
-
-tr.pricing td {
-    position: relative;
 }
 
 .center { text-align: center; }
