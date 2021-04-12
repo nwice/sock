@@ -213,6 +213,7 @@ let load = [
         ContentType: 'application/json',
         ACL: 'public-read',
     })).promise();
+    
     exit()
     
 })();
