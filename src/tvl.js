@@ -42,7 +42,7 @@ const userLiquidity = async (account, symbol0, symbol1, avaxprice) => {
     });
 }
 
-let web3 = new Web3('ws://192.168.1.14:9650/ext/bc/C/ws');
+let web3 = new Web3('wss://api.avax.network/ext/bc/C/ws');
 
 var tokenABI = [{ 
     "constant": true, 
@@ -68,7 +68,6 @@ let load = [
             Bucket: 'powder.network',
             Key: `dex/png/price/${p.symbol.toLowerCase()}.json`
         }).promise()
-        console.log(data)
         let content = await data.Body.toString();
         let loaded_p = JSON.parse(content);
 
