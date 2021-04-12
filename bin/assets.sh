@@ -1,3 +1,5 @@
+cd /home/ubuntu/sock
+
 aws s3 sync public/assets s3://powder.network/assets --acl public-read
 
 aws cloudfront create-invalidation --distribution-id E1JZNMX0HG4856 --paths "/assets/*"

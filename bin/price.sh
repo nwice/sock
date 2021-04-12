@@ -1,4 +1,6 @@
-node ./src/price.js
+cd /home/ubuntu/sock
+
+/home/ubuntu/.nvm/versions/node/v15.9.0/bin/node ./src/price.js
 
 aws s3 cp ./public/price_with_uptick.html s3://beta.scewpt.com/price --acl public-read --content-type "text/html; charset=utf-8"
 aws s3 cp ./public/price_with_uptick.html s3://powder.network/price --acl public-read --content-type "text/html; charset=utf-8"
