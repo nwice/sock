@@ -2,7 +2,7 @@ import websocket
 import json
 import pprint 
 
-from web3 import Web3 
+from web3 import Web3
 
 from eth_abi import decode_single, decode_abi
 
@@ -95,15 +95,18 @@ common_addr = {
 }
 
 defi_addr = {
-    '0x5a9710f3f23053573301c2ab5024d0a43a461e80': 'olive master chef',
-
     '0x9E4AAbd2B3E60Ee1322E94307d0776F2c8e6CFbb': 'elk router',    
+
+    '0x97fb1a0d7cfe3bef6c2edbe1fcefd41a91318407': 'elk stake avax/wbtc',
     '0xAA8A33E7bcADb52ab4f43152682e483607faC83F': 'elk stake avax/elk',
     '0x8b763519d3e634533b4039491e09f5774281e4b4': 'elk stake elk/png',
+
     '0xfEbf47CF89F766E6c24317b17F862bA5d4d82f8c': 'elk pair avax/elk ',
+    '0x288ffb87fc69dc652f9b564faf05db7468013544': 'elk pair avax/wbtc',  
     '0xfEbf47CF89F766E6c24317b17F862bA5d4d82f8c': 'elk pair elk/dai ',
     '0x266ed42866b3d2d418C87EbF8b58f22add0E6F8e': 'elk pair elk/png',  
-    '0x53e3d3e77b3ed38fdc5156f6ef761d85012850c2': 'elk pair elk/usdt',  
+    '0x53e3d3e77b3ed38fdc5156f6ef761d85012850c2': 'elk pair elk/usdt',
+
     '0xd661a38708e6544f2d32e302e6e893a97be7314c': 'elk snowball elk/eth',
     '0xF31a76d123dd6b10008F2f096AB0AafBd508A2de': 'elk snowball elk/dai',
 
@@ -112,6 +115,7 @@ defi_addr = {
 
     '0x8AC8ED5839ba269Be2619FfeB3507baB6275C257': 'penguin master chef',
     '0x033489768527C7915F35bCEb4Fe084dd5Aecf74b': 'penguin pefi treasury',
+    '0xD79A36056c271B988C5F1953e664E61416A9820F': 'penguin nest',
 
     '0x1eC206a9dD85625E1940cD2B0c8e14a894D2e9ac': 'ice',
     '0xf7b8d9f8a82a7a6dd448398afc5c77744bd6cb85': 'controller v4',
@@ -176,6 +180,9 @@ defi_addr = {
     '0xD765B31399985f411A9667330764f62153b42C76': 'pangolin pair png/dai',
     '0xa465e953F9f2a00b2C1C5805560207B66A570093': 'pangolin pair png/yfi',
 
+    '0xbb40bc7364a04e59050f66d0a83eeb6a85c8399c': 'pangolin pair wavax/penis',
+    '0x0160ab62c5d92b7862a5bf48a39bf08ddfe69552': 'pangolin pair wavax/vagina',
+
     '0x0b9753d73e1c62933e913e9c2c94f2ffa8236f6c': 'pangolin pair pefi/snob',
     '0xa1c2c3b6b120cbd4cec7d2371ffd4a931a134a32': 'pangolin pair avax/snob',
     '0x0a63179a8838b5729e79d239940d7e29e40a0116': 'pangolin pair avax/spore',
@@ -222,6 +229,8 @@ defi_addr = {
 
     '0xfcE7264Ca738f21CA01FFEDd35C15fe849c22F71': 'yeti stake yts/png',
     '0xd2fa9b7396c2944a897337a00059f4bee8601712': 'yeti stake avax/usdt',
+    '0xbc86bA14027d4fF47a9FC1Ed333c0a9c5635036F': 'yeti stake avax/yts',
+    '0x2b5d69ea9c586219e98b4f993488c143c338b271': 'yeti stake avax/eth',
 
     '0xF1E800Ab9D0D1F6eaFf54E00Ad19710c41b154f2': 'yeti pair yts/usdt',
     '0x07099b26f36fcb7e086d5a879ec1261271319829': 'yeti pair avax/yts',
@@ -230,6 +239,7 @@ defi_addr = {
     '0x94231f103882033B6103785675038347693f9cd8': 'yeti pair yts/png',
 
     '0x85995d5f8ee9645ca855e92de16fa62d26398060': 'zero',
+    
     '0xd3694aeb35db0d73a4d1e83ffe8f462e8202ed0f': 'zero stake avax/zeth',    
     '0x60f19487bda9c2f8336784110dc5c4d66425402d': 'zero stake avax/zero',
     '0x8754699cf9f32b56654f7da44ff580bdf09f3526': 'zero stake avax/zusdc',
@@ -285,7 +295,7 @@ defi_addr = {
     '0x083e14c8c0e122e374e4c6ff2169d8db7e6728be': 'panda pair eth/wbtc',
     '0x2545b379dcbb673e36c612cfdb8d6f1d61480bca': 'panda pair usdt/wbtc',
 
-
+    '0x5a9710f3f23053573301c2ab5024d0a43a461e80': 'olive master chef',
     '0x0c45FB63001b56a21e29c7dcc1727bfDA273a368': 'olive router',
     '0x57cc32Cd7F5a531953E9af25e1C9394093428082': 'olive treasury',
     '0xcdee5108413e80af6c84bdd3ab0d328a3d63dda4': 'olive treasury 2',
