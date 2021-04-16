@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Supply by Snowball Network</title> 
+    <title>Supply by Snowball Network</title> 
 </head>
 <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="assets/fonts.css" rel="stylesheet">
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
@@ -15,14 +16,16 @@
 
 <script type="text/javascript" src="common.js"></script>
 
-<script type="text/javascript" type="module" src="defiheader.js"></script>
-<script type="text/javascript" type="module" src="defiprice.js"></script>
-<script type="text/javascript" type="module" src="defisupply.js"></script>
+<script type="module" src="defiheader.js"></script>
+<script type="module" src="defifooter.js"></script>
+<script type="module" src="defiprice.js"></script>
+<script type="module" src="defisupply.js"></script>
 
 <body class="mdc-typography">    
     <defi-header></defi-header>    
     <main>
         <defi-supply symbol="snob" dex="png"/>
     </main>
+    <defi-footer></defi-footer>    
 </body>
 </html>

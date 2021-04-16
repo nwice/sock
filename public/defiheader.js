@@ -1,3 +1,5 @@
+import './defipref.js'
+
 const defiheader = document.createElement('template');
 defiheader.innerHTML = `
 <header class="mdc-top-app-bar mdc-top-app-bar--fixed">
@@ -27,7 +29,7 @@ defiheader.innerHTML = `
 
             </nav>            
 
-            <img src="assets/images/poweredbyavalanche.png" hspace="10"/>
+            <img src="assets/images/avalanche.png" width="140" hspace="5"/>
 
             <button class="mdc-button--outlined" id="theme">
                 <div class="mdc-button__ripple"></div>
@@ -35,6 +37,8 @@ defiheader.innerHTML = `
                     <ion-icon class="moon" name="moon-outline" role="img" class="md hydrated"></ion-icon>
                 </span>
             </button>
+
+            <defi-pref></defi-pref>
 
         </section>
     </div>
@@ -70,8 +74,6 @@ window.customElements.define('defi-header', class DefiHeader extends HTMLElement
         this.firstElementChild.querySelector('.siteicon').addEventListener('click', (e) => {
             document.location.href = 'https://snowball.network';
         });     
-
         this.toggleMode()
     }
-
 });

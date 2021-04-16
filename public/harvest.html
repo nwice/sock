@@ -2,54 +2,158 @@
 <html>
 <head>
     <title>Harvest by Snowball Network</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    
+    <script type="module" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"></script>
+
+    <script type="text/javascript" src="common.js"></script>
+
+    <script type="module" src="defiheader.js"></script>
+    <script type="module" src="defifooter.js"></script>
+    <script type="module" src="defiprice.js"></script>
+    
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>    
+
 </head>
-<link rel="preconnect" href="https://fonts.gstatic.com">
 
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-<link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+<style>
+    .pricesymbol {
+        display:none;
+    }
+    .logowrap > img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+    }
+    span.ox {
+        width: 24px;
+        bottom: -4px;        
+        right: 0px;
+    }
+    .strategy.ox {
+        width: 24px;
+        bottom: -4px;
+        right: 0px;
+    }
+    .json.ox {
+        width: 24px;
+        top: -0;
+        right: 0px;
+    }
+    .ox {
+        font-size: 11px;
+        white-space: nowrap;
+        overflow: hidden;    
+        text-overflow: ellipsis;
+        display: inline-block;    
+        cursor: pointer;   
+        position: absolute;    
+    }
+    defi-price {
+        width: 200
+    }
+    #chart > * {
+        width: 100%
+    }
+</style>
+    
 
-<script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+<script>
+    const other = (harvest) => {
+        if (harvest.reinvest) {
+            if (harvest.reinvest.pair.token0.symbol.toLowerCase() === 'wavax') {
+                return harvest.reinvest.pair.token1;
+            }
+            return harvest.reinvest.pair.token0;
+        }        
+        return harvest.claim.pair.token0;
+    }
 
-<script type="module" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"></script>
+    const chartdiv = document.getElementById('chart')        
+    const chart = LightweightCharts.createChart(chartdiv , {        
+        width: chartdiv.offsetWidth - 300,
+        height: 527
+    });    
+    chart.applyOptions({
+        watermark: {
+            color: 'black',
+            visible: true,
+            text: 'Snowball Harvest',
+            fontSize: 16,
+            horzAlign: 'left',
+            vertAlign: 'top',
+        },
+        layout: {
+            textColor: '#696969',
+            fontSize: 12,
+            fontFamily: 'Calibri',
+        },
+        grid: {
+            vertLines: {
+                visible: false,
+            },
+            horzLines: {
+                visible: false,
+            },
+        },            
+        crosshair: {
+            vertLine: {
+                visible: false,
+                labelVisible: true,                    
+            },
+            horzLine: {
+                visible: false,
+                labelVisible: false,
+            },
+            mode: 0,
+        }
+    });
+    document.addEventListener('harvests', (e) => {
+        let harvests = e.detail;            
+        let uid = harvests[0].reinvest?.pair?.id || harvests[0].claim.pair.id
+        console.log('uid:', uid)
+        getAverageHEXById(other(harvests[0]).id).then(color => {
+            let series = chart.addLineSeries({                
+                title: `wavax-` + other(harvests[0]).symbol.toLowerCase(),
+                priceLineVisible: false,
+                lastValueVisible: false,
+                color
+            });
+            let sum = 0
+            let map = harvests.sort( (a, b) => { return parseInt(a.claim.timestamp) - parseInt(b.claim.timestamp) }).map(harvest => {
+                let date = new Date( parseInt(harvest.claim.timestamp) );            
+                let single = harvest.reinvest === undefined ? true : false;
+                sum += harvest.claim.amountUSD * (single ? 2: 1)
+                let o = { time: date.getTime(), value: sum }
+                //console.log(o)
+                return o;
+            })
+            series.setData(map);            
+        })
+    })
+</script>
 
-<link href="assets/site.css" rel="stylesheet">
-
-<script type="text/javascript" src="common.js"></script>
-
-<script type="text/javascript" type="module" src="defiprice.js"></script>
-<script type="text/javascript" type="module" src="defiheader.js"></script>
-<script type="text/javascript" type="module" src="defiharvest.js"></script>
-
-<body class="mdc-typography">
+<body style="margin-left: 100px; margin-right: 100px; display:flex;align-items:center">
     <defi-header></defi-header>
     <main>
-        <div style="display: flex; flex-direction: column;">
-            <a href="https://x-api.snowball.network/dex/snob/harvest/0x14ec55f8b4642111a5af4f5ddc56b7be867eb6cc.json">
-                0x14ec55f8b4642111a5af4f5ddc56b7be867eb6cc
-            </a>
-            <a href="https://x-api.snowball.network/dex/snob/harvest/0x6a803904b9ea0fc982fbb077c7243c244ae05a2d.json">
-                0x6a803904b9ea0fc982fbb077c7243c244ae05a2d
-            </a>            
-            <a href="https://x-api.snowball.network/dex/snob/harvest/0x74db28797957a52a28963f424daf2b10226ba04c.json">
-                0x74db28797957a52a28963f424daf2b10226ba04c
-            </a>            
-            <a href="https://x-api.snowball.network/dex/snob/harvest/0x74db28797957a52a28963f424daf2b10226ba04c.json">
-                0x74db28797957a52a28963f424daf2b10226ba04c
-            </a>            
-            <a href="https://x-api.snowball.network/dex/snob/harvest/0x953853590b805a0e885a75a3c786d2affceea3cf.json">
-                0x953853590b805a0e885a75a3c786d2affceea3cf
-            </a>            
-            <a href="https://x-api.snowball.network/dex/snob/harvest/0x974ef0bda58c81f3094e124f530ef34fe70dc103.json">
-                0x974ef0bda58c81f3094e124f530ef34fe70dc103
-            </a>            
-            <a href="https://x-api.snowball.network/dex/snob/harvest/0xa362a10ba6b59ee113faa00e41e01c0087dd9ba1.json">
-                0xa362a10ba6b59ee113faa00e41e01c0087dd9ba1
-            </a>                                    
-        </div>
         <div>
-            <defi-harvest dex="snob" strategy="0x14ec55f8b4642111a5af4f5ddc56b7be867eb6cc"></defi-harvest>        
-            <defi-harvest dex="snob" strategy="0x6a803904b9ea0fc982fbb077c7243c244ae05a2d"></defi-harvest>    
+            <button onClick="localStorage.clear()">Clear</button>
+        </div>    
+        <div id="chart" style="flex:3"></div>
+        <div>
+    
+            <defi-harvest dex="snob" strategy="0x6a803904b9ea0fc982fbb077c7243c244ae05a2d"></defi-harvest>
+            <defi-harvest dex="snob" strategy="0x14ec55f8b4642111a5af4f5ddc56b7be867eb6cc"></defi-harvest>
+            <defi-harvest dex="snob" strategy="0x74db28797957a52a28963f424daf2b10226ba04c"></defi-harvest>
+            <defi-harvest dex="snob" strategy="0x953853590b805a0e885a75a3c786d2affceea3cf"></defi-harvest>
+            <defi-harvest dex="snob" strategy="0xa362a10ba6b59ee113faa00e41e01c0087dd9ba1"></defi-harvest>
+    
         </div>
-    </main>    
+    </main>
+    <defi-footer></defi-footer>
 </body>
 </html>

@@ -2,7 +2,6 @@
 <html>
 <head>
 <title>Price by Snowball Network</title> 
-</head>
 <link rel="preconnect" href="https://fonts.gstatic.com">
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -15,40 +14,81 @@
 
 <script type="text/javascript" src="common.js"></script>
 
-<script type="text/javascript" type="module" src="defiheader.js"></script>
-<script type="text/javascript" type="module" src="defiprice.js"></script>
+<script type="module" src="defiprice.js"></script>
+<script type="module" src="defiheader.js"></script>
+<script type="module" src="defifooter.js"></script>
 
-<body class="mdc-typography">    
-    <defi-header></defi-header>    
-    <main>
-        <section style="text-align:center"><h1>* Warning (don't hurt yourself)</h1></section>
-        <section class="pricing"></section>
-    </main>
-    <script>
-        let prices = []
-        if ( getParameterByName('symbol') ) {
-            let oneoff = { symbol: getParameterByName('symbol')}
-            if ( getParameterByName('dex') ) {
-                oneoff.dex = getParameterByName('dex')
-            }
-            prices.push(oneoff)
-        } else {
-            prices = [
+</head>
+
+<style>
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+main > section.pricing {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: var(--header-padding);
+}
+.logowrap {
+    position: relative;
+}
+.logowrap > span.ox {
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;    
+    text-overflow: ellipsis;
+    display: inline-block;    
+    cursor: pointer;   
+    position: absolute;    
+    display: none;
+}
+.logowrap > span.ox.open {
+    display: block;
+}
+.logowrap > img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(event) {   
+    let prices = []
+    if ( getParameterByName('symbol') ) {
+        let oneoff = { symbol: getParameterByName('symbol')}
+        if ( getParameterByName('dex') ) {
+            oneoff.dex = getParameterByName('dex')
+        }
+        prices.push(oneoff)
+    } else {
+        prices = [
             { symbol: 'snob'}, { symbol: 'olive', dex: 'olive'}, { symbol: 'wavax'}, { symbol: 'png'}, { symbol: 'wbtc'},
             { symbol: 'eth'}, { symbol: 'link'}, { symbol: 'pefi'}, { symbol: 'sushi'},
             { symbol: 'uni'}, { symbol: 'aave'}, { symbol: 'yfi'}, { symbol: 'sfi'}, 
             { symbol: 'yts', dex: 'yts'}, { symbol: 'elk', dex: 'elk'}, { symbol: 'com', dex: 'com'}, 
-            { symbol: 'zero', dex: 'zero'}, { symbol: 'bamboo-v2'}, { symbol: 'shit'}
-            ]
+            { symbol: 'zero', dex: 'zero'}, { symbol: 'bamboo-v2'}, { symbol: 'shit'}, { symbol: 'spore' }
+        ]
+    }
+    prices.forEach(p => {
+        let dp = document.createElement('defi-price')
+        dp.setAttribute('symbol', p.symbol)
+        if ( p.dex ) {
+            dp.setAttribute('dex', p.dex)
         }
-        prices.forEach(p => {
-            let dp = document.createElement('defi-price')
-            dp.setAttribute('symbol', p.symbol)
-            if ( p.dex ) {
-                dp.setAttribute('dex', p.dex)
-            }
-            document.querySelector('body > main > section.pricing').appendChild(dp)
-        })
-    </script>
+        document.querySelector('body > main > section.pricing').appendChild(dp)
+    })
+});
+</script>
+
+<body>    
+    <defi-header></defi-header>    
+    <main>
+        <section class="right">Hello</section>
+        <section class="pricing"></section>
+    </main>
+    <defi-footer></defi-footer>    
 </body>
 </html>
