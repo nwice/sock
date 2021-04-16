@@ -170,6 +170,7 @@ const dexes = {
             { id: '0x14ec55f8B4642111A5aF4f5ddc56B7bE867eB6cC', priced: png_usdt_pair},
             { id: '0x74dB28797957a52a28963F424dAF2B10226ba04C', priced: png_usdt_pair},
             { id: '0xA362A10Ba6b59eE113FAa00e41E01C0087dd9BA1', priced: png_usdt_pair}
+            { id: '0xde3bE8a846e4311447462482E91e4b97115222e6', priced: png_usdt_pair, single: true}
         ],
         graphql: conor
     }),
