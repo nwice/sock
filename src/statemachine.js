@@ -1,5 +1,6 @@
 import Web3 from 'web3'
 import fs from 'fs';
+import { dexpairs, userliquidity } from './graph.js'
 
 const abi = JSON.parse(fs.readFileSync('public/abi.json'));
 const web3 = new Web3(Web3.givenProvider || 'wss://api.avax.network/ext/bc/C/ws');
@@ -93,55 +94,82 @@ const tokens = {
     }
 };
 
+// token0: tokens.usdt, token1: tokens.dai, token2: tokens.busd,
+
 const conor = 'https://graph-node.avax.network/subgraphs/name/dasconnor/pangolindex'
 const me = 'https://pango-info.scewpt.com/subgraphs/name/dasconnor/pangolindex'
 
 const png_usdt_pair = '0xe8acf438b10a2c09f80aef3ef2858f8e758c98f9'
 
 const dexes = {
-    snob: Object.assign({ pricing: false }, tokens.snob, {
-        tvl: [
+    snob: Object.assign({ amm: false }, tokens.snob, {
+        tvl: { 
+            pairs: [
             {
-                pair: { id: '0xdE1A11C331a0E45B9BA8FeE04D4B51A745f1e4A4'},
-                token0: tokens.usdt, token1: tokens.dai, token2: tokens.busd,
-                accounts: [{ contract: '0xdE1A11C331a0E45B9BA8FeE04D4B51A745f1e4A4'}]                 
+                id: '0xdE1A11C331a0E45B9BA8FeE04D4B51A745f1e4A4', 
+                dex: 'png',
+                accounts: [{ id: '0xB12531a2d758c7a8BF09f44FC88E646E1BF9D375', account_type: 'balance'}]                 
             },            
             {
-                pair: { id: '0x7a6131110b82dacbb5872c7d352bfe071ea6a17c'},
-                accounts: [{ pool: '0x39be35904f52e83137881c0ac71501edf0180181'}]
+                id: '0x7a6131110b82dacbb5872c7d352bfe071ea6a17c', 
+                dex: 'png',
+                accounts: [{ id: '0x39be35904f52e83137881c0ac71501edf0180181', account_type: 'pool'}]
             },            
             {
-                pair: { id: '0x9EE0a4E21bd333a6bb2ab298194320b8DaA26516'},
-                accounts: [{ stake: '0x74db28797957a52a28963f424daf2b10226ba04c'}, {pool: '0x3fcFBCB4b368222fCB4d9c314eCA597489FE8605'}]
+                id: '0x9EE0a4E21bd333a6bb2ab298194320b8DaA26516', 
+                dex: 'png',
+                accounts: [
+                    { id: '0x3fcFBCB4b368222fCB4d9c314eCA597489FE8605', account_type: 'pool'},
+                    { id: '0x74db28797957a52a28963f424daf2b10226ba04c', account_type: 'stake'}
+                ]
             },
             {
-                pair: { id: '0xbbC7fFF833D27264AaC8806389E02F717A5506c9'},
-                accounts: [{ stake: '0x974Ef0bDA58C81F3094e124f530eF34fe70dc103'}, {pool: '0x00933c16e06b1d15958317C2793BC54394Ae356C'}]
+                id: '0xbbC7fFF833D27264AaC8806389E02F717A5506c9', 
+                dex: 'png',
+                accounts: [
+                    { id: '0x00933c16e06b1d15958317C2793BC54394Ae356C', account_type: 'pool'},
+                    { id: '0x974Ef0bDA58C81F3094e124f530eF34fe70dc103', account_type: 'stake'}
+                ]
             },
             {
-                pair: { id: '0x1aCf1583bEBdCA21C8025E172D8E8f2817343d65'},
-                accounts: [{ stake: '0x953853590b805A0E885A75A3C786D2aFfcEEA3Cf'}, {pool: '0x586554828eE99811A8ef75029351179949762c26'}]                
+                id: '0x1aCf1583bEBdCA21C8025E172D8E8f2817343d65', 
+                dex: 'png',
+                accounts: [
+                    { id: '0x586554828eE99811A8ef75029351179949762c26', account_type: 'pool'},
+                    { id: '0x953853590b805A0E885A75A3C786D2aFfcEEA3Cf', account_type: 'stake'}
+                ]                
             },
             {
-                pair: { id: '0xd7538cABBf8605BdE1f4901B47B8D42c61DE0367'},
-                accounts: [{ stake: '0x6a803904b9ea0fc982fbb077c7243c244ae05a2d'}, {pool: '0x621207093D2e65Bf3aC55dD8Bf0351B980A63815'}]
+                id: '0xd7538cABBf8605BdE1f4901B47B8D42c61DE0367', 
+                dex: 'png',
+                accounts: [
+                    { id: '0x621207093D2e65Bf3aC55dD8Bf0351B980A63815', account_type: 'pool'},
+                    { id: '0x6a803904b9ea0fc982fbb077c7243c244ae05a2d', account_type: 'stake'}                    
+                ]                
             },
             {
-                pair: { id: '0xa1C2c3B6b120cBd4Cec7D2371FFd4a931A134A32'},
-                accounts: [{ stake: '0xB12531a2d758c7a8BF09f44FC88E646E1BF9D375'}]
+                id: '0xa1C2c3B6b120cBd4Cec7D2371FFd4a931A134A32', 
+                dex: 'png',
+                accounts: [
+                    { id: '0xB12531a2d758c7a8BF09f44FC88E646E1BF9D375', account_type: 'stake'}
+                ]
             },
             {
-                pair: { id: '0xd8b262c0676e13100b33590f10564b46eef652ad'},
-                accounts: [{ stake: '0x14ec55f8B4642111A5aF4f5ddc56B7bE867eB6cC'}, {pool: '0x751089F1bf31B13Fa0F0537ae78108088a2253BF'}]
+                id: '0xd8b262c0676e13100b33590f10564b46eef652ad', 
+                dex: 'png',
+                accounts: [
+                    { id: '0x751089F1bf31B13Fa0F0537ae78108088a2253BF', account_type: 'pool'},
+                    { id: '0x14ec55f8B4642111A5aF4f5ddc56B7bE867eB6cC', account_type: 'stake'}
+                ]
             }        
-        ],
+        ]},
         strategies: [
-            { id: '0x974Ef0bDA58C81F3094e124f530eF34fe70dc103', priced: png_usdt_pair, nickname: 'avax-link'  },
-            { id: '0x6A803904b9eA0Fc982fBB077c7243c244Ae05a2d', priced: png_usdt_pair, single: true, nickname: 'avax-png' },
-            { id: '0x953853590b805A0E885A75A3C786D2aFfcEEA3Cf', priced: png_usdt_pair, nickname: 'avax-eth' },
-            { id: '0x14ec55f8B4642111A5aF4f5ddc56B7bE867eB6cC', priced: png_usdt_pair, nickname: 'avax-sushi' },
-            { id: '0x74dB28797957a52a28963F424dAF2B10226ba04C', priced: png_usdt_pair, nickname: 'avax-usdt' },
-            { id: '0xA362A10Ba6b59eE113FAa00e41E01C0087dd9BA1', priced: png_usdt_pair, nickname: 'avax-wbtc' }
+            { id: '0x974Ef0bDA58C81F3094e124f530eF34fe70dc103', priced: png_usdt_pair},
+            { id: '0x6A803904b9eA0Fc982fBB077c7243c244Ae05a2d', priced: png_usdt_pair, single: true},
+            { id: '0x953853590b805A0E885A75A3C786D2aFfcEEA3Cf', priced: png_usdt_pair},
+            { id: '0x14ec55f8B4642111A5aF4f5ddc56B7bE867eB6cC', priced: png_usdt_pair},
+            { id: '0x74dB28797957a52a28963F424dAF2B10226ba04C', priced: png_usdt_pair},
+            { id: '0xA362A10Ba6b59eE113FAa00e41E01C0087dd9BA1', priced: png_usdt_pair}
         ],
         graphql: conor
     }),
@@ -149,7 +177,7 @@ const dexes = {
         graphql: conor
     }),
     elk: Object.assign({}, tokens.elk, {
-        graphql: conor
+        graphql: 'https://avax-graph.elk.finance/subgraphs/name/elkfinance/elkdex-avax'
     }),
     com: Object.assign({}, tokens.com, {
         graphql: 'https://graph.avagraph.live/subgraphs/name/complusnetwork/subgraph-ava'
@@ -159,7 +187,12 @@ const dexes = {
         stable: { id: '0x474Bb79C3e8E65DcC6dF30F9dE68592ed48BBFDb' }
     }), 
     olive: Object.assign({}, tokens.olive, {
-        tvl: { all: true },
+        graphql: 'https://api.thegraph.com/subgraphs/name/olive-rose/olivecash',
+        tvl: {
+            account: {
+                id: '0x5A9710f3f23053573301C2aB5024D0a43A461E80'
+            }
+        },
         tokens: [
             {
                 pair: { id: '0xF54a719215622f602FCA5BF5a6509734C3574a4c' }, 
@@ -177,23 +210,96 @@ const dexes = {
     })    
 }
 
-await Promise.all(Object.keys(tokens).map(k => { return tokens[k]}).map(async (token) => {
+const get_price = (pair, find) => {
+    return parseFloat(pair.token0.id.toLowerCase() === find.id.toLowerCase() ? pair.token0Price : pair.token1Price)
+}
+
+const pair_contains = (pair, find1, find2 ) => {
+    return (pair.token0.id.toLowerCase() === find1.id.toLowerCase() || pair.token1.id.toLowerCase() === find1.id.toLowerCase()) && (pair.token0.id.toLowerCase() === find2.id.toLowerCase() || pair.token1.id.toLowerCase() === find2.id.toLowerCase())
+}  
+
+const dex_avaxprice = (dex) => {
+    let base = dex.pairs.filter(avaxpair => {
+        return pair_contains(avaxpair, tokens.wavax, dex.stable ? dex.stable : tokens.usdt)
+    })[0];        
+    let baseprice = get_price(
+        base,
+        dex.stable ? dex.stable : tokens.usdt
+    )
+    return baseprice
+}
+
+const alldexes = await Promise.all(Object.keys(tokens).map(k => { return tokens[k]}).map(async (token) => {
     return populate(token)
-})).then( ign => {
-    Object.keys(dexes).forEach( k => { 
+})).then(async (populated_tokens) => {
+    
+    console.log('tokens populated:', populated_tokens.length)
+    
+    const internal = Object.keys(dexes).map(k => { 
         Object.assign(dexes[k], tokens[k])
+        return { dex_name: k, dex: dexes[k] }
     });
-    return Promise.all(Object.keys(dexes).map(k => { return dexes[k]}).filter(d => d.tvl !== undefined && Array.isArray(d.tvl)).map(async (dex) => {        
-        await Promise.all(dex.tvl.filter(t => t.token0 === undefined).map(async (individual) => {
-            let token0 = await new web3.eth.Contract(abi, individual.pair.id).methods.token0().call()
-            individual['token0'] = { id: token0 }
-            await populate(individual['token0'])
-            let token1 = await new web3.eth.Contract(abi, individual.pair.id).methods.token1().call()
-            individual['token1'] = { id: token1 }
-            await populate(individual['token1'])
-        }));
+
+    await Promise.all(internal.filter(d => { return (d.dex.amm === undefined || d.dex.amm !== false) && d.dex.graphql !== undefined }).map(d => {        
+        return dexpairs(d.dex).then(pairs => {
+            console.log('dex:', d.dex_name, 'pairs length:', pairs.length)
+            d.dex.pairs = pairs
+            let avaxprice = dex_avaxprice(d.dex)
+            let tvllocked = d.dex.pairs.map(pair => {
+                pair.locked = parseFloat(pair.reserveETH) * avaxprice
+                return pair.locked
+            }).reduce((a, b) => a + b, 0)
+            console.log('tvl locked:', tvllocked, 'dex:', d.dex_name)
+        })
     }));
+
+    await Promise.all(internal.filter(d => d.dex?.tvl?.account !== undefined).map(async (dex_obj) => {
+        let account = dex_obj.dex.tvl.account
+        let avaxprice = dex_avaxprice(dex_obj.dex)
+        Promise.all(dex_obj.dex.pairs.map(async (pair) => {
+            return new web3.eth.Contract(abi, pair.id).methods.balanceOf(account.id).call().then( result => {
+                let lv = avaxprice * result / 1e18
+                console.log('locked value:', lv, 'token0:', pair.token0.symbol, 'token1:', pair.token1.symbol)
+                return lv
+            })
+        })).then(totals => {
+            account.locked = totals.reduce((a, b) => a + b, 0)
+            console.log('account locked:', account.locked)
+        })
+    }));
+
+    await Promise.all(internal.filter(d => d.dex?.tvl?.pairs !== undefined).map(async (dex_obj) => {
+        await Promise.all(dex_obj.dex.tvl.pairs.map(async pair => {
+            if ( pair.token0 === undefined ) {
+                Object.assign(pair, dexes[pair.dex].pairs.filter(p => { return p.id.toLowerCase() === pair.id.toLowerCase() })[0]);
+            }            
+            return Promise.all(pair.accounts.map(account=> {                
+                if ( ['stake', 'pool'].includes(account.account_type) ) {                    
+                    let avaxprice = dex_avaxprice(dexes[pair.dex])
+                    return userliquidity(dex_obj.dex.graphql, account.id.toLowerCase(), pair.token1.symbol, pair.token0.symbol, avaxprice, account.account_type).then(av => {
+                        account.locked = av;
+                        return account
+                    })                                       
+                } else if ( ['balance'].includes(account.account_type) ) {
+                    return new web3.eth.Contract(abi, pair.id).methods.balanceOf(account.id).call().then( result => {
+                        account.locked = result / 1e18
+                        return account
+                    })
+                }
+            })).then(account_results => {
+                let al = account_results.map(ar => { return ar.locked }).reduce((a, b) => a + b, 0);
+                pair.locked = al;                
+                return pair
+            });    
+        })).then(pair_results => {
+            let dl = pair_results.map(p => p.locked).reduce((a, b) => a + b, 0);
+            dex_obj.dex.locked = dl
+        });        
+    }));
+    return internal
 })
 
-export { tokens, dexes }
+//console.log('tokens:', tokens)
+console.log('snob:', JSON.stringify(dexes.snob, null, 2))
 
+export { tokens, dexes, alldexes }

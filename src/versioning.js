@@ -58,8 +58,6 @@ const versioning = async (o, path, conditional) => {
             Body: out,
             Key: next_version_location,
         })).promise();    
-    } else {
-        console.log('skipped:', path)
     }
 }
 

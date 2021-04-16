@@ -102,8 +102,8 @@ const history = async (strategy, dex_name) => {
   }
 }
 
-await Promise.all(Object.keys(dexes).map(k => { return {dex_name: k, dex: dexes[k]}}).filter(d => Array.isArray(d.dex.strategies) ).map(async dex_obj => {
+await Promise.all(Object.keys(dexes).map(k => { return {name: k, dex: dexes[k]}}).filter(d => Array.isArray(d.dex.strategies) ).map(async dex_obj => {
   for (var x = 0; x < dex_obj.dex.strategies.length; x++) {
-    await history(dex_obj.dex.strategies[x], dex_obj.dex_name);
+    await history(dex_obj.dex.strategies[x], dex_obj.name);
   }  
 }));

@@ -1,34 +1,14 @@
 import fs from 'fs';
-import { request, gql } from 'graphql-request';
 import Web3 from 'web3';
-import { versioning } from './versioning.js';
 import { dexes, tokens } from './statemachine.js';
 import { exit } from 'process';
+import { versioning } from './versioning.js';
+import { dexpairs } from './graph.js';
 
 const abi = JSON.parse(fs.readFileSync('public/abi.json'));
 
 const web3 = new Web3('wss://api.avax.network/ext/bc/C/ws');
 const nowish = new Date().getTime();
-
-const priceql = gql`query getPairs($skip: Int!) {  
-  pairs(skip: $skip) {
-    token0Price
-    token0 {
-      id
-      symbol
-      name
-      tradeVolume
-    }
-    token1Price
-    token1 {
-      id
-      symbol
-      name
-      tradeVolume
-    }
-    totalSupply   
-  }
-}`
 
 const get_price = (pair, find) => {
   return parseFloat(pair.token0.id.toLowerCase() === find.id.toLowerCase() ? pair.token0Price : pair.token1Price)
@@ -50,53 +30,43 @@ const prices = [];
 
 await Promise.all(Object.keys(dexes).map(k => { 
     return { dex: dexes[k], dex_name: k } 
-  }).filter(d => { return d.dex.pricing === undefined || d.dex.pricing === true }).map(async (dex_obj) => {
-  let dex = dex_obj.dex
-  let dex_name = dex_obj.dex_name
-  let skip = 0
-  let pairs = []
-  if ( dex.graphql ) {
-    while ( skip % 100 == 0 ) {      
-      let priceData = await request(dex.graphql, priceql, { skip })
-      pairs = [...pairs,...priceData.pairs]
-      skip = priceData.pairs.length
-    }
-    let base = { timestamp: nowish };
-    pairs.forEach(p => {
+  }).filter(d => { return d.dex?.amm === undefined || d.dex.amm === true }).map(async (dex_obj) => {
+  if ( dex_obj.dex.graphql ) {
+    let base = { timestamp: nowish };    
+    console.log('dex pairs length:', dex_obj.dex.pairs.length)
+    dex_obj.dex.pairs.forEach(p => {
       p.token0.tradeVolume = parseFloat(p.token0.tradeVolume)
       p.token1.tradeVolume = parseFloat(p.token1.tradeVolume)
     });
-    let basepair = pairs.filter(p => { 
-      return pair_contains(p, tokens.wavax) && pair_contains(p, dex.stable ? dex.stable : tokens.usdt) 
+    let basepair = dex_obj.dex.pairs.filter(p => { 
+      return pair_contains(p, tokens.wavax) && pair_contains(p, dex_obj.dex.stable ? dex_obj.dex.stable : tokens.usdt) 
     })[0];
     let avaxprice = get_price(
       basepair,
-      dex.stable ? dex.stable : tokens.usdt
+      dex_obj.dex.stable ? dex_obj.dex.stable : tokens.usdt
     )
-    console.log('avaxprice:', avaxprice)
+    console.log(dex_obj.dex_name, 'avaxprice:', avaxprice)
 
     prices.push(
-      Object.assign({}, base, get_token(basepair, tokens.wavax), { price: avaxprice }, { dex: dex_name })
+      Object.assign({}, base, get_token(basepair, tokens.wavax), { price: avaxprice }, { dex: dex_obj.dex_name })
     )
     prices.push(
-      Object.assign({}, base, get_token(basepair, dex.stable ? dex.stable : tokens.usdt), { price: get_price(basepair, tokens.wavax) * avaxprice }, { dex: dex_name })
+      Object.assign({}, base, get_token(basepair, dex_obj.dex.stable ? dex_obj.dex.stable : tokens.usdt), { price: get_price(basepair, tokens.wavax) * avaxprice }, { dex: dex_obj.dex_name })
     )
-
-    pairs.filter(p => { return p != basepair && pair_contains(p, tokens.wavax) }).forEach(p => {
+    dex_obj.dex.pairs.filter(p => { return p != basepair && pair_contains(p, tokens.wavax) }).forEach(p => {
       let notavax = get_token(p, tokens.wavax, true)
-      let price = Object.assign({}, base, notavax, { price: get_price(p, tokens.wavax) * avaxprice }, { dex: dex_name })
-      //console.trace('price:', price)
+      let price = Object.assign({}, base, notavax, { price: get_price(p, tokens.wavax) * avaxprice }, { dex: dex_obj.dex_name })
       prices.push(
         price
       )
     })      
   } else {
-    for (var y = 0; y < dex.tokens.length; y++) {
+    for (var y = 0; y < dex_obj.dex.tokens.length; y++) {
       let t0 = new web3.eth.Contract(abi, tokens.usdt.id);
-      let t1 = new web3.eth.Contract(abi, dex.tokens[y].token.id);
-      let t1supply = await t1.methods.balanceOf(dex.tokens[y].pair.id).call()        
-      let t0supply = await t0.methods.balanceOf(dex.tokens[y].pair.id).call()        
-      let dex_specific = Object.assign({}, dex.tokens[y].token, { price: t0supply / t1supply * 1e12 }, { dex: dex_name })
+      let t1 = new web3.eth.Contract(abi, dex_obj.dex.tokens[y].token.id);
+      let t1supply = await t1.methods.balanceOf(dex_obj.dex.tokens[y].pair.id).call()        
+      let t0supply = await t0.methods.balanceOf(dex_obj.dex.tokens[y].pair.id).call()        
+      let dex_specific = Object.assign({}, dex_obj.dex.tokens[y].token, { price: t0supply / t1supply * 1e12 }, { dex: dex_obj.dex_name })
       prices.push(dex_specific);
     }
   }
@@ -111,6 +81,29 @@ const price_different = (p, previous) => {
   return true
 }
 
+const any_price_different = (all, all_previous) => {
+  if ( all.length === all_previous.length ) {
+    return all.map(p => {
+      let changed = false;
+      let compare_to = all_previous.filter(previous => { return previous.id === p.id && previous.dex === p.dex })[0]
+      if ( compare_to === undefined ) {
+        console.log('missing:', p.symbol, 'to:', p.price)        
+        changed = true;
+      } else if ( compare_to.price !== p.price ) {
+        console.log('change:', p.symbol, 'to:', p.price, 'from:', compare_to?.price)
+        changed = true;
+      }
+      return { changed, p, compare_to}
+    }).filter(b => b.changed).length === 0 ? false : true;    
+  }
+  return true
+}
+
+const publishable = prices.filter(p => !master_skip.map(msi => msi.toLowerCase()).includes(p.id.toLowerCase()));
+
+versioning(publishable, `dex/prices.json`, any_price_different)
+
+
 const clean_symbol = (s) => {
   if ( s.length == 2) {
     return s.codePointAt(0).toString(16)
@@ -118,7 +111,7 @@ const clean_symbol = (s) => {
   return s
 }
 
-prices.filter(p => !master_skip.map(msi => msi.toLowerCase()).includes(p.id.toLowerCase())).forEach(async (p) => {  
+publishable.forEach(async (p) => {  
   versioning(p, `dex/${p.dex}/price/${clean_symbol(p.symbol)}.json`.toLowerCase(), price_different)
 })
 

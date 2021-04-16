@@ -2,11 +2,13 @@ import fs from 'fs';
 import Web3 from 'web3'
 import AWS from 'aws-sdk';
 import { request, gql } from 'graphql-request';
+import { versioning, getcurrent } from './versioning.js';
+import { dexes, tokens } from './statemachine.js';
 import { exit } from 'process';
 
-AWS.config.update({ region: 'us-east-1' });
+const abi = JSON.parse(fs.readFileSync('public/abi.json'));
 
-const s3 = new AWS.S3();
+AWS.config.update({ region: 'us-east-1' });
 
 const nowish = new Date().getTime();
 
@@ -30,6 +32,7 @@ const query_block = gql`query getUser($userId: String!) {
       }      
     } 
 }`;
+
 const userLiquidity = async (account, symbol0, symbol1, avaxprice) => {
     return request(endpoint, query_block, { userId: account.toLowerCase() }).then(response => {        
         if ( !response.user ) { return 0 }
@@ -43,30 +46,78 @@ const userLiquidity = async (account, symbol0, symbol1, avaxprice) => {
 }
 
 let web3 = new Web3('wss://api.avax.network/ext/bc/C/ws');
+var s3d = new web3.eth.Contract(abi, '0xdE1A11C331a0E45B9BA8FeE04D4B51A745f1e4A4');
 
-var tokenABI = [{ 
-    "constant": true, 
-    "inputs": [{ "name": "_owner", "type": "address" }], 
-    "name": "balanceOf", 
-    "outputs": [{ "name": "balance", "type": "uint256" }], 
-    "payable": false, 
-    "type": "function" 
-}];
+(async () => {
 
-var s3d = new web3.eth.Contract(tokenABI, '0xdE1A11C331a0E45B9BA8FeE04D4B51A745f1e4A4');
+    dexes.snob.tvl.pairs(pair => {
+        let wtf = pair.accounts.map(a => { return { account_name: Object.keys(s)[0] }});
+        console.log(wtf);
+    })
+
+    //await Promise.all([].map(d => { return } {
+        
+
+            //console.log('need:', ta.map(t => t.symbol))
+            //await Promise.all(.map( async (account_type) => {
+            //    let at = Object.keys(account_type)[0]
+            //    let an = account_type[at]
+            //    console.log('account:', an.toLowerCase())
+            //    let av = await userLiquidity(an, pair.token0.symbol, pair.token1.symbol, ap)
+            //    console.log('value:', av)
+            //    account_type.locked = av;
+            //    return av;
+            //}))            
+    //    return Promise.resolve()
+    //}));
+
+
+
+    //let tvl_sum = await Promise.all(new_tvl.pairs.filter(p => p.locked === undefined).map( async (pair) => {
+    //    let pair_sum = .then(inner_resolve => {
+    //        return inner_resolve.reduce((a, b) => a + b, 0)
+    //    })
+    //    pair.locked = pair_sum;
+    //    return pair_sum;
+    //})).then(resolve => {
+    //    return resolve.reduce((a, b) => a + b, 0)            
+    //})    
+        /*                
+
+        })
+
+        if ( Array.isArray(dex_obj.dex.tvl) ) {
+            
+                
+                await Promise.all(ta.map(async (token) => {
+                    let current = await getcurrent(`dex/${dex_obj.dex_name}/price/${token.symbol.toLowerCase()}.json`)
+                    
+                }));                
+            }))
+        } else {
+            return Promise.resolve()
+        } 
+        */       
+
+})();
+
+console.log('done')
+
+
+/*
 
 let load = [
     { symbol: 'wavax' }, { symbol: 'link' }, { symbol: 'eth' }, { symbol: 'png' }, { symbol: 'snob' }, 
     { symbol: 'sushi' }, { symbol: 'usdt' }, { symbol: 'dai' }, { symbol: 'wbtc' }
 ];
 
-(async () => {     
+
 
     const players = await Promise.all(load.map(async (p) => {
         console.log('get:', p.symbol)
         let data = await s3.getObject({
             Bucket: 'powder.network',
-            Key: `dex/png/price/${p.symbol.toLowerCase()}.json`
+            Key: 
         }).promise()
         let content = await data.Body.toString();
         let loaded_p = JSON.parse(content);
@@ -124,8 +175,6 @@ let load = [
         id: '0xaeb044650278731ef3dc244692ab9f64c78ffaea'
     }
 
-    console.log('step 1')
-
     let stablepair_uint = await s3d.methods.balanceOf('0xB12531a2d758c7a8BF09f44FC88E646E1BF9D375').call()
     let stablepairlocked = stablepair_uint / 1e18    
     new_tvl.pairs[0].accounts[0].locked = stablepairlocked    
@@ -133,23 +182,7 @@ let load = [
 
     let ap = player('wavax').price
     
-    let tvl_sum = await Promise.all(new_tvl.pairs.filter(p => p.locked === undefined).map( async (pair) => {
-        let pair_sum = await Promise.all(pair.accounts.filter(a => a.locked === undefined).map( async (account_type) => {
-            let at = Object.keys(account_type)[0]
-            let an = account_type[at]
-            console.log('account:', an.toLowerCase())
-            let av = await userLiquidity(an, pair.token0.symbol, pair.token1.symbol, ap)
-            console.log('value:', av)
-            account_type.locked = av;
-            return av;
-        })).then(inner_resolve => {
-            return inner_resolve.reduce((a, b) => a + b, 0)
-        })
-        pair.locked = pair_sum;
-        return pair_sum;
-    })).then(resolve => {
-        return resolve.reduce((a, b) => a + b, 0)            
-    })
+
     
     tvl_sum += stablepairlocked
 
@@ -213,6 +246,7 @@ let load = [
         ACL: 'public-read',
     })).promise();
     
-    exit()
+    //exit()
     
 })();
+*/
