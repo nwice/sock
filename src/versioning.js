@@ -40,7 +40,12 @@ const getcurrent = async (path) => {
     return current
 }
 
-const versioning = async (o, path, conditional) => {
+const upload = async (o) => {
+    return s3.upload(o).promise();        
+}
+
+const versioning = async (o, p, conditional) => {
+    let path = p.toLowerCase()
     let out = JSON.stringify(o, null, 2)
     let localpath = 'public/' + path
     let dirpath = localpath.substring(0, localpath.lastIndexOf('/') + 1)
@@ -61,4 +66,4 @@ const versioning = async (o, path, conditional) => {
     }
 }
 
-export { versioning, getcurrent, getversion }
+export { upload, versioning, getcurrent, getversion }

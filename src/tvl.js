@@ -10,8 +10,6 @@ const abi = JSON.parse(fs.readFileSync('public/abi.json'));
 
 AWS.config.update({ region: 'us-east-1' });
 
-const nowish = new Date().getTime();
-
 //const endpoint = 'https://beta.scewpt.com/subgraphs/name/dasconnor/pangolindex'
 const endpoint = 'https://graph-node.avax.network/subgraphs/name/dasconnor/pangolindex'
 const query_block = gql`query getUser($userId: String!) {
@@ -33,71 +31,41 @@ const query_block = gql`query getUser($userId: String!) {
     } 
 }`;
 
-const userLiquidity = async (account, symbol0, symbol1, avaxprice) => {
-    return request(endpoint, query_block, { userId: account.toLowerCase() }).then(response => {        
-        if ( !response.user ) { return 0 }
-        let lp = response.user.liquidityPositions.filter(lp => {
-            return [symbol0, symbol1].includes(lp.pair.token0.symbol) && [symbol0, symbol1].includes(lp.pair.token1.symbol)
-        })[0] 
-        let mv = lp.liquidityTokenBalance / lp.pair.totalSupply * lp.pair.reserveUSD
-        console.log('userLiquidity:', mv)
-        return mv * avaxprice
-    });
-}
-
-let web3 = new Web3('wss://api.avax.network/ext/bc/C/ws');
-var s3d = new web3.eth.Contract(abi, '0xdE1A11C331a0E45B9BA8FeE04D4B51A745f1e4A4');
-
 (async () => {
+
+    /*
+    let next_version_location = `${increment_type}/${increment_symbol}/${nv}.json`
+    let tvl_location = `snob/tvl`
+
+    console.log('new version:', nv, 'new version location:', next_version_location)
+
+    await s3.upload(Object.assign({}, s3object, {  
+        Bucket: 'beta.scewpt.com',      
+        Key: tvl_location,
+        Body: new_tvl.locked.toFixed(2),
+        ContentType: 'text/plain',
+        ACL: 'public-read',
+    })).promise();
+
+    await s3.upload(Object.assign({}, s3object, {        
+        Body: increment_out,
+        ContentType: 'application/json',
+        WebsiteRedirectLocation: '/' + next_version_location,
+        ACL: 'public-read',
+    })).promise();    
+
+    await s3.upload(Object.assign({}, s3object, {
+        Key: next_version_location,
+        Body: increment_out,
+        ContentType: 'application/json',
+        ACL: 'public-read',
+    })).promise();
+    */
 
     dexes.snob.tvl.pairs(pair => {
         let wtf = pair.accounts.map(a => { return { account_name: Object.keys(s)[0] }});
         console.log(wtf);
     })
-
-    //await Promise.all([].map(d => { return } {
-        
-
-            //console.log('need:', ta.map(t => t.symbol))
-            //await Promise.all(.map( async (account_type) => {
-            //    let at = Object.keys(account_type)[0]
-            //    let an = account_type[at]
-            //    console.log('account:', an.toLowerCase())
-            //    let av = await userLiquidity(an, pair.token0.symbol, pair.token1.symbol, ap)
-            //    console.log('value:', av)
-            //    account_type.locked = av;
-            //    return av;
-            //}))            
-    //    return Promise.resolve()
-    //}));
-
-
-
-    //let tvl_sum = await Promise.all(new_tvl.pairs.filter(p => p.locked === undefined).map( async (pair) => {
-    //    let pair_sum = .then(inner_resolve => {
-    //        return inner_resolve.reduce((a, b) => a + b, 0)
-    //    })
-    //    pair.locked = pair_sum;
-    //    return pair_sum;
-    //})).then(resolve => {
-    //    return resolve.reduce((a, b) => a + b, 0)            
-    //})    
-        /*                
-
-        })
-
-        if ( Array.isArray(dex_obj.dex.tvl) ) {
-            
-                
-                await Promise.all(ta.map(async (token) => {
-                    let current = await getcurrent(`dex/${dex_obj.dex_name}/price/${token.symbol.toLowerCase()}.json`)
-                    
-                }));                
-            }))
-        } else {
-            return Promise.resolve()
-        } 
-        */       
 
 })();
 
@@ -218,33 +186,7 @@ let load = [
         console.log('zero file?')
         nv = 0
     }
-     
-    let next_version_location = `${increment_type}/${increment_symbol}/${nv}.json`
-    let tvl_location = `snob/tvl`
 
-    console.log('new version:', nv, 'new version location:', next_version_location)
-
-    await s3.upload(Object.assign({}, s3object, {  
-        Bucket: 'beta.scewpt.com',      
-        Key: tvl_location,
-        Body: new_tvl.locked.toFixed(2),
-        ContentType: 'text/plain',
-        ACL: 'public-read',
-    })).promise();
-
-    await s3.upload(Object.assign({}, s3object, {        
-        Body: increment_out,
-        ContentType: 'application/json',
-        WebsiteRedirectLocation: '/' + next_version_location,
-        ACL: 'public-read',
-    })).promise();    
-
-    await s3.upload(Object.assign({}, s3object, {
-        Key: next_version_location,
-        Body: increment_out,
-        ContentType: 'application/json',
-        ACL: 'public-read',
-    })).promise();
     
     //exit()
     

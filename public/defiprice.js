@@ -7,10 +7,14 @@ defiprice.innerHTML = `
                 <span class="ox" onClick="clippy(this)"></span>
             </td>
             <td>
-                <ul>
-                    <li class="name">
-                    <li class="symbol">
-                </ul>
+                <dl>
+                    <dt class="name">
+                    <dd>dd1
+                    <dd>
+                    <dd>dd3
+                    <dt class="symbol">
+                    <dd>dd1
+                </dl>            
             </td>            
         </tr>
         <tr class="pricing">
@@ -76,7 +80,11 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
                 logo.src = `/assets/avalanche-tokens/${newvalue.toLowerCase()}/logo.png`;                
                 break;
             default:
-                this.querySelector('.' + name).innerHTML = newvalue
+                if ( newvalue ) {
+                    this.querySelector('.' + name).innerHTML = newvalue
+                } else {
+                    console.log('ignore:', name)
+                }                
                 break;                
         }
     }
@@ -109,24 +117,35 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
         this.setAttribute('id', id);
     }
 
+    get name() {
+        return this.getAttribute('name');
+    }
+
+    set name(name) {
+        this.setAttribute('name', name);
+    }
+
+
     connectedCallback() {
         this.appendChild(defiprice.content.cloneNode(true));        
         document.addEventListener(this.listento(), (e) => {
             this.setAttribute('price', e.detail.price)
+            this.setAttribute('name', e.detail.name)
+            this.setAttribute('symbol', e.detail.symbol)
         })
         if ( !this.getAttribute('price') ) {
             let location = `/dex/${this.dex.toLowerCase()}/price/${this.symbol.toLowerCase()}.json`;
 
             fetch(location).then((res) => {
-                let redirect = res.headers.get('x-amz-website-redirect-location')
-                if ( redirect == null ) {
-                    redirect = override_location
-                }
-                this.previous = redirect;            
+                //let redirect = res.headers.get('x-amz-website-redirect-location')
+                //if ( redirect == null ) {
+                //    redirect = override_location
+                //}
+                //this.previous = redirect;            
                 return res.json()          
             }).then((now) => {            
                 if ( !document.querySelector('#' + now.id.substring(1)) ) {
-                    this.id = now.id
+                    this.id = now.id                    
                 }            
                 this.symbol = now.symbol
                 document.dispatchEvent(new CustomEvent(this.listento(), {

@@ -1,25 +1,42 @@
-import { dexes, tokens } from './statemachine.js';
-import { getversion, getcurrent } from './versioning.js';
+import { dexes } from './statemachine.js';
+import { getversion, getcurrent, versioning } from './versioning.js';
+import { exit } from 'process';
 
-Promise.all(dexes.snob.strategies.map(async strategy => {
+let strategies = dexes.snob.tvl.pairs.filter(p => { return p.strategy !== undefined})
+
+let all_strategies = [...strategies,...dexes.snob.legacy]
+
+Promise.all(all_strategies.map(async pair => {
+    console.log('pair:', pair.id)
     let harvests = []
-    let now = await getcurrent(`dex/snob/harvest/${strategy.id.toLowerCase()}.json`)
-    harvests.push(now.json)
-    let previous = now.version - 1;
-    while (previous > 0) {
-        let p = await getversion(`dex/snob/harvest/${strategy.id.toLowerCase()}.json`, previous)
-        harvests.push(p)
-        previous -= 1;        
+    let now = await getcurrent(`dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/${pair.strategy.toLowerCase()}.json`)
+    if ( now.json !== undefined ) {
+        harvests.push(now.json)
+        let previous = now.version - 1;
+        while (previous > 0) {
+            console.log('previous')
+            let p = await getversion(`dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/${pair.strategy.toLowerCase()}.json`, previous)
+            harvests.push(p)
+            previous -= 1;        
+        }    
     }
     let total = 0;
     harvests.forEach(h => {
         total += h.claim.amountUSD
     })
-    if ( strategy.single ) {
+    if ( pair.single ) {
         total = total * 2
     }    
-    console.log(strategy.nickname, 'total:', total)
-    return total
+    return { strategy: pair.strategy.toLowerCase(), total: total }
 })).then(res => {
-    console.log('total:', res.reduce((a, b) => a + b, 0))
+    console.log('harvests:', res.length)
+    let harvests = { total: 0.0 }
+    res.forEach(r => {
+        harvests[r.strategy] = r.total
+        harvests.total += r.total
+    })
+    versioning(harvests, `dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/total.json`)    
+    setTimeout( () => {
+        exit()
+    },1000)
 })

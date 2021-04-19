@@ -2,22 +2,22 @@
 <html>
 <head>
     <title>Harvest by Snowball Network</title>
+
     <link rel="preconnect" href="https://fonts.gstatic.com">
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
-    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
-    
-    <script type="module" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"></script>
+    <link href="assets/site.css" rel="stylesheet">
 
     <script type="text/javascript" src="common.js"></script>
-
+    
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>    
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"></script>
+    
     <script type="module" src="defiheader.js"></script>
     <script type="module" src="defifooter.js"></script>
-    <script type="module" src="defiprice.js"></script>
+    <script type="module" src="defiharvest.js"></script>
     
-    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>    
-
 </head>
 
 <style>
@@ -59,8 +59,7 @@
     #chart > * {
         width: 100%
     }
-</style>
-    
+</style>    
 
 <script>
     const other = (harvest) => {
@@ -137,12 +136,9 @@
     })
 </script>
 
-<body style="margin-left: 100px; margin-right: 100px; display:flex;align-items:center">
+<body class="mdc-typography">
     <defi-header></defi-header>
     <main>
-        <div>
-            <button onClick="localStorage.clear()">Clear</button>
-        </div>    
         <div id="chart" style="flex:3"></div>
         <div>
     
@@ -151,7 +147,8 @@
             <defi-harvest dex="snob" strategy="0x74db28797957a52a28963f424daf2b10226ba04c"></defi-harvest>
             <defi-harvest dex="snob" strategy="0x953853590b805a0e885a75a3c786d2affceea3cf"></defi-harvest>
             <defi-harvest dex="snob" strategy="0xa362a10ba6b59ee113faa00e41e01c0087dd9ba1"></defi-harvest>
-    
+            <defi-harvest dex="snob" strategy="0xde3bE8a846e4311447462482E91e4b97115222e6"></defi-harvest>
+                
         </div>
     </main>
     <defi-footer></defi-footer>

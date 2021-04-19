@@ -1,4 +1,7 @@
 import './defipref.js'
+import './defimode.js'
+import './defiweb3.js'
+import './defiwallet.js'
 
 const defiheader = document.createElement('template');
 defiheader.innerHTML = `
@@ -29,20 +32,32 @@ defiheader.innerHTML = `
 
             </nav>            
 
-            <img src="assets/images/avalanche.png" width="140" hspace="5"/>
+            <img id="avalabs" src="assets/images/avalanche.png" width="140" hspace="5"/>
 
-            <button class="mdc-button--outlined" id="theme">
-                <div class="mdc-button__ripple"></div>
-                <span class="mdc-button__label">
-                    <ion-icon class="moon" name="moon-outline" role="img" class="md hydrated"></ion-icon>
-                </span>
-            </button>
+            <menu>
+                <defi-pref></defi-pref>
 
-            <defi-pref></defi-pref>
+                <defi-mode></defi-mode>
+
+                <defi-web3></defi-web3>
+
+                <defi-wallet></defi-wallet>
+            </menu>
 
         </section>
     </div>
 </header>
+`
+
+const deficonsent = document.createElement('template');
+deficonsent.innerHTML = `
+<div class="consent">
+    Consent
+</div>
+`
+const deficanvans = document.createElement('template');
+deficanvans.innerHTML = `
+<canvas id="edge"></canvas>
 `
 
 window.customElements.define('defi-header', class DefiHeader extends HTMLElement {
@@ -51,29 +66,36 @@ window.customElements.define('defi-header', class DefiHeader extends HTMLElement
         super();              
     }
 
-    toggleMode(e) {
-        if ( e ) {
-            if ( localStorage.theme ) {
-                delete localStorage.theme
-            } else {                
-                localStorage.theme = 'light';
-            }
-        }
-        if ( localStorage.theme ) {
-            document.documentElement.setAttribute('data-theme', 'light')                        
-            this.querySelector('ion-icon').setAttribute('name', 'moon-outline')            
-        } else {
-            document.documentElement.removeAttribute('data-theme')
-            this.querySelector('ion-icon').setAttribute('name', 'sunny')            
-        }        
-    }
-
     connectedCallback() {       
-        this.appendChild(defiheader.content.cloneNode(true), document.body.firstChild);
-        document.querySelector('#theme').addEventListener('click', this.toggleMode);     
+        this.appendChild(defiheader.content.cloneNode(true));
         this.firstElementChild.querySelector('.siteicon').addEventListener('click', (e) => {
             document.location.href = 'https://snowball.network';
-        });     
-        this.toggleMode()
+        });
+        let ct = deficanvans.content.cloneNode(true);
+        ct.firstElementChild.setAttribute('width', window.innerWidth + 'px');
+        ct.firstElementChild.setAttribute('height', '4px');        
+        this.appendChild(ct);
+
+        let draw = () => {
+            let edge = this.querySelector('canvas#edge');
+            let ctx = edge.getContext('2d');
+            let color = getComputedStyle(document.documentElement).getPropertyValue('--mdc-theme-primary'); 
+            console.log('ctx:', ctx, 'color:', color)
+            ctx.fillStyle = color;
+            ctx.fillRect(0, 0, edge.width, edge.height);    
+            return this.querySelector('canvas#edge').toDataURL();
+        }
+
+        let resize = () => {
+            let resize = this.querySelector('canvas#edge');
+            resize.setAttribute('width', window.innerWidth + 'px')
+            resize.setAttribute('height', '4px')    
+            let url = 'url(' + draw() + ')'
+            document.documentElement.style.setProperty('--edge-data-image', url);
+        }
+        document.querySelector('#theme').addEventListener('click', resize);
+        window.addEventListener('resize', resize , false);
+        resize()
     }
+
 });

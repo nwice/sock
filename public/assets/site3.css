@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Encode+Sans&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons&display=swap');
 
 :root {
     --mdc-typography-font-family: "Encode Sans", sans-serif, monospace;
@@ -37,38 +36,23 @@ html[data-theme='light'] {
 }
 
 @media screen and (min-width: 450px) {
-    html { --header-fontsize: 20px; --header-padding: 15px; }
-    #avalabs {
-        width: 50px;
-    }
+    html { --header-fontsize: 20px; --header-padding: 50px; }
 }
 
 @media screen and (min-width: 750px) {
-    html { --header-fontsize: 20px; --header-padding: 40px; }
-    #avalabs {
-        width: 75px;
-    }
+    html { --header-fontsize: 20px; --header-padding: 100px; }
 }
 
 @media screen and (min-width: 1050px) {
-    html { --header-fontsize: 20px; --header-padding: 75px;}
-    #avalabs {
-        width: 100px;
-    }
+    html { --header-fontsize: 20px; --header-padding: 125px;}
 }
 
 @media screen and (min-width: 1350px) {
-    html { --header-fontsize: 20px; --header-padding: 125px; }
-    #avalabs {
-        width: 120px;
-    }
+    html { --header-fontsize: 20px; --header-padding: 150px; }
 }
 
 @media screen and (min-width: 1650px) {
     html { --header-fontsize: 20px; --header-padding: 175px; }
-    #avalabs {
-        width: 140px;
-    }
 }
 
 .mdc-dialog {
@@ -116,6 +100,44 @@ body {
     color: var(--mdc-theme-primary);
 }
 
+main {
+    padding-top: 95px;
+}
+
+defi-tvl defi-price {
+    display: inline-block;
+}
+
+defi-tvl > table, defi-supply > table {
+    margin-left:auto; 
+    margin-right:auto;    
+}
+
+main > section.pricing {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: var(--header-padding);
+}
+
+defi-price > table {
+    width: 200px;
+    margin: 10px 0;
+}
+
+defi-tvl defi-price > table {
+    width: 150px;
+    margin: 0;
+}
+
+nav {
+    flex-grow: 2;    
+}
+
+nav a {
+    display: inline-block;
+    margin-left: 40px;
+}
+
 .mdc-top-app-bar {
     padding-left: var(--header-padding);
     padding-right: var(--header-padding);
@@ -138,67 +160,36 @@ body {
     height: 91px;
 }
 
-defi-header::after {
-    position: absolute;
-    height: 4px;
-    content: "";
-    width: var(--computed-width);
-    margin-top: 91px;
-    left: 0;
-    right: 0;
-    background-image: var(--edge-data-image)
+.pricetd {
+    width: 100%;
+    padding-left: 8px;
 }
 
-#edge {
-    position: absolute;
-}
-
-main {
-    padding-top: 95px;
-}
-
-nav {
-    flex-grow: 2;    
-}
-
-nav a {
-    display: inline-block;
-    margin-left: 40px;
-}
-
-menu {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-menu > * {
-    margin: 1px;
-}
-
-.logowrap {
-    position: relative;
-}
-.logowrap > span.ox {
-    font-size: 11px;
-    white-space: nowrap;
-    overflow: hidden;    
-    text-overflow: ellipsis;
-    display: inline-block;    
-    cursor: pointer;   
-    position: absolute;    
-    display: none;
-}
-.logowrap > span.ox.open {
-    display: block;
-}
-.logowrap > img {
-    width: 64px;
-    height: 64px;
+.logowrap > img {    
     border-radius: 50%;
+    width: 48px;
+    height: 48px;
 }
 
-.relative {
-    position: relative;        
+defi-tvl defi-price .logowrap > img {
+    width: 36px;
+    height: 36px;
+}
+
+.logowrap > span {
+    font-weight: 200;
+
+    
+}
+
+defi-tvl defi-price .logowrap > span {
+    top: 36px;
+}
+
+thead {
+    margin: 5px 15px 10px 15px;
+    font-size: x-large;
+    font-weight: bolder;
 }
 
 .center { text-align: center; }

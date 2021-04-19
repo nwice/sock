@@ -147,7 +147,7 @@ window.customElements.define('defi-tvl', class DefiTvl extends HTMLElement {
                     let tr = defitvl_tr.content.cloneNode(true)    
                     tr.firstElementChild.setAttribute('id', qs);
                     tk.forEach(k => {
-                        tr.firstElementChild.querySelector('.pairtokens').innerHTML += `<defi-price class="tokenlink" symbol="${p[k].symbol}"></defi-price>`
+                        tr.firstElementChild.querySelector('.pairtokens').innerHTML += `<defi-price symbol="${p[k].symbol}"></defi-price>`
                     })
                     table.querySelector('tbody').appendChild(tr);
                     row = table.querySelector('#' + qs);

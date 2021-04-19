@@ -1,121 +1,165 @@
-import fs from 'fs';
-import Web3 from 'web3';
-import { dexes, tokens } from './statemachine.js';
+import { dex_avaxprice, pair_contains, get_token, get_token_by_symbol, get_price, refuse, pairnick } from './util.js';
+import { tokens } from './statemachine.js';
 import { exit } from 'process';
-import { versioning } from './versioning.js';
-import { dexpairs } from './graph.js';
 
-const abi = JSON.parse(fs.readFileSync('public/abi.json'));
-
-const web3 = new Web3('wss://api.avax.network/ext/bc/C/ws');
 const nowish = new Date().getTime();
 
-const get_price = (pair, find) => {
-  return parseFloat(pair.token0.id.toLowerCase() === find.id.toLowerCase() ? pair.token0Price : pair.token1Price)
-}
-
-const get_token = (pair, find, inverse) => {
-  if (inverse) {
-    return pair.token0.id.toLowerCase() === find.id.toLowerCase() ? pair.token1 : pair.token0
-  } else {
-    return pair.token0.id.toLowerCase() === find.id.toLowerCase() ? pair.token0 : pair.token1
+const pairscore = (pair, base, dex_name) => {
+  let stabletoken = get_token(base, tokens.wavax, true)  
+  let dextoken = tokens[dex_name ? dex_name: 'png']
+  if ( !dextoken ) {
+    console.log('dex name:', dex_name, pair)
+    exit()
   }
-}
-
-const pair_contains = (pair, find) => {
-  return pair.token0.id.toLowerCase() === find.id.toLowerCase() || pair.token1.id.toLowerCase() === find.id.toLowerCase()
-}
-
-const prices = [];
-
-await Promise.all(Object.keys(dexes).map(k => { 
-    return { dex: dexes[k], dex_name: k } 
-  }).filter(d => { return d.dex?.amm === undefined || d.dex.amm === true }).map(async (dex_obj) => {
-  if ( dex_obj.dex.graphql ) {
-    let base = { timestamp: nowish };    
-    console.log('dex pairs length:', dex_obj.dex.pairs.length)
-    dex_obj.dex.pairs.forEach(p => {
-      p.token0.tradeVolume = parseFloat(p.token0.tradeVolume)
-      p.token1.tradeVolume = parseFloat(p.token1.tradeVolume)
-    });
-    let basepair = dex_obj.dex.pairs.filter(p => { 
-      return pair_contains(p, tokens.wavax) && pair_contains(p, dex_obj.dex.stable ? dex_obj.dex.stable : tokens.usdt) 
-    })[0];
-    let avaxprice = get_price(
-      basepair,
-      dex_obj.dex.stable ? dex_obj.dex.stable : tokens.usdt
-    )
-    console.log(dex_obj.dex_name, 'avaxprice:', avaxprice)
-
-    prices.push(
-      Object.assign({}, base, get_token(basepair, tokens.wavax), { price: avaxprice }, { dex: dex_obj.dex_name })
-    )
-    prices.push(
-      Object.assign({}, base, get_token(basepair, dex_obj.dex.stable ? dex_obj.dex.stable : tokens.usdt), { price: get_price(basepair, tokens.wavax) * avaxprice }, { dex: dex_obj.dex_name })
-    )
-    dex_obj.dex.pairs.filter(p => { return p != basepair && pair_contains(p, tokens.wavax) }).forEach(p => {
-      let notavax = get_token(p, tokens.wavax, true)
-      let price = Object.assign({}, base, notavax, { price: get_price(p, tokens.wavax) * avaxprice }, { dex: dex_obj.dex_name })
-      prices.push(
-        price
-      )
-    })      
+  if ( pair_contains(pair, tokens.wavax) && pair_contains(pair, stabletoken) ) {
+    return 9
+  } else if ( pair_contains(pair, tokens.wavax) && pair_contains(pair, dextoken) ) {    
+    return 8
+  } else if ( pair_contains(pair, tokens.wavax) ) {
+    return 7
+  } else if ( pair_contains(pair, stabletoken) ) {
+    return 6
+  } else if ( pair_contains(pair, dextoken) ) {
+    return 5
+  } else if ( pair_contains(pair, tokens.eth) || pair_contains(pair, tokens.wbtc) ) {
+    return 4
   } else {
-    for (var y = 0; y < dex_obj.dex.tokens.length; y++) {
-      let t0 = new web3.eth.Contract(abi, tokens.usdt.id);
-      let t1 = new web3.eth.Contract(abi, dex_obj.dex.tokens[y].token.id);
-      let t1supply = await t1.methods.balanceOf(dex_obj.dex.tokens[y].pair.id).call()        
-      let t0supply = await t0.methods.balanceOf(dex_obj.dex.tokens[y].pair.id).call()        
-      let dex_specific = Object.assign({}, dex_obj.dex.tokens[y].token, { price: t0supply / t1supply * 1e12 }, { dex: dex_obj.dex_name })
-      prices.push(dex_specific);
+    let t0 = pair.token0.symbol.toLowerCase();
+    let t1 = pair.token0.symbol.toLowerCase();
+    if ( tokens[t0] && tokens[t1] ) {
+      return 3
+    } else if ( tokens[t0] || tokens[t1] ) {
+      return 2
     }
   }
-}));
+  return 1
+};
 
-const master_skip = ['0xc5b25a5bed03bb7c9030dfe5be56f21f5c3fcb1b', '0x67e1e9195e3e3eebc862b83af9abe1fa24d108f5', '0xa40903b205881e4a4da16121e2625d3997c4322d', '0x0362d330f94fae853d5c462e57357f7ef7c2ea1d', '0x212ae83a676d3cc71ee111fdaa7aa0b0cd63001c', '0x64ea9156199161b0c54825c2f117cd71dbde859c'];
-
-const price_different = (p, previous) => {
-  if ( p.price === previous.price ) {
-    return false
-  }
-  return true
+const getpriced = (prices, token) => {
+  let pt;
+  prices.forEach(price => {
+    if ( token.id.toLowerCase() === price.id.toLowerCase() && pt === undefined) {
+      pt = price
+    }    
+  })
+  return pt
 }
 
-const any_price_different = (all, all_previous) => {
-  if ( all.length === all_previous.length ) {
-    return all.map(p => {
-      let changed = false;
-      let compare_to = all_previous.filter(previous => { return previous.id === p.id && previous.dex === p.dex })[0]
-      if ( compare_to === undefined ) {
-        console.log('missing:', p.symbol, 'to:', p.price)        
-        changed = true;
-      } else if ( compare_to.price !== p.price ) {
-        console.log('change:', p.symbol, 'to:', p.price, 'from:', compare_to?.price)
-        changed = true;
+const accept = (pair) => {
+  return !refuse.includes(pair.token0.id.toLowerCase()) && !refuse.includes(pair.token1.id.toLowerCase())
+}
+
+const notpriced = (pair) => {
+  return pair.token0.price === undefined || pair.token1.price === undefined
+}
+
+const func = (prices, token) => {
+  if ( prices.filter(p => { return p.id.toLowerCase() === token.id.toLowerCase() && p.dex === token.dex}).length > 0 ) {
+    return;
+  }
+  prices.push(token)
+  let ft = tokens[token.symbol.toLowerCase()]
+  if ( ft ) {
+    if ( !ft.prices ) {
+      ft.prices = [];
+      ft.prices.push(token)
+    } else {
+      let op = ft.prices.filter(p => { return p.id.toLowerCase() === token.id.toLowerCase() && p.dex === token.dex })
+      if ( op.length > 0 ) {
+        op.forEach(o => {
+          Object.assign(o, token)
+        })
+      } else {
+        ft.prices.push(token)
       }
-      return { changed, p, compare_to}
-    }).filter(b => b.changed).length === 0 ? false : true;    
+    }    
   }
-  return true
 }
 
-const publishable = prices.filter(p => !master_skip.map(msi => msi.toLowerCase()).includes(p.id.toLowerCase()));
+const dexprices = (dex_list) => {
+  return Promise.all(Object.keys(dex_list).map(k => {
+    return { dex: dex_list[k], dex_name: k }
+  }).filter(d => { return d.dex?.amm === undefined || d.dex.amm === true }).map(async (dex_obj) => {
+    let prices = [];
+    if (dex_obj.dex.graphql) {
+      let base = { timestamp: nowish };
+      console.log('dex pairs length:', dex_obj.dex.pairs.length)
+      dex_obj.dex.pairs.forEach(p => {
+        p.token0.tradeVolume = parseFloat(p.token0.tradeVolume)
+        p.token1.tradeVolume = parseFloat(p.token1.tradeVolume)
+      });
 
-versioning(publishable, `dex/prices.json`, any_price_different)
+      let basepricearray = dex_avaxprice(dex_obj)
+      
+      let basepair = basepricearray[0];
+      let avaxprice = basepricearray[2];
 
+      let avaxtoken = get_token(basepair, tokens.wavax)
+      let stabletoken = get_token(basepair, tokens.wavax, true)
 
-const clean_symbol = (s) => {
-  if ( s.length == 2) {
-    return s.codePointAt(0).toString(16)
-  }
-  return s
+      Object.assign(avaxtoken, base, { price: avaxprice }, { dex: dex_obj.dex_name })
+      func(prices, avaxtoken)
+      Object.assign(stabletoken, base, { price: get_price(basepair, tokens.wavax) * avaxprice }, { dex: dex_obj.dex_name })
+      func(prices, stabletoken)
+
+      let dexpair = basepricearray[1];
+      Object.assign(get_token(dexpair, tokens.wavax), avaxtoken)
+      let dextoken = get_token(dexpair, tokens.wavax, true)
+      let dexprice = get_price(dexpair, tokens.wavax) * avaxprice
+      Object.assign(dextoken, base, { price: dexprice }, { dex: dex_obj.dex_name })
+      func(prices, dextoken);
+
+      dex_obj.dex.pairs.sort((a, b) => {        
+        return pairscore(b, basepair, dex_obj.dex_name) - pairscore(a, basepair, dex_obj.dex_name);
+      })
+      dex_obj.dex.pairs.filter( p => { 
+        return ![basepair, dexpair].includes(p) && accept(p)
+      }).forEach( pair => {
+        if ( pair_contains(pair, tokens.wavax) ) {
+          let notavax = get_token(pair, tokens.wavax, true);
+          Object.assign(notavax, base, { price: get_price(pair, tokens.wavax) * avaxprice }, { dex: dex_obj.dex_name })
+          func(prices, notavax)
+          Object.assign(get_token(pair, tokens.wavax), avaxtoken)
+        } else if (pair_contains(pair, stabletoken) ) {
+          let op = pair.token0.symbol.toLowerCase() === stabletoken.symbol.toLowerCase() ? parseFloat(pair.token0Price) : parseFloat(pair.token1Price)
+          let notstable = get_token(pair, stabletoken, true)
+          Object.assign(notstable, base, { price: op / avaxprice }, { dex: dex_obj.dex_name })
+          func(prices, notstable)
+          Object.assign(get_token(pair, stabletoken), stabletoken)
+        } else if (pair_contains(pair, tokens[dex_obj.dex_name]) ) {
+          let ot = get_token(pair, tokens[dex_obj.dex_name], true)
+          let otp = get_price(pair, tokens[dex_obj.dex_name]) * dexprice
+          //let otp2 = get_price(pair, tokens[dex_obj.dex_name], true) * dexprice
+          //console.log(pairnick(pair), otp, otp2)          
+          Object.assign(ot, base, { price: otp}, { dex: dex_obj.dex_name })
+          func(prices, ot)
+          Object.assign(get_token(pair, tokens[dex_obj.dex_name]), base, dextoken, { dex: dex_obj.dex_name })
+        }
+      })
+      dex_obj.dex.pairs.filter( p => { 
+        return accept(p) && notpriced(p)
+      }).forEach(p => {      
+        if ( p.token0.price === undefined ) {
+          let t0 = getpriced(prices, p.token0)  
+          if ( t0 ) {
+            Object.assign(p.token0, t0)
+          }            
+        }
+        if ( p.token1.price === undefined ) {
+          let t1 = getpriced(prices, p.token1)  
+          if ( t1 ) {
+            Object.assign(p.token1, t1)
+          }
+        }        
+      });
+      console.log('missing:', dex_obj.dex.pairs.filter( p => { 
+        return accept(p) && notpriced(p)
+      }).length)
+    }
+    return prices.filter(p => { return p.price })
+  })).then(results => {
+    return results.flat()
+  });
 }
 
-publishable.forEach(async (p) => {  
-  versioning(p, `dex/${p.dex}/price/${clean_symbol(p.symbol)}.json`.toLowerCase(), price_different)
-})
-
-setTimeout( () => {
-  console.log('prices length:', prices.length)
-  exit(0) 
-}, 1000)
+export { dexprices }
