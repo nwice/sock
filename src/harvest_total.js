@@ -35,7 +35,8 @@ Promise.all(all_strategies.map(async pair => {
         harvests[r.strategy] = r.total
         harvests.total += r.total
     })
-    //versioning(harvests, `dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/total.json`)    
+    console.log('harvests total:', harvests.total)
+    versioning(harvests, `dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/total.json`)    
     setTimeout( () => {
         exit()
     },1000)
