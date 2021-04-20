@@ -139,13 +139,14 @@ body {
 }
 
 defi-header::after {
-    position: absolute;
+    position: fixed;
     height: 4px;
     content: "";
     width: var(--computed-width);
     margin-top: 91px;
     left: 0;
     right: 0;
+    z-index: 1;
     background-image: var(--edge-data-image)
 }
 
@@ -153,8 +154,15 @@ defi-header::after {
     position: absolute;
 }
 
+dt, dd{
+    margin-block-start: 0px;
+    margin-block-end: 0em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
+
 main {
-    padding-top: 95px;
+    padding-top: 98px;
 }
 
 nav {

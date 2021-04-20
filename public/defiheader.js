@@ -80,7 +80,6 @@ window.customElements.define('defi-header', class DefiHeader extends HTMLElement
             let edge = this.querySelector('canvas#edge');
             let ctx = edge.getContext('2d');
             let color = getComputedStyle(document.documentElement).getPropertyValue('--mdc-theme-primary'); 
-            console.log('ctx:', ctx, 'color:', color)
             ctx.fillStyle = color;
             ctx.fillRect(0, 0, edge.width, edge.height);    
             return this.querySelector('canvas#edge').toDataURL();

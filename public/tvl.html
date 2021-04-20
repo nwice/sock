@@ -26,19 +26,32 @@
         flex-direction: column;
         align-items: stretch;
     }
-    defi-tvl .pairtokens {
-        display: flex;
-        align-items: center;
+    .pairtokens {
+        text-align: center;
+    }
+    .pairtokens > defi-price {
+        display: inline-block;
+        width:175px;
+        text-align: left;
+    }
+    .pairtokens .logowrap > img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
     }
     defi-tvl > table {
         margin: auto;
+    }
+    .tvlhead {
+        font-weight: 700;
+        font-size: larger;
     }
 </style>
 
 <body class="mdc-typography">
     <defi-header></defi-header>
     <main>
-        <defi-tvl symbol="snob"></defi-tvl>        
+        <defi-tvl hash="0xC38f41A296A4493Ff429F1238e030924A1542e50"></defi-tvl>        
     </main>    
     <defi-footer></defi-footer>
 </body>

@@ -9,11 +9,7 @@ defiprice.innerHTML = `
             <td>
                 <dl>
                     <dt class="name">
-                    <dd>dd1
-                    <dd>
-                    <dd>dd3
-                    <dt class="symbol">
-                    <dd>dd1
+                    <dd class="symbol">
                 </dl>            
             </td>            
         </tr>
@@ -42,7 +38,7 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['id', 'price', 'name'];
+        return ['hash', 'price', 'name'];
     }
 
     attributeChangedCallback(name, oldvalue, newvalue) {
@@ -67,7 +63,7 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
                     }                    
                 }
                 break;            
-            case 'id':
+            case 'hash':
                 if ( this.querySelector('.logowrap img') ) return;                
                 let logo = new Image()                
                 logo.onload = () => {
@@ -90,7 +86,7 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
     }
 
     listento() {
-        return `price-${this.symbol.toLowerCase()}-${this.dex.toLowerCase()}`;
+        return `price-${this.hash.toLowerCase()}-${this.dex.toLowerCase()}`;
     }
 
     get symbol() {
@@ -102,19 +98,19 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
     }
 
     get dex() {
-        return this.getAttribute('dex') ? this.getAttribute('dex') : 'png';
+        return this.getAttribute('dex') ? this.getAttribute('dex') : '0x60781C2586D68229fde47564546784ab3fACA982';
     }
 
-    set dex(nd) {
-        this.setAttribute('dex', nd);
+    set dex(dex) {
+        this.setAttribute('dex', dex);
     }
 
-    get id() {
-        return this.getAttribute('id');
+    get hash() {
+        return this.getAttribute('hash');
     }
 
-    set id(id) {
-        this.setAttribute('id', id);
+    set hash(hash) {
+        this.setAttribute('hash', hash);
     }
 
     get name() {
@@ -134,7 +130,7 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
             this.setAttribute('symbol', e.detail.symbol)
         })
         if ( !this.getAttribute('price') ) {
-            let location = `/dex/${this.dex.toLowerCase()}/price/${this.symbol.toLowerCase()}.json`;
+            let location = `/dex/${this.dex.toLowerCase()}/price/${this.hash.toLowerCase()}.json`;
 
             fetch(location).then((res) => {
                 //let redirect = res.headers.get('x-amz-website-redirect-location')

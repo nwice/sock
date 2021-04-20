@@ -7,9 +7,11 @@ defitvl.innerHTML = `
                 <div class="center tvlhead">Total Value Locked</div>
             </td>
             <td class="total right pretty"></td>
+            <!---
             <td class="1hour"></td>
             <td class="1day"></td>
             <td class="1week"></td>
+            --->
         </tr>
     </thead>
     <tbody></tbody>
@@ -22,9 +24,11 @@ defitvl.innerHTML = `
                 </div>
                 <span class="timestamp"></span>
             </td>
-            <td class="1hour">1 Hour</td>
-            <td class="1day">1 Day</td>
-            <td class="1day">1 Week</td>
+            <!---
+            <td class="1hour"></td>
+            <td class="1day"></td>
+            <td class="1week"></td>
+            --->
         </tr>            
     </tfoot>
 </table>
@@ -32,7 +36,7 @@ defitvl.innerHTML = `
 const defitvl_tr = document.createElement('template');
 defitvl_tr.innerHTML = `
 <tr>
-    <td class="center pairtokens"></td>
+    <td class="pairtokens"></td>
     <td class="right pretty"></td>
 </tr>
 `
@@ -65,12 +69,12 @@ window.customElements.define('defi-tvl', class DefiTvl extends HTMLElement {
     }
 
     loadtvl() {
-        fetch(`/tvl/${this.symbol.toLowerCase()}.json`).then( (res) => { 
+        fetch(`/dex/${this.hash.toLowerCase()}/tvl.json`).then( (res) => { 
             let redirect = res.headers.get('x-amz-website-redirect-location')
             if ( redirect && getParameterByName('noticks') == null ) {
                 let rn = redirect.split('/').pop()
                 rn = parseInt(rn.substring(0, rn.length - 5)) - 6
-                let previous_url = `/tvl/${this.symbol.toLowerCase()}/${rn}.json`;
+                let previous_url = `/tvl/${this.hash.toLowerCase()}/${rn}.json`;
                 return fetch(previous_url).then( (res2) => { 
                     return res2.json()
                 }).then( (previous) => {
@@ -114,22 +118,22 @@ window.customElements.define('defi-tvl', class DefiTvl extends HTMLElement {
         }).catch( (err) => {
             console.log('tvl error:', err)
             document.dispatchEvent(new CustomEvent('tvl', {
-                detail: { circulating: "⛷️", symbol: getParameterByName('symbol') || 'SNOB', total: 18000000 }
+                detail: { somethin: "⛷️", hash: getParameterByName('hash') || '0xC38f41A296A4493Ff429F1238e030924A1542e50' }
             }))
         });
     } 
 
     listento() {
-        return `tvl-${this.symbol.toLowerCase()}`;
+        return `tvl-${this.hash.toLowerCase()}`;
     }
     
-    get symbol() {
-        return this.getAttribute('symbol');
+    get hash() {
+        return this.getAttribute('hash');
     }
       
-    set symbol(ns) {
-        this.setAttribute('symbol', ns);
-    }
+    set hash(hash) {
+        this.setAttribute('hash', hash);
+    }    
 
     connectedCallback() {       
         this.appendChild(defitvl.content.cloneNode(true));
@@ -140,14 +144,16 @@ window.customElements.define('defi-tvl', class DefiTvl extends HTMLElement {
             tick(table.querySelector('.total'), e.detail.locked, e.detail.clear)        
             
             e.detail.pairs?.forEach(p => {
-                let tk = Object.keys(p).filter(k => k.startsWith('token'));
-                let qs = 'pair-' + tk.map(k => { return p[k].symbol.toLowerCase()}).sort().join('-')
+                console.log('p:', p)
+                let tk = Object.keys(p).filter(k => { return k.startsWith('token') && !k.endsWith('Price') });
+                console.log(tk)
+                let qs = 'pair-' + tk.map(k => { return p[k].id.toLowerCase()}).sort().join('-')
                 let row = table.querySelector('#' + qs);
                 if ( !row ) {
                     let tr = defitvl_tr.content.cloneNode(true)    
                     tr.firstElementChild.setAttribute('id', qs);
                     tk.forEach(k => {
-                        tr.firstElementChild.querySelector('.pairtokens').innerHTML += `<defi-price symbol="${p[k].symbol}"></defi-price>`
+                        tr.firstElementChild.querySelector('.pairtokens').innerHTML += `<defi-price hash="${p[k].id}"></defi-price>`
                     })
                     table.querySelector('tbody').appendChild(tr);
                     row = table.querySelector('#' + qs);

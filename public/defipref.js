@@ -60,7 +60,8 @@ window.customElements.define('defi-pref', class DefiPref extends HTMLElement {
         const dialog = new mdc.dialog.MDCDialog(document.querySelector('.mdc-dialog'));
 
         this.firstElementChild.addEventListener('click', (e) => {
-            dialog.open()
+            //dialog.open()
+            confirm('Yes?')
         })
     }
 
