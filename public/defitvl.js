@@ -71,7 +71,7 @@ window.customElements.define('defi-tvl', class DefiTvl extends HTMLElement {
     loadtvl() {
         fetch(`/dex/${this.hash.toLowerCase()}/tvl.json`).then( (res) => { 
             let redirect = res.headers.get('x-amz-website-redirect-location')
-            if ( redirect && getParameterByName('noticks') == null ) {
+            if ( redirect && false ) {
                 let rn = redirect.split('/').pop()
                 rn = parseInt(rn.substring(0, rn.length - 5)) - 6
                 let previous_url = `/tvl/${this.hash.toLowerCase()}/${rn}.json`;
