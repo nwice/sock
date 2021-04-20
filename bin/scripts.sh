@@ -31,6 +31,6 @@ aws s3 cp ./public/supply.html s3://beta.scewpt.com/supply --acl public-read --c
 aws s3 cp ./public/supply.html s3://powder.network/supply --acl public-read --content-type "text/html; charset=utf-8"
 aws s3 cp ./public/supply.html s3://analytics.snowball.network/supply --acl public-read --content-type "text/html; charset=utf-8"
 
-aws cloudfront create-invalidation --distribution-id E1JZNMX0HG4856 --paths "/*.js" "/price" "/harvest" "/tvl" "/supply" "/index" "/error" "/assets/site.css"
-aws cloudfront create-invalidation --distribution-id E94H37WVV1OQY --paths "/*.js" "/price" "/harvest" "/tvl" "/supply" "/index" "/error" "/assets/site.css"
-aws cloudfront create-invalidation --distribution-id E3HOAWI4MEOVWK --paths "/*.js" "/price" "/harvest" "/tvl" "/supply" "/index" "/error" "/assets/site.css"
+aws cloudfront create-invalidation --distribution-id E1JZNMX0HG4856 --paths "/*.js" "/price" "/harvest" "/tvl" "/supply" "/" "/index" "/error" "/assets/site.css"
+aws cloudfront create-invalidation --distribution-id E94H37WVV1OQY --paths "/*.js" "/price" "/harvest" "/tvl" "/supply"  "/" "/index" "/error" "/assets/site.css"
+aws cloudfront create-invalidation --distribution-id E3HOAWI4MEOVWK --paths "/*.js" "/price" "/harvest" "/tvl" "/supply"  "/" "/index" "/error" "/assets/site.css"
