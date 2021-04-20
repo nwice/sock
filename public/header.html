@@ -22,17 +22,27 @@
         flex-direction: column;
         align-items: stretch;
     }
-    main > section {
-        display: flex;
-        flex-wrap: wrap;
+    main > pre {
         margin-left: var(--header-padding);
     }
 </style>
 <body class="mdc-typography">
     <defi-header></defi-header>
     <main>
-        <section>Home</section>        
+        <pre id="pre"></pre>        
     </main>
     <defi-footer></defi-footer>
+    <script>
+        
+        [
+            'https://x-api.snowball.network/snob/tvl',
+            'https://x-api.snowball.network/snob/harvest',
+            'https://x-api.snowball.network/snob/circulating'
+
+        ].forEach(async (url,i) => {
+            let res = await fetch(url).then(res => res.text());                        
+            document.getElementById('pre').innerText += [i == 0 ? url : '\n' + url, res].join(' ')
+        })
+    </script>
 </body>
 </html>

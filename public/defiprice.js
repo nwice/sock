@@ -10,11 +10,9 @@ defiprice.innerHTML = `
                 <dl>
                     <dt class="name">
                     <dd class="symbol">
+                    <dt class="price pretty">
                 </dl>            
             </td>            
-        </tr>
-        <tr class="pricing">
-            <td class="pricetd pretty"></td>
         </tr>
     </tbody>
 </table>
@@ -25,7 +23,10 @@ const numberformat = (price) => {
     if ( price > 1000 ) return price.toFixed(0)
     if ( price > 100 ) return price.toFixed(1)
     if ( price > 10 ) return price.toFixed(2)
-    if ( price > 1 ) return price.toFixed(3)
+    if ( price > .97 ) {
+        console.log('what the:', price)
+        return price.toFixed(3)
+    }
     if ( price < .000000001 ) return  price.toFixed(18)
     if ( price < .01 ) return  price.toFixed(8)
     return price.toFixed(4)    
@@ -44,11 +45,11 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
     attributeChangedCallback(name, oldvalue, newvalue) {
         switch (name) {
             case 'price':
-                let pricetd = this.querySelector('.pricetd');
+                let pricetd = this.querySelector('.price');
                 if ( pricetd ) {
                     let newprice = parseFloat(newvalue);
                     let oldprice = parseFloat(oldvalue);
-                    pricetd.innerHTML = numberformat(newprice);                                                    
+                    pricetd.innerHTML = numberformat(newprice, this);                                                    
                     if (oldprice) {
                         if (parseFloat(oldprice) < newprice) {
                             pricetd.classList.remove('down')
@@ -124,10 +125,11 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
 
     connectedCallback() {
         this.appendChild(defiprice.content.cloneNode(true));        
-        document.addEventListener(this.listento(), (e) => {
+        this.addEventListener(this.listento(), (e) => {
             this.setAttribute('price', e.detail.price)
             this.setAttribute('name', e.detail.name)
             this.setAttribute('symbol', e.detail.symbol)
+            console.log('yo:', this.listento(), e.detail)
         })
         if ( !this.getAttribute('price') ) {
             let location = `/dex/${this.dex.toLowerCase()}/price/${this.hash.toLowerCase()}.json`;
@@ -144,17 +146,17 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
                     this.id = now.id                    
                 }            
                 this.symbol = now.symbol
-                document.dispatchEvent(new CustomEvent(this.listento(), {
+                this.dispatchEvent(new CustomEvent(this.listento(), {
                     detail: now
                 }))
             }).catch((err) => {
                 console.log(err)
-                document.dispatchEvent(new CustomEvent(this.listento(), {
+                this.dispatchEvent(new CustomEvent(this.listento(), {
                     detail: { price: "⛷️", symbol: this.symbol, id: "⛷️", dex: 'png' }
                 }))
             });
         } else {
-            document.dispatchEvent(new CustomEvent(this.listento(), {
+            this.dispatchEvent(new CustomEvent(this.listento(), {
                 detail: { price: this.getAttribute('price') }
             }))
         }

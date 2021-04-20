@@ -74,7 +74,17 @@ const saveprice = async () => {
 
     console.log('publishable:', publishable.length)
     
-    publishable.forEach(async (p) => {      
+    publishable.forEach(async (p) => {    
+      if ( p.symbol === 'SNOB' ) {
+        let promise = upload({
+          Bucket: 'beta.scewpt.com',
+          Key: `snob/price`,
+          Body: p.price,
+          ContentType: 'text/plain',
+          ACL: 'public-read',
+        })
+        console.log('promise:', promise);      
+      }
       versioning(p, `dex/${tokens[p.dex].id.toLowerCase()}/price/${p.id.toLowerCase()}.json`.toLowerCase(), price_different)
     })
 

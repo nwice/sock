@@ -345,25 +345,31 @@ const external = await Promise.all(Object.keys(tokens).map(k => { return tokens[
     return populate(token)
 })).then(async (populated_tokens) => {
     
-    console.log('tokens populated:', populated_tokens.length)
+    //console.log('tokens populated:', populated_tokens.length)
     
     const internal = Object.keys(dexes).map(k => { 
         Object.assign(dexes[k], tokens[k])
         return { dex_name: k, dex: dexes[k] }
     });
 
-    await Promise.all(internal.filter(d => { return (d.dex.amm === undefined || d.dex.amm !== false) && d.dex.graphql !== undefined }).map(d => {        
+    let system = await Promise.all(internal.filter(d => { return (d.dex.amm === undefined || d.dex.amm !== false) && d.dex.graphql !== undefined }).map(d => {        
         return dexpairs(d.dex).then(pairs => {
-            console.log('dex:', d.dex_name, 'pairs length:', pairs.length)
+            //console.log('dex:', d.dex_name, 'pairs length:', pairs.length)
             d.dex.pairs = pairs
-            let avaxprice = dex_avaxprice(d)[1]
+            let avaxprice = dex_avaxprice(d)[2]
             let tvllocked = d.dex.pairs.map(pair => {
+                
                 pair.locked = parseFloat(pair.reserveETH) * avaxprice
                 return pair.locked
             }).reduce((a, b) => a + b, 0)
-            //console.log('tvl locked:', tvllocked, 'dex:', d.dex_name)
-        })
+            console.log('tvl locked:', tvllocked, 'dex:', d.dex_name)
+            return tvllocked
+        }).then(res => {
+            return res
+        })        
     }));
+    let system_related = system.reduce( (a, b) => { return a + b }, 0)
+    console.log('full amm tvl:', system_related)
 
     await Promise.all(internal.filter(d => d.dex?.tvl?.account !== undefined).map(async (dex_obj) => {
         let account = dex_obj.dex.tvl.account
