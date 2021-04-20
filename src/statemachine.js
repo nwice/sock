@@ -100,6 +100,9 @@ const tokens = {
     bamboo: {
         id: '0x9a928D7dcD8D7E5Cb6860B7768eC2D87B8934267'
     },
+    sfi: {
+        id: '0x1f1fe1ef06ab30a791d6357fdf0a7361b39b1537'
+    },    
     shit: {
         id: '0x54b17F4f55bd93EfBe5f91a3A4619619bC7DBC33'
     },

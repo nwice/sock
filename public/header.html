@@ -24,25 +24,63 @@
     }
     main > pre {
         margin-left: var(--header-padding);
+        position: relative;
+    }
+    #sanity::before {
+        position: absolute;
+        content: " Sanity Check ";
+        top: -10px;
+    }
+    #contracts::before {
+        position: absolute;
+        content: " Contracts ";
+        top: -10px;
     }
 </style>
 <body class="mdc-typography">
     <defi-header></defi-header>
     <main>
-        <pre id="pre"></pre>        
+        <pre id="sanity"></pre>
+
+        <pre id="contracts"></pre>
+
     </main>
     <defi-footer></defi-footer>
     <script>
-        
-        [
+        const spacer = (l, u) => {
+            let r =''
+            for (var x = 0; x < l - u.length; x++) {
+                r += ' '
+            }
+            return r
+        }
+        let sanitychecks = [
             'https://x-api.snowball.network/snob/tvl',
             'https://x-api.snowball.network/snob/harvest',
-            'https://x-api.snowball.network/snob/circulating'
+            'https://x-api.snowball.network/snob/circulating',
+            'https://x-api.snowball.network/snob/price'
+        ];
+        let len1 = sanitychecks.reduce( (a, b) => { return a.length > b.length ? a.length: b.length }, 0);
 
-        ].forEach(async (url,i) => {
+        sanitychecks.forEach(async (url,i) => {
             let res = await fetch(url).then(res => res.text());                        
-            document.getElementById('pre').innerText += [i == 0 ? url : '\n' + url, res].join(' ')
+            document.getElementById('sanity').innerText += '\n' + url + spacer(len1 + 15, url) + res
         })
+
+        let contracts = [
+            { stablevault: 'https://cchain.explorer.avax.network/address/0x6B41E5c07F2d382B921DE5C34ce8E2057d84C042/contracts' },
+            { icequeen: 'https://cchain.explorer.avax.network/address/0xB12531a2d758c7a8BF09f44FC88E646E1BF9D375/contracts' },
+            { snowball: 'https://cchain.explorer.avax.network/address/0xC38f41A296A4493Ff429F1238e030924A1542e50/contracts' },
+            { controller: 'https://cchain.explorer.avax.network/address/0xf7B8D9f8a82a7a6dd448398aFC5c77744Bd6cb85/contracts' }
+        ];
+        let len2 = contracts.map(c => c[Object.keys(c)[0]]).reduce( (a, b) => { return a > b ? a: b }, 0 ) ;
+
+        contracts.forEach(async (uo) => {
+            let url = uo[Object.keys(uo)[0]]
+            document.getElementById('contracts').innerText += '\n' + url + spacer(len2 + 30, url) + Object.keys(uo)[0]
+        })
+
+
     </script>
 </body>
 </html>
