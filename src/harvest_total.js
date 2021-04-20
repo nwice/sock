@@ -1,5 +1,5 @@
 import { dexes } from './statemachine.js';
-import { getversion, getcurrent, versioning } from './versioning.js';
+import { upload, getversion, getcurrent, versioning } from './versioning.js';
 import { exit } from 'process';
 
 let strategies = dexes.snob.tvl.pairs.filter(p => { return p.strategy !== undefined})
@@ -37,7 +37,7 @@ Promise.all(all_strategies.map(async pair => {
     })
     let promise = upload({
         Bucket: 'beta.scewpt.com',
-        Key: `snob/tvl`,
+        Key: `snob/harvest`,
         Body: harvests.total.toFixed(2),
         ContentType: 'text/plain',
         ACL: 'public-read',
