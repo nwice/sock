@@ -80,7 +80,7 @@ const history = async (pair, dex_id) => {
   console.log('total harvest swaps length:', swaps.length)
   for (var y = 0; y < swaps.length; y+=increment) {
       let harvest = { claim: swaps[y] };
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 25));
       let claim_pricing = await force( { id: png_usdt_pair }, harvest.claim.timestamp)
       harvest.claim.pair.token0.price = parseFloat(claim_pricing.pairHourDatas[0].reserve1) / parseFloat(claim_pricing.pairHourDatas[0].reserve0)      
       
