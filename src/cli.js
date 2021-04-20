@@ -68,11 +68,11 @@ const saveprice = async () => {
 
     let friendly = Object.keys(tokens).map(k => { tokens[k].id.toLowerCase() })
   
-    let publishable = prices.filter(p => {       
-      return friendly.includes(p.id.toLowerCase()) && !refuse.map(msi => msi.toLowerCase()).includes(p.id.toLowerCase())      
+    let publishable = prices.filter(p => {   
+      return p.tradeVolume > 0 && !refuse.map(msi => msi.toLowerCase()).includes(p.id.toLowerCase())      
     });
-  
-    await versioning(publishable, `dex/prices.json`, any_price_different)
+
+    console.log('publishable:', publishable.length)
     
     publishable.forEach(async (p) => {      
       versioning(p, `dex/${tokens[p.dex].id.toLowerCase()}/price/${p.id.toLowerCase()}.json`.toLowerCase(), price_different)
