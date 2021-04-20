@@ -41,7 +41,8 @@ const getcurrent = async (path) => {
 }
 
 const upload = async (o) => {
-    let s3upload = Object.assign({}, s3object, o)
+    let s3upload = Object.assign({}, s3props, o)
+    console.log('s3upload:', s3upload);
     return s3.upload(s3upload).promise();        
 }
 
