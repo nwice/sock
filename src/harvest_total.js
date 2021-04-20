@@ -7,14 +7,14 @@ let strategies = dexes.snob.tvl.pairs.filter(p => { return p.strategy !== undefi
 let all_strategies = [...strategies,...dexes.snob.legacy]
 
 Promise.all(all_strategies.map(async pair => {
-    console.log('pair:', pair.id)
+    console.log('pair:', pair.strategy)
     let harvests = []
     let now = await getcurrent(`dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/${pair.strategy.toLowerCase()}.json`)
     if ( now.json !== undefined ) {
         harvests.push(now.json)
         let previous = now.version - 1;
+        console.log('previous:', previous)
         while (previous > 0) {
-            console.log('previous')
             let p = await getversion(`dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/${pair.strategy.toLowerCase()}.json`, previous)
             harvests.push(p)
             previous -= 1;        
@@ -35,7 +35,7 @@ Promise.all(all_strategies.map(async pair => {
         harvests[r.strategy] = r.total
         harvests.total += r.total
     })
-    versioning(harvests, `dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/total.json`)    
+    //versioning(harvests, `dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/total.json`)    
     setTimeout( () => {
         exit()
     },1000)

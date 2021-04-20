@@ -41,7 +41,8 @@ const getcurrent = async (path) => {
 }
 
 const upload = async (o) => {
-    return s3.upload(o).promise();        
+    let s3upload = Object.assign({}, s3object, o)
+    return s3.upload(s3upload).promise();        
 }
 
 const versioning = async (o, p, conditional) => {
