@@ -66,8 +66,6 @@ const saveprice = async () => {
     let prices = await dexprices(dexes)
     console.log('prices length:', prices.length)
 
-    let friendly = Object.keys(tokens).map(k => { tokens[k].id.toLowerCase() })
-  
     let publishable = prices.filter(p => {   
       return p.tradeVolume > 0 && !refuse.map(msi => msi.toLowerCase()).includes(p.id.toLowerCase())      
     });
@@ -75,11 +73,11 @@ const saveprice = async () => {
     console.log('publishable:', publishable.length)
     
     publishable.forEach(async (p) => {    
-      if ( p.symbol === 'SNOB' ) {
+      if ( p.symbol.toLowerCase() === 'snob' && p.dex.toLowerCase() === 'png' ) {
         let promise = upload({
           Bucket: 'beta.scewpt.com',
           Key: `snob/price`,
-          Body: p.price,
+          Body: '' + p.price,
           ContentType: 'text/plain',
           ACL: 'public-read',
         })
