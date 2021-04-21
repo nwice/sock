@@ -41,6 +41,7 @@ const external = await Promise.all(Object.keys(tokens).map(k => { return tokens[
     });
 
     let system = await Promise.all(internal.filter(d => { return (d.dex.amm === undefined || d.dex.amm !== false) && d.dex.graphql !== undefined }).map(d => {        
+        console.log('dex:', d.dex_name)
         return dexpairs(d.dex).then(pairs => {
             //console.log('dex:', d.dex_name, 'pairs length:', pairs.length)
             d.dex.pairs = pairs

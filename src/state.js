@@ -83,8 +83,8 @@ const tokens = {
     }
 };
 
-const pangolinql = 'https://graph-node.avax.network/subgraphs/name/dasconnor/pangolindex'
-const pangolinql_old = 'https://api.thegraph.com/subgraphs/name/dasconnor/pangolin-dex'
+const pangolinql_old = 'https://graph-node.avax.network/subgraphs/name/dasconnor/pangolindex'
+const pangolinql = 'https://api.thegraph.com/subgraphs/name/dasconnor/pangolin-dex'
 
 const dexes = {
     snob: Object.assign({ amm: false }, tokens.snob, {
@@ -300,7 +300,7 @@ const dexes = {
     com: Object.assign({}, tokens.com, {
         graphql: 'https://graph.avagraph.live/subgraphs/name/complusnetwork/subgraph-ava'
     }),
-    zero: Object.assign({}, tokens.zero, {
+	zero: Object.assign({ amm: false }, tokens.zero, {
         graphql: 'https://zero-graph.0.exchange/subgraphs/name/zeroexchange/zerograph',
         stable: { id: '0x474Bb79C3e8E65DcC6dF30F9dE68592ed48BBFDb' }
     }), 
