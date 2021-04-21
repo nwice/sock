@@ -117,6 +117,7 @@ defi_addr_png = {
     '0x4df32f1f8469648e89e62789f4246f73fe768b8e': 'pangolin staking rewards avax/aave',
     '0x574d3245e36Cf8C9dc86430EaDb0fDB2F385F829': 'pangolin staking rewards avax/png',
     '0xbda623cdd04d822616a263bf4edbbce0b7dc4ae7': 'pangolin staking rewards avax/link',
+        
     '0xE2510a1fCCCde8d2D1c40b41e8f71fB1F47E5bBA': 'pangolin staking rewards png/usdt',
     '0xfd9acec0f413ca05d5ad5b962f3b4de40018ad87': 'pangolin staking rewards png/aave',
     '0x633f4b4db7dd4fa066bd9949ab627a551e0ecd32': 'pangolin staking rewards png/sushi',
