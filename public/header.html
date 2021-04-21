@@ -36,6 +36,12 @@
         content: " Contracts ";
         top: -10px;
     }
+
+    #strategies::before {
+        position: absolute;
+        content: " Strategies ";
+        top: -10px;
+    }    
 </style>
 <body class="mdc-typography">
     <defi-header></defi-header>
@@ -43,6 +49,8 @@
         <pre id="sanity"></pre>
 
         <pre id="contracts"></pre>
+
+        <pre id="strategies"></pre>
 
     </main>
     <defi-footer></defi-footer>
@@ -60,11 +68,11 @@
             'https://x-api.snowball.network/snob/circulating',
             'https://x-api.snowball.network/snob/price'
         ];
-        let len1 = sanitychecks.reduce( (a, b) => { return a.length > b.length ? a.length: b.length }, 0);
+        let scl = sanitychecks.reduce( (a, b) => { return a.length > b.length ? a.length: b.length }, 0);
 
         sanitychecks.forEach(async (url,i) => {
             let res = await fetch(url).then(res => res.text());                        
-            document.getElementById('sanity').innerText += '\n' + url + spacer(len1 + 15, url) + res
+            document.getElementById('sanity').innerText += '\n' + url + spacer(scl + 10, url) + res
         })
 
         let contracts = [
@@ -72,14 +80,30 @@
             { icequeen: 'https://cchain.explorer.avax.network/address/0xB12531a2d758c7a8BF09f44FC88E646E1BF9D375/contracts' },
             { snowball: 'https://cchain.explorer.avax.network/address/0xC38f41A296A4493Ff429F1238e030924A1542e50/contracts' },
             { controller: 'https://cchain.explorer.avax.network/address/0xf7B8D9f8a82a7a6dd448398aFC5c77744Bd6cb85/contracts' }
-        ];
-        let len2 = contracts.map(c => c[Object.keys(c)[0]]).reduce( (a, b) => { return a > b ? a: b }, 0 ) ;
+        ];        
+
+        let cl = contracts.map(c => Object.keys(c)[0].length).reduce( (a, b) => { return a > b ? a: b }, 0 ) ;
 
         contracts.forEach(async (uo) => {
-            let url = uo[Object.keys(uo)[0]]
-            document.getElementById('contracts').innerText += '\n' + url + spacer(len2 + 30, url) + Object.keys(uo)[0]
+            let key = Object.keys(uo)[0]
+            let url = uo[key]
+            document.getElementById('contracts').innerText += '\n' + key + spacer(cl + 10, key) + url
         })
 
+        let strategies = [
+            { stablevault: 'https://cchain.explorer.avax.network/address/0x6B41E5c07F2d382B921DE5C34ce8E2057d84C042/contracts' },
+            { icequeen: 'https://cchain.explorer.avax.network/address/0xB12531a2d758c7a8BF09f44FC88E646E1BF9D375/contracts' },
+            { snowball: 'https://cchain.explorer.avax.network/address/0xC38f41A296A4493Ff429F1238e030924A1542e50/contracts' },
+            { controller: 'https://cchain.explorer.avax.network/address/0xf7B8D9f8a82a7a6dd448398aFC5c77744Bd6cb85/contracts' }
+        ];        
+
+        let sl = strategies.map(c => Object.keys(c)[0].length).reduce( (a, b) => { return a > b ? a: b }, 0 ) ;
+
+        strategies.forEach(async (uo) => {
+            let key = Object.keys(uo)[0]
+            let url = uo[key]
+            document.getElementById('strategies').innerText += '\n' + key + spacer(cl + 10, key) + url
+        })
 
     </script>
 </body>

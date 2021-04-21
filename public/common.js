@@ -123,11 +123,9 @@ const prettyNumber = (n, fixed) => {
     console.log(n)
     let nonNan = new Intl.NumberFormat('en-US').format(fixed ? n.toFixed(fixed): n);
     if  ( isNaN(n) ) {
-        console.log('hey')
         return n;
     }
     if ( n > 10000 && parseInt(n) != n ) {
-        console.log('hey2')
         return prettyNumber(parseInt(n))
     }
     return nonNan
