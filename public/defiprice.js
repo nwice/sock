@@ -132,7 +132,7 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
             console.log('yo:', this.listento(), e.detail)
         })
         if ( !this.getAttribute('price') ) {
-            let location = `/dex/${this.dex.toLowerCase()}/price/${this.hash.toLowerCase()}.json`;
+            let location = `/dex/${this.dex.toLowerCase()}/price/${this.hash.toLowerCase()}.json?cb=${ new Date().getTime() }`;
 
             fetch(location).then((res) => {
                 //let redirect = res.headers.get('x-amz-website-redirect-location')

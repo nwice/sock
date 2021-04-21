@@ -83,8 +83,8 @@ const tokens = {
     }
 };
 
-const pangolinql_old = 'https://graph-node.avax.network/subgraphs/name/dasconnor/pangolindex'
-const pangolinql = 'https://api.thegraph.com/subgraphs/name/dasconnor/pangolin-dex'
+const pangolinql = 'https://graph-node.avax.network/subgraphs/name/dasconnor/pangolindex'
+const pangolinql_old = 'https://api.thegraph.com/subgraphs/name/dasconnor/pangolin-dex'
 
 const dexes = {
     snob: Object.assign({ amm: false }, tokens.snob, {
@@ -205,7 +205,7 @@ const dexes = {
                     accounts: [{
                         id: '0x681047473B6145BA5dB90b074E32861549e85cC7',
                         account_type: 'compound'
-                    }]
+                    }]                    
                 },
                 {
                     nickname: 'png-uni',
@@ -291,7 +291,7 @@ const dexes = {
     pefi: Object.assign({amm: false}, tokens.pefi, {
         graphql: pangolinql
     }),
-    lyd: Object.assign({}, tokens.lyd, {
+    lyd: Object.assign({ amm: false}, tokens.lyd, {
         graphql: pangolinql
     }),    
     elk: Object.assign({}, tokens.elk, {

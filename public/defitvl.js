@@ -69,7 +69,7 @@ window.customElements.define('defi-tvl', class DefiTvl extends HTMLElement {
     }
 
     loadtvl() {
-        fetch(`/dex/${this.hash.toLowerCase()}/tvl.json`).then( (res) => { 
+        fetch(`/dex/${this.hash.toLowerCase()}/tvl.json?cb=${ new Date().getTime() }`).then( (res) => { 
             let redirect = res.headers.get('x-amz-website-redirect-location')
             if ( redirect && false ) {
                 let rn = redirect.split('/').pop()

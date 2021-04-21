@@ -95,26 +95,32 @@ common_addr = {
     '0xa3312e017326e164a10d63d908cac89e16da0f77c3540dc0ad9bf208399bfc75': 'swapin',
     '0x481f79ac3a523b6d6db3c5a720e190e986d1cc1b41adcdf50f9caef849901100': 'update min tokens to reinvest',
     '0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62': 'transfer single',
-    '0xa560e3198060a2f10670c1ec5b403077ea6ae93ca8de1c32b451dc1a943cd6e7': 'execute transaction'
+    '0xa560e3198060a2f10670c1ec5b403077ea6ae93ca8de1c32b451dc1a943cd6e7': 'execute transaction',
+    '0x1a2b6f9ef83035573e51aab1c386f711ea592e6fdf7bb0d7b346c1dd70d3dcc7': 'shares staked',
+    '0x8bf178dcdd2a6012ec21be7cdac6119597012d18eb92007f216ec7bcee35103c': 'shares withdrawn',
+    '0xab2246061d7b0dd3631d037e3f6da75782ae489eeb9f6af878a4b25df9b07c77': 'sweep',
+    '0x414b0454a52507c753948f2002246a3358eaea8464b41c2143f88b100306eee6': 'unknown',
+    '0x05d0634fe981be85c22e2942a880821b70095d84e152c3ea3c17a4e4250d9d61': 'log swap in'
 }
 
 defi_addr_png = {
     '0xe54ca86531e17ef3616d22ca28b0d458b6c89106': 'pangolin router',
 
     '0xb921a3ae9ceda66fa8a74dbb0946367fb14fae34': 'pangolin stake old',
+    '0x7accc6f16bf8c0dce22371fbd914c6b5b402bf9f': 'pangolin stake old',
 
     '0xa16381eae6285123c323a665d4d99a6bcfaac307': 'pangolin staking rewards avax/eth',
-    '0x633f4b4db7dd4fa066bd9949ab627a551e0ecd32': 'pangolin staking rewards png/sushi',
     '0x701e03fad691799a8905043c0d18d2213bbcf2c7': 'pangolin staking rewards avax/dai',
     '0x94c021845efe237163831dac39448cfd371279d6': 'pangolin staking rewards avax/usdt',
     '0x417c02150b9a31bcacb201d1d60967653384e1c6': 'pangolin staking rewards avax/eth', 
     '0xe968e9753fd2c323c2fe94caff954a48afc18546': 'pangolin staking rewards avax/wbtc',
-    '0xE2510a1fCCCde8d2D1c40b41e8f71fB1F47E5bBA': 'pangolin staking rewards png/usdt',
-    '0xfd9acec0f413ca05d5ad5b962f3b4de40018ad87': 'pangolin staking rewards png/aave',
-    '0x7ac007afb5d61f48d1e3c8cc130d4cf6b765000e': 'pangolin staking rewards eth/png',
     '0x4df32f1f8469648e89e62789f4246f73fe768b8e': 'pangolin staking rewards avax/aave',
     '0x574d3245e36Cf8C9dc86430EaDb0fDB2F385F829': 'pangolin staking rewards avax/png',
     '0xbda623cdd04d822616a263bf4edbbce0b7dc4ae7': 'pangolin staking rewards avax/link',
+    '0xE2510a1fCCCde8d2D1c40b41e8f71fB1F47E5bBA': 'pangolin staking rewards png/usdt',
+    '0xfd9acec0f413ca05d5ad5b962f3b4de40018ad87': 'pangolin staking rewards png/aave',
+    '0x633f4b4db7dd4fa066bd9949ab627a551e0ecd32': 'pangolin staking rewards png/sushi',
+    '0x7ac007afb5d61f48d1e3c8cc130d4cf6b765000e': 'pangolin staking rewards png/eth',
 
     '0x9ee0a4e21bd333a6bb2ab298194320b8daa26516': 'pangolin pair avax/usdt',
     '0xbbc7fff833d27264aac8806389e02f717a5506c9': 'pangolin pair avax/link',    
@@ -146,10 +152,24 @@ defi_addr_png = {
     '0x5122524af267567897cf56ab4389ce20a08194fa': 'pangolin pair snob/spore',
     '0x7692c5f0c87b928981112c4ce5d51c8301acc88c': 'pangolin pair avax/bamboo',
     '0x605424527cFB662Fe65b2e08Bc62e558f3b9400e': 'pangolin pair avax/elk',
-    '0x271d62b3cd770f02e08f5fc83dbf9b551ee212ca': 'pangolin pair bamboo/avax'
+    '0x271d62b3cd770f02e08f5fc83dbf9b551ee212ca': 'pangolin pair bamboo/avax',
+
+    '0x8fd2755c6ae7252753361991bdcd6ff55bdc01ce': 'pango old stake avax/png '
 }
 
 defi_addr = {
+    '0xB14a4b9bC056BB2deeA9FB4CC886D4cb249385f7': 'cycle valut shares',
+
+    '0x814409AbbC142fa5824C034d564D8D738b20cD51': 'lydia electrum bar',
+    '0xFb26525B14048B7BB1F3794F6129176195Db7766': 'lydia croesus',
+    '0xa52abe4676dbfd04df42ef7755f01a3c41f28d27': 'lydia router',
+    
+    '0x752c59f22faaa861108649f4596034796c69bc3f': 'lydia pair usdt/lyd',
+    '0xe22a65204726f102d9e3539b85d3999dee2e421f': 'lydia pair avax/usdt',
+    '0xfba4edaad3248b03f1a3261ad06ad846a8e50765': 'lydia pair avax/lyd',
+    '0x58128ab3ecbf703682ede72f341944bffe3524b9': 'lydia pair avax/eth',
+    '0x161f750b753c7120599d07c352607f458ecb918e': 'lydia pair lyd/png',
+
     '0x9E4AAbd2B3E60Ee1322E94307d0776F2c8e6CFbb': 'elk router',    
 
     '0x5311ea28df83703fde89797a56a39e30f09a2016': 'elk stake elk/eth',
@@ -202,6 +222,8 @@ defi_addr = {
 
     '0x8d36C5c6947ADCcd25Ef49Ea1aAC2ceACFff0bD7': 'yak timelock strategy v3',
 
+    '0xFfbE3f2b1fF3f595e3059CCa8a7FcD3eB4D71949': 'yieldyak lyd avax/lyd',
+    '0x7346502437C9F09AB040855f756EdeA2A2aC0912': 'yieldyak lyd avax/usdt',
     '0xda875a511860f2752b891677489d08caedac00ea': 'yieldyak png avax/eth',
     '0xB58535A99e2D615df6Ff00AD091D01310Daabda3': 'yieldyak png avax/uni',
     '0x37A83906a69d6236DBcB4d8257D8f62d1f3BBcD5': 'yieldyak panda avax/bamboo-v2',
@@ -219,7 +241,12 @@ defi_addr = {
     '0xDF8bFA6c5C8578CdE19D58d6EFf0B39aB2415d83': 'yieldyak pair avax/yak',    
     '0xF0BDE208A05CC0a056B5FAE1a78212Adf7A4AFfe': 'yieldyak pair avax/bambooV1',
 
-
+    '0xffffe6c261fac5ea28c41e71672b482efbad8e4b': 'yieldyak middleman 10',
+    '0x57596ea15be8f36e4104ba570144d154d604b0c5': 'yieldyak middleman 9',
+    '0x0e569D21238a29D82AcbeE5E51C717Bac80a2DD8': 'yieldyak middleman 8',
+    '0xfdcac864f48e76d752be4f809a668cb5ea2fb453': 'yieldyak middleman 7',
+    '0xD4DA7da717b72d4Ce74Eac28617295b2F14b191a': 'yieldyak middleman 6',
+    '0xdea591345c15ce24abe0ac9ceb47ef618650b9da': 'yieldyak middleman 5',
     '0xFa3fF5201C97c54Dd34EE8F21643c28B4De74807': 'yieldyak middleman 4',
     '0xdAaA1Ba6839a7F04061dA8805De5800B152Def2F': 'yieldyak middleman 3',
     '0x68761Ed6263DDfee85A3f5078cFacd8ad26dEAD0': 'yieldyak middleman 2',
@@ -327,6 +354,7 @@ defi_addr_olive = {
     '0x57cc32Cd7F5a531953E9af25e1C9394093428082': 'olive treasury',
     '0xcdee5108413e80af6c84bdd3ab0d328a3d63dda4': 'olive treasury 2',
     
+    '0xe5350ad10f9f9341cd5a761b845eff25ddafddba': 'olive pair avax/snob',
     '0xbcd81aaa76d9c1e3aed31c315761c0d9779751b5': 'olive pair avax/sushi',
     '0x76fbce48d9dce3d04bfac318d1fdeb3a78e903a9': 'olive pair avax/eth',
     '0xbfc3C72Bab7252341dC90A1E85797Ebd8C79c338': 'olive pair usdt/avax',
@@ -335,7 +363,9 @@ defi_addr_olive = {
     '0x57cc32cd7f5a531953e9af25e1c9394093428082': 'olive pair avax/olive',
     '0x79C1B4Ee613F29a8c0aae563Ef445317D99a6906': 'olive pair avax/wbtc',
     '0x107f59a1a067d464c10969759132d78b1844f946': 'olive pair avax/elk',
-    '0xad786dfe6ac4a68dd3f9a5400ddee5dedd20d109': 'olive pair avax/png'
+    '0xad786dfe6ac4a68dd3f9a5400ddee5dedd20d109': 'olive pair avax/png',
+
+    '0x05c5DB43dB72b6E73702EEB1e5b62A03a343732a': 'swap flash loan'
 }
 
 nft_addr = {
