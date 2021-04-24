@@ -1,12 +1,4 @@
-const defimode = document.createElement('template');
-defimode.innerHTML = `
-<button class="mdc-button--outlined" id="theme">
-    <div class="mdc-button__ripple"></div>
-    <span class="mdc-button__label">
-        <ion-icon class="moon" name="moon-outline" role="img" class="md hydrated"></ion-icon>
-    </span>
-</button>
-`
+import { html, render } from './node_modules/lit-html/lit-html.js';
 
 window.customElements.define('defi-mode', class DefiMode extends HTMLElement {
     
@@ -32,8 +24,18 @@ window.customElements.define('defi-mode', class DefiMode extends HTMLElement {
     }
 
     connectedCallback() {
-        this.appendChild(defimode.content.cloneNode(true));
-        document.querySelector('#theme').addEventListener('click', this.toggleMode);     
+        render(
+            html`
+                <button class="mdc-button--outlined" id="theme">
+                    <div class="mdc-button__ripple"></div>
+                    <span class="mdc-button__label">
+                        <ion-icon class="moon" name="moon-outline" role="img" class="md hydrated"></ion-icon>
+                    </span>
+                </button>
+            `,
+            this
+        )
+        this.addEventListener('click', this.toggleMode);     
         this.toggleMode()
     }
 

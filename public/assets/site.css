@@ -1,22 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Encode+Sans&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sniglet:wght@800&display=swap');
 
 :root {
-    --mdc-typography-font-family: "Encode Sans", sans-serif, monospace;
+    --mdc-typography-font-family: sans-serif, monospace;
     
-    --mdc-theme-primary: white;
-
-    --logo-image: url(/assets/images/Logo_Light@2x.png);
+    --mdc-theme-primary: #fff;
 
     --button-bg-color: rgba(255, 255, 255, 0.05);
     --button-bg-hover-color: lighten(--button-bg-color, 20%);
     --button-color:  rgb(51, 169, 255);
     --button-border-color:  rgb(51, 169, 255);
 
-    --header-link-color-hover:  rgb(51, 169, 255);
-    --header-link-color: rgba(255, 255, 255, 0.8);    
-    --header-bg-color: #222741;
+    --header-link-color-hover: darken(#ffffff);
+    --header-link-color: #ffffff;    
+    --header-bg-color: #696969;
 
     --bg-color: rgb(27, 31, 50);
     --up: "⬆️";  
@@ -24,16 +21,16 @@
 }
 
 html[data-theme='light'] {
-    --mdc-theme-primary: rgb(27, 31, 50);
 
-    --logo-image: url(/assets/images/Logo_Dark@2x.png);
+    --mdc-theme-primary: #696969;
+    --bg-color: #fff;
+
+    --header-bg-color: #fff;    
+    --header-link-color: rgba(0, 0, 0, 0.85);    
 
     --button-bg-color: rgba(255, 255, 255, 0.05);
-
-    --header-bg-color: #fff;
     --button-bg-hover-color: darken(--button-bg-color, 20%);
-    --bg-color: rgba(255, 255, 255, 0.05);
-    --header-link-color: rgba(0, 0, 0, 0.85);    
+
 }
 
 @media screen and (min-width: 450px) {
@@ -81,14 +78,9 @@ a {
     color: var(--button-bg-hover-color)
 }
 
-.siteicon {
-    background-image: var(--logo-image);
-    height: 80px;
-    width: 240px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    cursor: pointer;
+.sniglet {
+    font-family: 'sniglet';
+    font-size: 30px;
 }
 
 header .mdc-button--outlined:not(:disabled) {
@@ -214,3 +206,7 @@ menu > * {
 .right { text-align:right; }
 .pretty { font-family: 'Inter', sans-serif; font-weight: 600; } 
 .hidden  { display: none; }
+
+tr.governance > td:first-of-type {
+    margin-left: -50px;
+}

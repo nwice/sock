@@ -1,9 +1,4 @@
-const defifooter = document.createElement('template');
-defifooter.innerHTML = `
-<footer>
-    <div class="timestamp"></div>
-</footer>
-`
+import { html, render } from './node_modules/lit-html/lit-html.js';
 
 window.customElements.define('defi-footer', class DefiFooter extends HTMLElement {
 
@@ -12,7 +7,13 @@ window.customElements.define('defi-footer', class DefiFooter extends HTMLElement
     }
 
     connectedCallback() {
-        this.appendChild(defifooter.content.cloneNode(true));        
+        render(
+            html`
+                <footer>
+                    <div class="timestamp"></div>
+                </footer>
+            `
+        , this)
     }
 
 });

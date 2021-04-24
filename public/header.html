@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <link rel="preconnect" href="https://fonts.gstatic.com">    
-    <title>Snowball Network - Be a flake</title>
+<head>    
+    <title>Powder - light the fuse</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
 
     <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
     <link href="assets/site.css" rel="stylesheet">    
@@ -46,11 +47,11 @@
 <body class="mdc-typography">
     <defi-header></defi-header>
     <main>
+        <pre id="pages"><a href="/proposals">Avalanche Proposals</a> - list of on chain proposals across blockchain</pre>
+
         <pre id="sanity"></pre>
 
         <pre id="contracts"></pre>
-
-        <pre id="strategies"></pre>
 
     </main>
     <defi-footer></defi-footer>
@@ -66,7 +67,8 @@
             'https://x-api.snowball.network/snob/tvl',
             'https://x-api.snowball.network/snob/harvest',
             'https://x-api.snowball.network/snob/circulating',
-            'https://x-api.snowball.network/snob/price'
+            'https://x-api.snowball.network/snob/price',
+            'https://x-api.snowball.network/supply/snob.json'
         ];
         let scl = sanitychecks.reduce( (a, b) => { return a.length > b.length ? a.length: b.length }, 0);
 
@@ -89,22 +91,6 @@
             let url = uo[key]
             document.getElementById('contracts').innerText += '\n' + key + spacer(cl + 10, key) + url
         })
-
-        let strategies = [
-            { stablevault: 'https://cchain.explorer.avax.network/address/0x6B41E5c07F2d382B921DE5C34ce8E2057d84C042/contracts' },
-            { icequeen: 'https://cchain.explorer.avax.network/address/0xB12531a2d758c7a8BF09f44FC88E646E1BF9D375/contracts' },
-            { snowball: 'https://cchain.explorer.avax.network/address/0xC38f41A296A4493Ff429F1238e030924A1542e50/contracts' },
-            { controller: 'https://cchain.explorer.avax.network/address/0xf7B8D9f8a82a7a6dd448398aFC5c77744Bd6cb85/contracts' }
-        ];        
-
-        let sl = strategies.map(c => Object.keys(c)[0].length).reduce( (a, b) => { return a > b ? a: b }, 0 ) ;
-
-        strategies.forEach(async (uo) => {
-            let key = Object.keys(uo)[0]
-            let url = uo[key]
-            document.getElementById('strategies').innerText += '\n' + key + spacer(cl + 10, key) + url
-        })
-
     </script>
 </body>
 </html>
