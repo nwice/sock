@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="preconnect" href="https://fonts.gstatic.com">    
+    <title>Powder - light the fuse</title>
+
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <link href="assets/site.css" rel="stylesheet">    
+
+    
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <script src="https://unpkg.com/@metamask/detect-provider/dist/detect-provider.min.js"></script>
+    <script src="https://unpkg.com/web3/dist/web3.min.js"></script>    
+
+    <script type="module" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"></script>
+
+    <script src="common.js"></script>    
+    
+    <script type="module" src="defiheader.js"></script>
+    <script type="module" src="defifooter.js"></script>    
+    <script type="module" src="defiproposals.js"></script>
+    
+</head>
+<style>
+    main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }    
+</style>
+<body class="mdc-typography">
+    <defi-header></defi-header>
+    <main>
+        <defi-proposals></defi-proposals>
+    </main>
+</body>
+</html>
