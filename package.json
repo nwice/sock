@@ -6,10 +6,14 @@
   "repository": "https://github.com/nwice/sock",
   "author": "Kevin McIntyre <kebin70@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "dev": "./bin/serve.sh"
+  },
   "dependencies": {
     "aws-sdk": "^2.869.0",
     "graphql-request": "^3.4.0",
     "http-server": "^0.12.3",
+    "lit": "^2.0.0-rc.1",
     "puppeteer": "^8.0.0",
     "web3": "^1.3.4",
     "ws": "^7.4.4"
