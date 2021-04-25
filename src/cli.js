@@ -42,14 +42,15 @@ const savetvl = async () => {
     })
   })
 
-  let promise = upload({
+  
+  upload({
     Bucket: 'beta.scewpt.com',
     Key: `snob/tvl`,
     Body: dex.tvl.locked.toFixed(2),
     ContentType: 'text/plain',
     ACL: 'public-read',
   })
-  console.log('promise:', promise);
+  
   
   let o = Object.assign({}, tp, dex.tvl)
   versioning(o, `dex/${dex.id.toLowerCase()}/tvl.json`)
@@ -68,16 +69,16 @@ const saveprice = async () => {
     
     publishable.forEach(async (p) => {    
       if ( p.symbol.toLowerCase() === 'snob' && p.dex.toLowerCase() === 'png' ) {
-        let promise = upload({
+        upload({
           Bucket: 'beta.scewpt.com',
           Key: `snob/price`,
           Body: '' + p.price,
           ContentType: 'text/plain',
           ACL: 'public-read',
         })
-        console.log('promise:', promise);      
       }
-      versioning(p, `dex/${tokens[p.dex].id.toLowerCase()}/price/${p.id.toLowerCase()}.json`.toLowerCase(), price_different)
+      let dextoken = find_token(tokens, { key: 'symbol', value: p.dex})
+      versioning(p, `dex/${dextoken.id.toLowerCase()}/price/${p.id.toLowerCase()}.json`.toLowerCase(), price_different)
     })
     return prices;
 }
@@ -95,6 +96,4 @@ if ( process.argv.length > 2 && Object.keys(commands).includes(process.argv[2]) 
         }, 2000)        
     })
 }
-
-export { savestate, saveprice }
 

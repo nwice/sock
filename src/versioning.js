@@ -41,9 +41,12 @@ const getcurrent = async (path) => {
 }
 
 const upload = async (o) => {
-    let s3upload = Object.assign({}, s3props, o)
-    console.log('s3upload:', s3upload);
-    return s3.upload(s3upload).promise();        
+    if ( process.env.NODE_ENV === undefined || process.env.NODE_ENV !== 'dev' ) {
+        let s3upload = Object.assign({}, s3props, o)
+        console.log('s3upload:', s3upload);
+        return s3.upload(s3upload).promise();        
+    } 
+    return Promise.resolve()
 }
 
 const versioning = async (o, p, conditional) => {
@@ -57,14 +60,16 @@ const versioning = async (o, p, conditional) => {
     if ( !conditional || !current.json || conditional(o, current.json) ) {
         let next_version_location = s3path(path).Key.substring(0, s3path(path).Key.length - 5).concat(`/${current.version + 1}.json`)      
         console.log('new version location:', next_version_location)
-        s3.upload(Object.assign({}, s3props, s3path(path), {        
-            Body: out,
-            WebsiteRedirectLocation: '/' + next_version_location
-        })).promise();        
-        s3.upload(Object.assign({}, s3props, s3path(path), {        
-            Body: out,
-            Key: next_version_location,
-        })).promise();    
+        if ( process.env.NODE_ENV === undefined || process.env.NODE_ENV !== 'dev' ) {
+            s3.upload(Object.assign({}, s3props, s3path(path), {        
+                Body: out,
+                WebsiteRedirectLocation: '/' + next_version_location
+            })).promise();        
+            s3.upload(Object.assign({}, s3props, s3path(path), {        
+                Body: out,
+                Key: next_version_location,
+            })).promise();    
+        }
     }
 }
 

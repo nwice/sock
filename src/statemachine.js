@@ -1,6 +1,6 @@
 
 import { tokens, dexes } from './state.js'
-import { dex_avaxprice, pairnick } from './util.js'
+import { dex_avaxprice, pair_contains, find_token, pairnick } from './util.js'
 import { dexpairs } from './graph.js'
 import { web3 } from './web3.js'
 import { abi_erc20 } from './abi/abi_erc20.js'
@@ -9,14 +9,8 @@ import { exit } from 'process';
 
 const populate = (token) => {
     return Promise.all([
-        new web3.eth.Contract(abi_erc20, token.id).methods.name().call().then( result => {
-            token['name'] = result
-        }),
-        new web3.eth.Contract(abi_erc20, token.id).methods.symbol().call().then( result => {
-            token['symbol'] = result
-        }),
         new web3.eth.Contract(abi_erc20, token.id).methods.totalSupply().call().then( result => {
-            token['totalSupply'] = result / 1e18
+            return parseInt(result)
         }).catch(err => {
             console.log('no supply:', err)
         }),
@@ -25,12 +19,19 @@ const populate = (token) => {
         }).catch(err => {
             console.log('no decimals:', err)
         }),        
+        new web3.eth.Contract(abi_erc20, token.id).methods.name().call().then( result => {
+            token['name'] = result
+        }),
+        new web3.eth.Contract(abi_erc20, token.id).methods.symbol().call().then( result => {
+            token['symbol'] = result
+        }),
         new web3.eth.Contract(abi_erc20, token.id).methods.owner().call().then( result => {
             token['owner'] = result
         }).catch(err => {
             //console.log('no owner:', err)            
         })
-    ]).then(ign => {
+    ]).then(results => {
+        token['totalSupply'] = results[0] / token['decimals']
         return token
     })
 }
@@ -48,8 +49,8 @@ const external = await Promise.all(Object.keys(tokens).map(k => { return tokens[
         return dexpairs(dex).then(pairs => {
             dex.pairs = pairs
             let avaxprice = dex_avaxprice(dex)[2]
-            let tvllocked = dex.pairs.map(pair => {
-                
+            console.log(dex.symbol.toLowerCase(), 'avaxprice:', avaxprice)
+            let tvllocked = dex.pairs.map(pair => {                
                 pair.locked = parseFloat(pair.reserveETH) * avaxprice
                 return pair.locked
             }).reduce((a, b) => a + b, 0)
@@ -61,14 +62,21 @@ const external = await Promise.all(Object.keys(tokens).map(k => { return tokens[
     let system_tvl = system.reduce( (a, b) => { return a + b }, 0)
     console.log('system tvl:', system_tvl)
 
+    /*
     await Promise.all(dexes.filter(d => d?.watch !== undefined).map(async (dex) => {        
         let avaxprice = dex_avaxprice(dex)[2]
         return Promise.all(Object.keys(dex.watch).map(key => {
             let account = dex.watch[key]
             return Promise.all(dex.pairs.map(async (pair) => {
-                return new web3.eth.Contract(abi_erc20, pair.id).methods.balanceOf(account.id).call().then( result => {
-                    let lv = avaxprice * result / 1e18
-                    //console.log('pair:', pairnick(pair), 'locked value:', lv)
+                return new web3.eth.Contract(abi_erc20, pair.id).methods.balanceOf(account.id).call().then( result => {                    
+                    let t0 = find_token(tokens, { key: 'id', value: pair.token0.id })
+                    let t1 = find_token(tokens, { key: 'id', value: pair.token1.id })
+                    let divider = 1e18
+                    if ( t0?.decimals === 9 || t1?.decimals === 9 ) {
+                        divider = 1e21
+                    }
+                    let lv = avaxprice * result / divider
+                    console.log('pair:', pairnick(pair), 'locked value:', lv, 'id:', pair.id)
                     return lv
                 })
             })).then(totals => {
@@ -80,7 +88,8 @@ const external = await Promise.all(Object.keys(tokens).map(k => { return tokens[
             //console.log('dex watch:', dex.symbol.toLowerCase(), 'dex watch:', dex.watch.locked)
         })
     }));
-
+    */
+   
     await Promise.all(dexes.filter(d => d?.tvl?.pairs).map(async (dex) => {
         await Promise.all(dex.tvl.pairs.map(async pair => {
             let pairdex = dexes.filter(d => d.symbol.toLowerCase() == pair.dex.toLowerCase())[0]
@@ -137,4 +146,16 @@ const external = await Promise.all(Object.keys(tokens).map(k => { return tokens[
     return dexes
 })
 
+console.log(find_token(dexes, { key: 'symbol', value: 'olive'}).watch)
+/*
+let totalspore = 0
+dexes.filter(d => d?.pairs).map(dex => {
+    dex.pairs.filter(p => { return pair_contains(p, spore)} ).forEach(p => {
+        console.log(`${dex.symbol.toLowerCase().padStart(10, ' ')} ${pairnick(p).padStart(20, ' ')} locked:`, p.locked)
+        totalspore += p.locked
+    })
+})
+console.log('')
+console.log(`total spore locked:`.padStart(39, ' '), totalspore)
+*/
 export { tokens, dexes, web3 }

@@ -1,4 +1,4 @@
-const proposalsABI = [{
+const abi_proposals = [{
     "constant": true,
     "inputs": [
       {
@@ -78,5 +78,5 @@ const proposalsABI = [{
     "payable": false,
     "stateMutability": "view",
     "type": "function"
-  }]
+}]
 export { abi_proposals }

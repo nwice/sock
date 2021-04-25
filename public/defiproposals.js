@@ -1,7 +1,7 @@
 import { html, render } from './node_modules/lit-html/lit-html.js';
 import { dexes } from './state.js'
 import './defiprice.js'
-import { proposalsABI } from './abi_gov.js';
+import { abi_proposals } from './abi/abi_gov.js';
 
 const range = (size, startAt = 0) => {
   return [...Array(size).keys()].map(i => i + startAt);
@@ -74,7 +74,7 @@ window.customElements.define('defi-proposals', class DefiProposals extends HTMLE
     connectedCallback() {            
       let web3 = new Web3(Web3.givenProvider || 'wss://api.avax.network/ext/bc/C/ws');
       dexes.filter(d => d.governance !== undefined).forEach(d => {
-        let contract = new web3.eth.Contract(proposalsABI, d.governance );
+        let contract = new web3.eth.Contract(abi_proposals, d.governance );
         contract.methods.proposalCount().call().then(result => {
           return Promise.all(range(parseInt(result), 1).map( (proposalId) => {
               return contract.methods.proposals(proposalId).call()
