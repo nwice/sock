@@ -62,31 +62,35 @@ const savetvl = async () => {
 }
 
 const saveprice = async () => {
+    console.log('step1')
+    try {      
+      let prices = await dexprices(dexes)
+      console.log('prices length:', prices)
 
-    let prices = await dexprices(dexes)
-    console.log('prices length:', prices.length)
+      let publishable = prices.filter(p => {   
+        return p.tradeVolume > 0 && !refuse.map(msi => msi.toLowerCase()).includes(p.id.toLowerCase())      
+      });
 
-    let publishable = prices.filter(p => {   
-      return p.tradeVolume > 0 && !refuse.map(msi => msi.toLowerCase()).includes(p.id.toLowerCase())      
-    });
+      console.log('publishable:', publishable.length)
+      
+      publishable.forEach(async (p) => {    
+        if ( p.symbol.toLowerCase() === 'snob' && p.dex.toLowerCase() === 'png' ) {
+          let promise = upload({
+            Bucket: 'beta.scewpt.com',
+            Key: `snob/price`,
+            Body: '' + p.price,
+            ContentType: 'text/plain',
+            ACL: 'public-read',
+          })
+          console.log('promise:', promise);      
+        }
+        //versioning(p, `dex/${tokens[p.dex].id.toLowerCase()}/price/${p.id.toLowerCase()}.json`.toLowerCase(), price_different)
+      })
 
-    console.log('publishable:', publishable.length)
-    
-    publishable.forEach(async (p) => {    
-      if ( p.symbol.toLowerCase() === 'snob' && p.dex.toLowerCase() === 'png' ) {
-        let promise = upload({
-          Bucket: 'beta.scewpt.com',
-          Key: `snob/price`,
-          Body: '' + p.price,
-          ContentType: 'text/plain',
-          ACL: 'public-read',
-        })
-        console.log('promise:', promise);      
-      }
-      versioning(p, `dex/${tokens[p.dex].id.toLowerCase()}/price/${p.id.toLowerCase()}.json`.toLowerCase(), price_different)
-    })
-
-    return prices;
+      return prices;
+    } catch (err) {
+      console.log(err)
+    }
 }
 
 const commands = { price: saveprice, state: savestate, tvl: savetvl }
@@ -95,7 +99,7 @@ if ( process.argv.length > 2 && Object.keys(commands).includes(process.argv[2]) 
     let command = process.argv[2];
     console.log('running command:', command)
     await commands[command]().then(res => {
-        console.log('command complete:', command)
+        console.log('command complete:', command, 'result:', res)
         setTimeout( () => {
             console.log('exit')
             exit()        

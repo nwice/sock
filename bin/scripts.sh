@@ -8,8 +8,6 @@ done
 
 aws s3 sync ./public/node_modules/lit-html s3://powder.network/node_modules/lit-html --acl public-read
 
-aws s3 cp public/assets/site.css s3://powder.network/assets/site.css --acl public-read --content-type "text/css"
-
 aws s3 cp ./public/header.html s3://powder.network/index --acl public-read --content-type "text/html; charset=utf-8"
 
 aws s3 cp ./public/header.html s3://powder.network/error --acl public-read --content-type "text/html; charset=utf-8"

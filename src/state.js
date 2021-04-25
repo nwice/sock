@@ -59,6 +59,14 @@ const tokens = [
         id: '0xaeb044650278731ef3dc244692ab9f64c78ffaea'
     },
     {
+        stable: true,
+        id: '0xdc42728b0ea910349ed3c6e1c9dc06b5fb591f98'
+    },
+    {
+        stable: true,
+        id: '0x1c20e891bab6b1727d14da358fae2984ed9b59eb'
+    },
+    {
         id: '0xB3fe5374F67D7a22886A0eE082b2E2f9d2651651',
     },
     {
@@ -100,12 +108,25 @@ const dexes = [
                     id: '0xde1a11c331a0e45b9ba8fee04d4b51a745f1e4a4', 
                     dex: 'png',
                     nickname: 's3d',
-                    token0: tokens.usdt,
-                    token1: tokens.dai,
-                    token2: tokens.busd,
+                    token0: { id: '0xde3a24028580884448a5397872046a019649b084' },
+                    token1: { id: '0xbA7dEebBFC5fA1100Fb055a87773e1E99Cd3507a' },
+                    token2: { id: '0xaeb044650278731ef3dc244692ab9f64c78ffaea' },
                     accounts: [{
                         id: '0xb12531a2d758c7a8bf09f44fc88e646e1bf9d375',
                         account_type: 'balance',
+                        avax: false
+                    }]                    
+                },
+                {
+                    id: '0xa42be3db9aff3aee48167b240bfee5e1697e1281', 
+                    dex: 'png',
+                    nickname: 's3f',
+                    token0: { id: '0xdc42728b0ea910349ed3c6e1c9dc06b5fb591f98' },
+                    token1: { id: '0x1c20e891bab6b1727d14da358fae2984ed9b59eb' },
+                    token2: { id: '0xde3A24028580884448a5397872046a019649b084' },
+                    accounts: [{
+                        id: '0x05c5db43db72b6e73702eeb1e5b62a03a343732a',
+                        account_type: 'tokens',
                         avax: false
                     }]                    
                 },                
@@ -307,14 +328,14 @@ const dexes = [
     Object.assign({}, tokens[5], {
         graphql: 'https://graph.avagraph.live/subgraphs/name/complusnetwork/subgraph-ava'
     }),
-	Object.assign({ amm: false }, tokens[6], {
+	Object.assign({ amm: false}, tokens[6], {
         graphql: 'https://zero-graph.0.exchange/subgraphs/name/zeroexchange/zerograph',
         stable: { id: '0x474Bb79C3e8E65DcC6dF30F9dE68592ed48BBFDb' }
     }), 
     Object.assign({}, tokens[7], {
         graphql: 'https://api.thegraph.com/subgraphs/name/olive-rose/olivecash',
-        tvl: {
-            account: {
+        watch: {
+            owner: {
                 id: '0x5A9710f3f23053573301C2aB5024D0a43A461E80'
             }
         }

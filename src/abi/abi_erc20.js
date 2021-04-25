@@ -1,4 +1,4 @@
-[
+const abi_erc20 = [
   {
     "constant":true,
     "inputs":[
@@ -138,3 +138,5 @@
      "type":"function"
   }
 ]
+
+export { abi_erc20 }

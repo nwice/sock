@@ -79,4 +79,4 @@ const proposalsABI = [{
     "stateMutability": "view",
     "type": "function"
   }]
-export { proposalsABI }
+export { abi_proposals }
