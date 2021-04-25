@@ -1,7 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>    
-    <title>Powder - light the fuse</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <meta name="viewport" content="width=device-width" />
+
+    <meta name="title" content="Powder Network">
+    <meta name="description" content="Blockchain Tools">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://powder.network">
+    <meta property="og:title" content="Powder Network">
+
+    <title>Powder Network</title>
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
 
@@ -11,7 +23,7 @@
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"></script>
 
-    <script src="common.js"></script>
+    <script src="common.js"></script>    
     
     <script type="module" src="defiheader.js"></script>
     <script type="module" src="defifooter.js"></script>
@@ -43,13 +55,55 @@
         content: " Strategies ";
         top: -10px;
     }    
+
+    #experimental::before {
+        position: absolute;
+        content: " Experimental ";
+        top: -10px;
+    }
 </style>
 <body class="mdc-typography">
     <defi-header></defi-header>
     <main>
-        <pre id="pages"><a href="/proposals">Avalanche Proposals</a> - list of on chain proposals across blockchain</pre>
+        <pre id="experimental">
+
+<a href="/live"><u>Avalanche Live</u></a> - monitor transactions visually - (work in progress)
+        </pre>
 
         <pre id="sanity"></pre>
+
+        <pre id="supported">
+<a href="/price"><u>Avalanche Price Page</u></a> - Quasi real pricing page - scheduled blened pricing modal
+<a href="/proposals"><u>Avalanche Proposals</u></a> - list of on chain proposals across blockchain            
+
+<a target="_blank" href="https://x-api.snowball.network/tvl"><u>Snowball TVL</u></a> - 15 minute cron to json publish with supporting html client            
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/tvl.json"><u>Snowball TVL</u></a> - TVL Cron product
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/total.json"><u>Snowball Harvest Total</u></a>
+
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0x08d8c7c1a6e8543a4674e77cc0111eaa1d520f8b.json">AVAX/PNG harvest</a>
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0x1b4468dc172b94b7b8307ca5b1f63466b086acc8.json">AVAX/SUSHI harvest</a>
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0x6b32266e7793359fa199c32e950cf5c0eb4b284a.json">AVAX/ETH harvest</a>
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0x846e79a9d8ccc6bbafc3939177a3d53e51c634fc.json">AVAX/LINK harvest</a>
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0x961890586dfb84919d8c6c5f6304192a2b3ddab7.json">AVAX/USDT harvest</a>
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0xa362a10ba6b59ee113faa00e41e01c0087dd9ba1.json">AVAX/WBTC harvest</a>
+
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0x8ee25bdfe0b749b78157505b92bd919414af696c.json">PNG/UNI harvest</a>
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0x93bc576943ef7452888dd810f502595ee83187ee.json">PNG/YFI harvest</a>
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0x47f884e0bfc0e56ecdc581e2774efec12874f7fd.json">PNG/AAVE harvest</a>
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0x53a6ffe10adb8db0d861bf264134d42cac03a1bd.json">PNG/DAI harvest</a>
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0x9b3298dba29a1fc7061a4ef9b360eaa12879c911.json">PNG/ETH harvest</a>
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0xaf1f77739e87a1bda1114e13d4af86c8546f3996.json">PNG/USDT harvest</a>
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0xafba321b14a22501466d18ea0d9616f8e90fc378.json">PNG/WBTC harvest</a>
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0xdc3f53a364be3b38d6f8e6a087f61cb2af58fc51.json">PNG/SUSHI harvest</a>
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0xe11248e5c0a98038633603f291267b74183ab7be.json">PNG/LINK harvest</a>
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0xe11248e5c0a98038633603f291267b74183ab7be.json">PNG/LINK harvest</a>
+
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0x74db28797957a52a28963f424daf2b10226ba04c.json">AVAX/USDT harvest (old)</a>
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0x974ef0bda58c81f3094e124f530ef34fe70dc103.json">AVAX/LINK harvest (old)</a>
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0x953853590b805a0e885a75a3c786d2affceea3cf.json">AVAX/ETH harvest (old)</a>
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0x14ec55f8b4642111a5af4f5ddc56b7be867eb6cc.json">AVAX/SUSHI harvest (old)</a>
+<a class="json" href="https://x-api.snowball.network/dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/0x6a803904b9ea0fc982fbb077c7243c244ae05a2d.json">AVAX/PNG harvest (old)</a>
+        </pre>
 
         <pre id="contracts"></pre>
 
@@ -89,7 +143,7 @@
         contracts.forEach(async (uo) => {
             let key = Object.keys(uo)[0]
             let url = uo[key]
-            document.getElementById('contracts').innerText += '\n' + key + spacer(cl + 10, key) + url
+            document.getElementById('contracts').innerHTML += '\n' + key + spacer(cl + 20, key) + `<a href="${url}">${ url.split('/')[4] }</a>`
         })
     </script>
 </body>

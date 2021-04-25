@@ -54,7 +54,7 @@ window.customElements.define('defi-proposals', class DefiProposals extends HTMLE
               }
               return html` 
                 <tr>                  
-                  <td>${proposal.id}</td>
+                  <td>${proposal.id} <img src="/assets/images/json-file.svg" width="20" class="json"></td>
                   <td class="right">${st.toLocaleDateString() }</td>
                   <td class="right">${et.toLocaleDateString() }</td>
                   <td><a href="https://cchain.explorer.avax.network/address/${proposal.proposer}">${proposal.proposer.toLowerCase()}</a></td>
@@ -80,6 +80,7 @@ window.customElements.define('defi-proposals', class DefiProposals extends HTMLE
               return contract.methods.proposals(proposalId).call()
           }));
         }).then(res => {
+          console.log(res)
           this.proposals.push({proposals: res, gov: d })
           this.doRender()
         })        

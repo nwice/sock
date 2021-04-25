@@ -1,8 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Encode+Sans&display=swap');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Sniglet:wght@800&display=swap');
 
 :root {
-    --mdc-typography-font-family: sans-serif, monospace;
+    --mdc-typography-font-family: "Encode Sans", sans-serif, monospace;
     
     --mdc-theme-primary: #fff;
 
@@ -209,4 +210,8 @@ menu > * {
 
 tr.governance > td:first-of-type {
     margin-left: -50px;
+}
+
+.json {
+    cursor: pointer;
 }

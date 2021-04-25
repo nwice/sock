@@ -9,7 +9,7 @@ const defiheader = html`
 <header class="mdc-top-app-bar mdc-top-app-bar--fixed">
     <div class="mdc-top-app-bar__row">
         <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">                        
-            <div class="sniglet">Powder</div>
+            <div class="sniglet"></div>
             <nav class="menu"></nav>            
 
             <img id="avalabs" src="assets/images/avalanche.png" width="140" hspace="5"/>
