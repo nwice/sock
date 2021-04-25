@@ -1,14 +1,20 @@
 cd /home/ubuntu/sock/
 
-aws s3 cp ./public/ s3://powder.network/ --acl public-read --content-type "text/javascript" --include "*.js" 
+for i in ./public/*.js; do
+    [ -f "$i" ] || break
+    j=$(basename $i)
+    aws s3 cp ./public/$j s3://powder.network/$j --acl public-read --content-type "text/javascript"
+done
 
-aws s3 cp --recursive ./public/node_modules/lit-html s3://powder.network/node_modules/lit-html --acl public-read
+aws s3 sync ./public/node_modules/lit-html s3://powder.network/node_modules/lit-html --acl public-read
 
 aws s3 cp public/assets/site.css s3://powder.network/assets/site.css --acl public-read --content-type "text/css"
 
 aws s3 cp ./public/header.html s3://powder.network/index --acl public-read --content-type "text/html; charset=utf-8"
 
 aws s3 cp ./public/header.html s3://powder.network/error --acl public-read --content-type "text/html; charset=utf-8"
+
+aws s3 cp ./public/live.html s3://powder.network/live --acl public-read --content-type "text/html; charset=utf-8"
 
 aws s3 cp ./public/proposals.html s3://powder.network/proposals --acl public-read --content-type "text/html; charset=utf-8"
 
