@@ -55,7 +55,7 @@ const pushprice = (prices, token) => {
     return;
   }
   prices.push(token)
-  let ft = tokens[token.symbol.toLowerCase()]
+  let ft = find_token(tokens, { key: 'id', value: token.id.toLowerCase()} )
   if ( ft ) {
     if ( !ft.prices ) {
       ft.prices = [];

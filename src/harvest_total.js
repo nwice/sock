@@ -7,7 +7,6 @@ let strategies = dexes.snob.tvl.pairs.filter(p => { return p.strategy !== undefi
 let all_strategies = [...strategies,...dexes.snob.legacy]
 
 Promise.all(all_strategies.map(async pair => {
-    console.log('pair:', pair.strategy)
     let harvests = []
     let now = await getcurrent(`dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/${pair.strategy.toLowerCase()}.json`)
     if ( now.json !== undefined ) {
@@ -28,22 +27,19 @@ Promise.all(all_strategies.map(async pair => {
         total = total * 2
     }    
     return { strategy: pair.strategy.toLowerCase(), total: total }
-})).then(res => {
-    console.log('harvests:', res.length)
+})).then(res => {    
     let harvests = { total: 0.0 }
     res.forEach(r => {
         harvests[r.strategy] = r.total
         harvests.total += r.total
     })
-    let promise = upload({
+    upload({
         Bucket: 'beta.scewpt.com',
         Key: `snob/harvest`,
         Body: harvests.total.toFixed(2),
         ContentType: 'text/plain',
         ACL: 'public-read',
     })
-    console.log('promise:', promise);
-    
     console.log('harvests total:', harvests.total)
     versioning(harvests, `dex/0xc38f41a296a4493ff429f1238e030924a1542e50/harvest/total.json`)    
     setTimeout( () => {

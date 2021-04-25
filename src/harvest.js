@@ -94,30 +94,26 @@ const history = async (pair, dex_id) => {
           harvest.reinvest.pair.token0.price = harvest.claim.pair.token1.price
           harvest.reinvest.pair.token1.price = harvest.reinvest.pair.token0.price * parseFloat(harvest.reinvest.amount0In) / parseFloat(harvest.reinvest.amount1Out)
           harvest.reinvest.amountUSD = harvest.reinvest.pair.token0.price * parseFloat(harvest.reinvest.amount0In)
-          //console.log('1 reinvest:', harvest.reinvest.pair.token1.symbol, 'price:', harvest.reinvest.pair.token1.price, 'usd:', harvest.reinvest.amountUSD)
         } else if (harvest.claim.pair.token1.id === harvest.reinvest.pair.token1.id) {
           harvest.reinvest.pair.token1.price = harvest.claim.pair.token1.price
           harvest.reinvest.pair.token0.price = harvest.reinvest.pair.token1.price * parseFloat(harvest.reinvest.amount1In) / parseFloat(harvest.reinvest.amount0Out)          
           harvest.reinvest.amountUSD = harvest.reinvest.pair.token1.price * parseFloat(harvest.reinvest.amount1In)
-          //console.log('2 reinvest:', harvest.reinvest.pair.token0.symbol, 'price:', harvest.reinvest.pair.token0.price, 'usd:', harvest.reinvest.amountUSD)
         }        
       }      
       await versioning(harvest, path)
   }
 }
 
-await Promise.all(Object.keys(dexes).map(k => { return {name: k, dex: dexes[k]}}).filter(d => { return d.dex?.tvl?.pairs !== undefined}).map(async dex_obj => {
-  for (var x = 0; x < dex_obj.dex.tvl.pairs.length; x++) {
-    if ( dex_obj.dex.tvl.pairs[x].strategy !== undefined ) {
-      let pair = dex_obj.dex.tvl.pairs[x]
-      console.log('pair:', pair.nickname)
-      await history(pair, dex_obj.dex.id);
+await Promise.all(dexes.filter(d => { return d?.tvl?.pairs}).map(async dex => {
+  for (var x = 0; x < dex.tvl.pairs.length; x++) {
+    if ( dex.tvl.pairs[x].strategy !== undefined ) {
+      let pair = dex.tvl.pairs[x]
+      await history(pair, dex.id);
     }    
   }  
-  for (var x = 0; x < dex_obj.dex.legacy.length; x++) {
-    let pair = dex_obj.dex.legacy[x]
-    console.log('legacy pair:', pair.nickname)
-    await history(pair, dex_obj.dex.id);
+  for (var x = 0; x < dex.legacy.length; x++) {
+    let pair = dex.legacy[x]
+    await history(pair, dex.id);
   }  
   setTimeout( () => {
     exit()

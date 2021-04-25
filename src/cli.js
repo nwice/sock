@@ -1,13 +1,8 @@
-import { refuse } from './util.js';
+import { find_token, refuse } from './util.js';
 import { tokens, dexes } from './statemachine.js';
 import { dexprices } from './price.js';
 import { versioning, upload } from './versioning.js';
 import { exit } from 'process';
-
-const savestate = async () => {
-    await dexprices(dexes)
-    return versioning( { tokens, dexes }, `dex/${dexes.snob.id.toLowerCase()}/state.json`)
-}
 
 const price_different = (p, previous) => {
   if ( p.price === previous.price ) {
@@ -36,8 +31,8 @@ const any_price_different = (all, all_previous) => {
 
 const savetvl = async () => {
   await dexprices(dexes)
-  let tp = tokens.snob.prices.filter(p => { return p.dex === 'png' })[0];  
-  let dex = dexes.snob
+  let tp = find_token(tokens, { key: 'symbol', value: 'snob'}).prices.filter(p => { return p.dex === 'png' })[0];  
+  let dex = find_token(dexes, { key: 'symbol', value: 'snob'})
   dex.tvl.locked = dex.tvl.pairs.map(p => {
     return p.locked 
   }).reduce( (a,b) => a + b, 0)  
@@ -62,38 +57,32 @@ const savetvl = async () => {
 }
 
 const saveprice = async () => {
-    console.log('step1')
-    try {      
-      let prices = await dexprices(dexes)
-      console.log('prices length:', prices)
+    let prices = await dexprices(dexes)
+    console.log('prices length:', prices)
 
-      let publishable = prices.filter(p => {   
-        return p.tradeVolume > 0 && !refuse.map(msi => msi.toLowerCase()).includes(p.id.toLowerCase())      
-      });
+    let publishable = prices.filter(p => {   
+      return p.tradeVolume > 0 && !refuse.map(msi => msi.toLowerCase()).includes(p.id.toLowerCase())      
+    });
 
-      console.log('publishable:', publishable.length)
-      
-      publishable.forEach(async (p) => {    
-        if ( p.symbol.toLowerCase() === 'snob' && p.dex.toLowerCase() === 'png' ) {
-          let promise = upload({
-            Bucket: 'beta.scewpt.com',
-            Key: `snob/price`,
-            Body: '' + p.price,
-            ContentType: 'text/plain',
-            ACL: 'public-read',
-          })
-          console.log('promise:', promise);      
-        }
-        //versioning(p, `dex/${tokens[p.dex].id.toLowerCase()}/price/${p.id.toLowerCase()}.json`.toLowerCase(), price_different)
-      })
-
-      return prices;
-    } catch (err) {
-      console.log(err)
-    }
+    console.log('publishable:', publishable.length)
+    
+    publishable.forEach(async (p) => {    
+      if ( p.symbol.toLowerCase() === 'snob' && p.dex.toLowerCase() === 'png' ) {
+        let promise = upload({
+          Bucket: 'beta.scewpt.com',
+          Key: `snob/price`,
+          Body: '' + p.price,
+          ContentType: 'text/plain',
+          ACL: 'public-read',
+        })
+        console.log('promise:', promise);      
+      }
+      versioning(p, `dex/${tokens[p.dex].id.toLowerCase()}/price/${p.id.toLowerCase()}.json`.toLowerCase(), price_different)
+    })
+    return prices;
 }
 
-const commands = { price: saveprice, state: savestate, tvl: savetvl }
+const commands = { price: saveprice, tvl: savetvl }
 
 if ( process.argv.length > 2 && Object.keys(commands).includes(process.argv[2]) ) {
     let command = process.argv[2];
