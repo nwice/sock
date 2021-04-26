@@ -90,7 +90,7 @@ const tokens = [
     {
         id: '0x6e7f5C0b9f4432716bDd0a77a3601291b9D9e985'
     }
-]);
+];
 
 const pangolinql = 'https://api.thegraph.com/subgraphs/name/dasconnor/pangolin-dex'
 
