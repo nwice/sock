@@ -1,4 +1,4 @@
-const combined = [
+const tokens = [
     {
         id: '0xC38f41A296A4493Ff429F1238e030924A1542e50', // snob
         maxSupply: 18000000
@@ -33,10 +33,7 @@ const combined = [
     {
         dex: 'yts',
         id: '0x488F73cddDA1DE3664775fFd91623637383D6404' // yts
-    }    
-]
-
-const tokens = combined.concat([
+    },    
     {
         id: '0x9a928D7dcD8D7E5Cb6860B7768eC2D87B8934267'
     },
@@ -98,7 +95,7 @@ const tokens = combined.concat([
 const pangolinql = 'https://api.thegraph.com/subgraphs/name/dasconnor/pangolin-dex'
 
 const dexes = [
-    Object.assign({ amm: false }, combined[0], {
+    Object.assign({ amm: false }, tokens[0], {
         governance: '0x914556b16c1220e4af63084dB1acbD4e6f9c65Aa',
         tvl: { 
             pairs: [
@@ -310,27 +307,27 @@ const dexes = [
         ],        
         graphql: pangolinql
     }),
-    Object.assign({},  combined[1], {
+    Object.assign({},  tokens[1], {
         graphql: pangolinql,
         governance: '0xb0Ff2b1047d9E8d294c2eD798faE3fA817F43Ee1'
     }),
-    Object.assign({amm: false},  combined[2], {
+    Object.assign({amm: false},  tokens[2], {
         graphql: pangolinql
     }),
-    Object.assign({},  combined[3], {
+    Object.assign({},  tokens[3], {
         graphql: 'https://api.thegraph.com/subgraphs/name/lydiacoder/lydia'
     }),    
-    Object.assign({},  combined[4], {
+    Object.assign({},  tokens[4], {
         graphql: 'https://avax-graph.elk.finance/subgraphs/name/elkfinance/elkdex-avax'
     }),
-    Object.assign({},  combined[5], {
+    Object.assign({},  tokens[5], {
         graphql: 'https://graph.avagraph.live/subgraphs/name/complusnetwork/subgraph-ava'
     }),
-	Object.assign({},  combined[6], {
+	Object.assign({},  tokens[6], {
         graphql: 'https://zero-graph.0.exchange/subgraphs/name/zeroexchange/zerograph',
         stable: { id: '0x474Bb79C3e8E65DcC6dF30F9dE68592ed48BBFDb' }
     }), 
-    Object.assign({},  combined[7], {
+    Object.assign({},  tokens[7], {
         graphql: 'https://api.thegraph.com/subgraphs/name/olive-rose/olivecash',
         watch: {
             owner: {
@@ -338,7 +335,7 @@ const dexes = [
             }
         }
     }),
-    Object.assign({},  combined[8], {
+    Object.assign({},  tokens[8], {
         graphql: 'https://api.thegraph.com/subgraphs/name/yetiswap/yetiswap',
     })    
 ]
