@@ -92,11 +92,6 @@ const tokens = [
     }
 ];
 
-
-const gettoken = (nickname) => {
-    return tokens.filter(t => t.symbol.toLowerCase() === nickname)[0]
-}
-
 const pangolinql = 'https://api.thegraph.com/subgraphs/name/dasconnor/pangolin-dex'
 
 const dexes = [

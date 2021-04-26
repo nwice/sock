@@ -1,7 +1,7 @@
 import { html, render } from './node_modules/lit-html/lit-html.js';
+import { abi_proposals } from './abi/abi_gov.js';
 import { dexes } from './state.js'
 import './defiprice.js'
-import { abi_proposals } from './abi/abi_gov.js';
 
 const range = (size, startAt = 0) => {
   return [...Array(size).keys()].map(i => i + startAt);
@@ -41,7 +41,7 @@ window.customElements.define('defi-proposals', class DefiProposals extends HTMLE
             <tr class="governance"><td rowspan="${po.proposals.length + 1}">
                 <defi-price hash=${po.gov.id}></defi-price>                
                 <div style="text-align:center">
-                  <a href="https://cchain.explorer.avax.network/address/${po.gov.governance}">Governance</a>
+                  <a href="https://cchain.explorer.avax.network/address/${po.gov.governance}">Governane Contract</a>
                 </div>
             </td></tr>
             ${po.proposals.map(proposal => {
@@ -71,11 +71,14 @@ window.customElements.define('defi-proposals', class DefiProposals extends HTMLE
       )      
     }
 
-    connectedCallback() {            
-      let web3 = new Web3(Web3.givenProvider || 'wss://api.avax.network/ext/bc/C/ws');
-      dexes.filter(d => d.governance !== undefined).forEach(d => {
+    connectedCallback() {      
+      let web3 = new Web3('wss://api.avax.network/ext/bc/C/ws');            
+      dexes.filter(d => d?.governance).forEach(d => {       
+        console.log('governance contract:', d.governance)
         let contract = new web3.eth.Contract(abi_proposals, d.governance );
+        
         contract.methods.proposalCount().call().then(result => {
+          
           return Promise.all(range(parseInt(result), 1).map( (proposalId) => {
               return contract.methods.proposals(proposalId).call()
           }));
@@ -83,7 +86,7 @@ window.customElements.define('defi-proposals', class DefiProposals extends HTMLE
           console.log(res)
           this.proposals.push({proposals: res, gov: d })
           this.doRender()
-        })        
-      })
+        })
+      })              
     }
 });

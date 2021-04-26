@@ -17,42 +17,52 @@ const site = (href) => {
     }
 }
 
-const defiheader = html`
-<header class="mdc-top-app-bar mdc-top-app-bar--fixed">
-    <div class="mdc-top-app-bar__row">
-        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">                        
-            <div><img src="/assets/images/${site(window.location.hostname)}-dark.png" height="80"/></div>
-            <nav class="menu"></nav>            
-
-            <img id="avalabs" src="assets/images/avalanche.png" width="140" hspace="5"/>
-
-            <menu>
-                <defi-pref></defi-pref>
-                <defi-mode></defi-mode>
-                <defi-web3></defi-web3>
-                <defi-wallet></defi-wallet>
-            </menu>
-        </section>
-    </div>
-</header>
-<canvas id="edge"
-height="4px"
-width="${ window.innerWidth }px"></canvas>
-`
-
 window.customElements.define('defi-header', class DefiHeader extends HTMLElement {
 
     constructor() {
         super();              
     }
 
-    connectedCallback() {   
+    get theme() {
+        if ( localStorage.theme ) {
+            return 'dark'
+        } else {
+            return 'light'
+        }    
+    }
 
+    doRender() {
         render(
-            defiheader,
-            this
-        ) 
+            html`
+            <header class="mdc-top-app-bar mdc-top-app-bar--fixed">
+                <div class="mdc-top-app-bar__row">
+                    <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">                        
+                        <div><img src="/assets/images/${site(window.location.hostname)}-${this.theme}.png" height="80"/></div>
+                        <nav class="menu"></nav>            
 
+                        <img id="avalabs" src="assets/images/avalanche.png" width="140" hspace="5"/>
+                        
+                        <menu>
+                            <defi-mode></defi-mode>
+                            <!---
+                            <defi-pref></defi-pref>
+                            <defi-web3></defi-web3>
+                            <defi-wallet></defi-wallet>
+                            --->
+                        </menu>
+                    </section>
+                </div>
+            </header>
+            <canvas id="edge"
+            height="4px"
+            width="${ window.innerWidth }px"></canvas>
+            `,
+            this
+        )         
+    }
+
+    connectedCallback() {   
+        this.doRender()
         let draw = () => {
             let edge = this.querySelector('canvas#edge');
             let ctx = edge.getContext('2d');
@@ -65,6 +75,7 @@ window.customElements.define('defi-header', class DefiHeader extends HTMLElement
         let resize = () => {
             let url = 'url(' + draw() + ')'
             document.documentElement.style.setProperty('--edge-data-image', url);
+            this.doRender()
         }
         this.querySelector('defi-mode').addEventListener('click', resize);
         window.addEventListener('resize', resize , false);
