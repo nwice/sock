@@ -1,5 +1,6 @@
 import { html, render } from './node_modules/lit-html/lit-html.js';
 import { topics } from './avalanche.js';
+import Web3 from 'web3';
 
 window.customElements.define('defi-blocks', class DefiBlocks extends HTMLElement {
 
@@ -36,12 +37,13 @@ window.customElements.define('defi-blocks', class DefiBlocks extends HTMLElement
     }
 
     connectedCallback() {      
-        console.log('loading')  
         document.addEventListener('tx', (e) => {
-            console.log('received')
             this.blocks.push(e.detail);
             this.doRender()
-        });          
+        });
+        new Web3('wss://api.avax.network/ext/bc/C/ws').eth.getBlockNumber().then(bn => {
+            
+        })
     }
 
 });

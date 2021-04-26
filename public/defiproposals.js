@@ -3,10 +3,6 @@ import { abi_proposals } from './abi/abi_gov.js';
 import { dexes } from './state.js'
 import './defiprice.js'
 
-const range = (size, startAt = 0) => {
-  return [...Array(size).keys()].map(i => i + startAt);
-}
-
 window.customElements.define('defi-proposals', class DefiProposals extends HTMLElement {
 
     static get properties() {

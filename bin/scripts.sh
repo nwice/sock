@@ -29,4 +29,5 @@ aws s3 cp ./public/tvl.html s3://beta.scewpt.com/tvl --acl public-read --content
 
 aws s3 cp ./public/supply.html s3://powder.network/supply --acl public-read --content-type "text/html; charset=utf-8"
 
-aws cloudfront create-invalidation --distribution-id E94H37WVV1OQY --paths "/*.js" "/price" "/harvest" "/tvl" "/supply" "/proposals"  "/" "/index" "/error" "/assets/site.css"
+aws cloudfront create-invalidation --distribution-id E94H37WVV1OQY --paths "/*"
+aws cloudfront create-invalidation --distribution-id E1JZNMX0HG4856 --paths "/*"
