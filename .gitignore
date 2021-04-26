@@ -1,3 +1,4 @@
 node_modules
 public/**/*.json
 dex
+public/abi
