@@ -25,8 +25,8 @@ const check = (bn, f) => {
     if ( bn !== current.bn && current.bn > 0 ) {
         Object.keys(current).filter(k => k !== 'bn').forEach(key => {
             if ( current[key][0].blockNumber / 1 !== bn ) {                
-                //document.dispatchEvent(new CustomEvent('tx', { detail: current[key] }))
-                console.log('tx')
+                document.dispatchEvent(new CustomEvent('tx', { detail: current[key] }))
+                console.log('tx:', current[key] );
                 delete current[key]
             }
         })

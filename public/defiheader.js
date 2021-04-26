@@ -13,7 +13,7 @@ const site = (href) => {
     } else if ( sl == 3 ) {
         return href.split('.')[1]
     } else {
-        return 'snowball'
+        return 'powder'
     }
 }
 
