@@ -5,11 +5,23 @@ import './defimode.js'
 import './defiweb3.js'
 import './defiwallet.js'
 
+
+const site = (href) => {
+    let sl = href.split('.').length
+    if ( sl == 2 ) {
+        return href.split('.')[0]
+    } else if ( sl == 3 ) {
+        return href.split('.')[1]
+    } else {
+        return 'snowball'
+    }
+}
+
 const defiheader = html`
 <header class="mdc-top-app-bar mdc-top-app-bar--fixed">
     <div class="mdc-top-app-bar__row">
         <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">                        
-            <div class="sniglet"></div>
+            <div><img src="/assets/images/${site(window.location.hostname)}-dark.png" height="80"/></div>
             <nav class="menu"></nav>            
 
             <img id="avalabs" src="assets/images/avalanche.png" width="140" hspace="5"/>
