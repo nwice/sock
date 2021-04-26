@@ -1,42 +1,45 @@
-const tokens = [
+const combined = [
     {
-        id: '0xC38f41A296A4493Ff429F1238e030924A1542e50',
+        id: '0xC38f41A296A4493Ff429F1238e030924A1542e50', // snob
         maxSupply: 18000000
     },
     {
-        id: '0x60781C2586D68229fde47564546784ab3fACA982',
+        id: '0x60781C2586D68229fde47564546784ab3fACA982', // png
     },
     {
-        id: '0xe896CDeaAC9615145c0cA09C8Cd5C25bced6384c',
+        id: '0xe896CDeaAC9615145c0cA09C8Cd5C25bced6384c', // pefi
         maxSupply: 21000000        
     },
     {
-        id: '0x4C9B4E1AC6F24CdE3660D5E4Ef1eBF77C710C084'
+        dex: 'lyd',
+        id: '0x4C9B4E1AC6F24CdE3660D5E4Ef1eBF77C710C084' // lyd
     },
     {
         dex: 'elk',
-        id: '0xE1C8f3d529BEa8E3fA1FAC5B416335a2f998EE1C'
+        id: '0xE1C8f3d529BEa8E3fA1FAC5B416335a2f998EE1C' // elk
     },
     {
         dex: 'com',
-        id: '0x3711c397B6c8F7173391361e27e67d72F252cAad'
+        id: '0x3711c397B6c8F7173391361e27e67d72F252cAad' // complus
     },
     {
         dex: 'zero',
-        id: '0x008E26068B3EB40B443d3Ea88c1fF99B789c10F7'
+        id: '0x008E26068B3EB40B443d3Ea88c1fF99B789c10F7' // zero
     },
     {    
         dex: 'olive',
-        id: '0x617724974218A18769020A70162165A539c07E8a',
+        id: '0x617724974218A18769020A70162165A539c07E8a', // olive
     },
     {
         dex: 'yts',
-        id: '0x488F73cddDA1DE3664775fFd91623637383D6404'
-    },
+        id: '0x488F73cddDA1DE3664775fFd91623637383D6404' // yts
+    }    
+]
+
+const tokens = combined.concat([
     {
         id: '0x9a928D7dcD8D7E5Cb6860B7768eC2D87B8934267'
     },
-
     {
         id: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7',
     },
@@ -90,12 +93,12 @@ const tokens = [
     {
         id: '0x6e7f5C0b9f4432716bDd0a77a3601291b9D9e985'
     }
-];
+]);
 
 const pangolinql = 'https://api.thegraph.com/subgraphs/name/dasconnor/pangolin-dex'
 
 const dexes = [
-    Object.assign({ amm: false }, tokens[0], {
+    Object.assign({ amm: false }, combined[0], {
         governance: '0x914556b16c1220e4af63084dB1acbD4e6f9c65Aa',
         tvl: { 
             pairs: [
@@ -307,27 +310,27 @@ const dexes = [
         ],        
         graphql: pangolinql
     }),
-    Object.assign({}, tokens[1], {
+    Object.assign({},  combined[1], {
         graphql: pangolinql,
         governance: '0xb0Ff2b1047d9E8d294c2eD798faE3fA817F43Ee1'
     }),
-    Object.assign({amm: false}, tokens[2], {
+    Object.assign({amm: false},  combined[2], {
         graphql: pangolinql
     }),
-    Object.assign({ amm: false}, tokens[3], {
-        graphql: pangolinql
+    Object.assign({},  combined[3], {
+        graphql: 'https://api.thegraph.com/subgraphs/name/lydiacoder/lydia'
     }),    
-    Object.assign({}, tokens[4], {
+    Object.assign({},  combined[4], {
         graphql: 'https://avax-graph.elk.finance/subgraphs/name/elkfinance/elkdex-avax'
     }),
-    Object.assign({}, tokens[5], {
+    Object.assign({},  combined[5], {
         graphql: 'https://graph.avagraph.live/subgraphs/name/complusnetwork/subgraph-ava'
     }),
-	Object.assign({}, tokens[6], {
+	Object.assign({},  combined[6], {
         graphql: 'https://zero-graph.0.exchange/subgraphs/name/zeroexchange/zerograph',
         stable: { id: '0x474Bb79C3e8E65DcC6dF30F9dE68592ed48BBFDb' }
     }), 
-    Object.assign({}, tokens[7], {
+    Object.assign({},  combined[7], {
         graphql: 'https://api.thegraph.com/subgraphs/name/olive-rose/olivecash',
         watch: {
             owner: {
@@ -335,7 +338,7 @@ const dexes = [
             }
         }
     }),
-    Object.assign({}, tokens[8], {
+    Object.assign({},  combined[8], {
         graphql: 'https://api.thegraph.com/subgraphs/name/yetiswap/yetiswap',
     })    
 ]
