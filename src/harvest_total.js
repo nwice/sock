@@ -1,10 +1,13 @@
 import { dexes } from './statemachine.js';
+import { find_token } from './util.js';
 import { upload, getversion, getcurrent, versioning } from './versioning.js';
 import { exit } from 'process';
 
-let strategies = dexes.snob.tvl.pairs.filter(p => { return p.strategy !== undefined})
+let snob = find_token(dexes, { key: 'symbol', value: 'snob'})
 
-let all_strategies = [...strategies,...dexes.snob.legacy]
+let strategies = snob.tvl.pairs.filter(p => { return p.strategy !== undefined})
+
+let all_strategies = [...strategies,...snob.legacy]
 
 Promise.all(all_strategies.map(async pair => {
     let harvests = []

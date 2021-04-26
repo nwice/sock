@@ -328,7 +328,7 @@ const dexes = [
     Object.assign({}, tokens[5], {
         graphql: 'https://graph.avagraph.live/subgraphs/name/complusnetwork/subgraph-ava'
     }),
-	Object.assign({ amm: false}, tokens[6], {
+	Object.assign({}, tokens[6], {
         graphql: 'https://zero-graph.0.exchange/subgraphs/name/zeroexchange/zerograph',
         stable: { id: '0x474Bb79C3e8E65DcC6dF30F9dE68592ed48BBFDb' }
     }), 

@@ -45,7 +45,9 @@ const upload = async (o) => {
         let s3upload = Object.assign({}, s3props, o)
         console.log('s3upload:', s3upload);
         return s3.upload(s3upload).promise();        
-    } 
+    } else {
+        console.log('not aws')
+    }
     return Promise.resolve()
 }
 
@@ -69,6 +71,8 @@ const versioning = async (o, p, conditional) => {
                 Body: out,
                 Key: next_version_location,
             })).promise();    
+        } else {
+            console.log('not aws')
         }
     }
 }

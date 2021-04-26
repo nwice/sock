@@ -29,6 +29,27 @@ const any_price_different = (all, all_previous) => {
   return true
 }
 
+const savesupply = async () => {
+  let snob = find_token(tokens, {key:'symbol', value: 'snob'})
+  console.log(snob)
+  await upload({
+      Bucket: 'beta.scewpt.com',
+      Key: `snob/circulating`,
+      Body: snob.totalSupply.toFixed(2),
+      ContentType: 'text/plain',
+      ACL: 'public-read',
+  })
+  let o = { circulating: parseFloat(snob.totalSupply.toFixed(2)), total: 18000000 }
+  await upload({
+      Bucket: 'powder.network',
+      Key: `supply/snob.json`,
+      Body: JSON.stringify(o),
+      ContentType: 'application/json',
+      ACL: 'public-read',
+  })
+  return snob.totalSupply.toFixed(2)
+}
+
 const savetvl = async () => {
   await dexprices(dexes)
   let tp = find_token(tokens, { key: 'symbol', value: 'snob'}).prices.filter(p => { return p.dex === 'png' })[0];  
@@ -83,7 +104,7 @@ const saveprice = async () => {
     return prices;
 }
 
-const commands = { price: saveprice, tvl: savetvl }
+const commands = { price: saveprice, tvl: savetvl, supply: savesupply }
 
 if ( process.argv.length > 2 && Object.keys(commands).includes(process.argv[2]) ) {
     let command = process.argv[2];

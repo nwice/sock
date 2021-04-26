@@ -15,23 +15,26 @@ const populate = (token) => {
             console.log('no supply:', err)
         }),
         new web3.eth.Contract(abi_erc20, token.id).methods.decimals().call().then( result => {
-            token['decimals'] = parseInt(result)
+            token.decimals = parseInt(result)
         }).catch(err => {
             console.log('no decimals:', err)
         }),        
         new web3.eth.Contract(abi_erc20, token.id).methods.name().call().then( result => {
-            token['name'] = result
+            token.name = result
         }),
         new web3.eth.Contract(abi_erc20, token.id).methods.symbol().call().then( result => {
-            token['symbol'] = result
+            token.symbol = result
         }),
         new web3.eth.Contract(abi_erc20, token.id).methods.owner().call().then( result => {
-            token['owner'] = result
+            token.owner = result
         }).catch(err => {
             //console.log('no owner:', err)            
         })
     ]).then(results => {
-        token['totalSupply'] = results[0] / token['decimals']
+        if ( token.decimals !== 18 ) {
+            console.log(token.symbol, 'decimals:', token.decimals)
+        }
+        token.totalSupply = results[0] / 10 ** token.decimals
         return token
     })
 }
