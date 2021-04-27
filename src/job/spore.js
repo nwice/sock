@@ -11,13 +11,16 @@ const pricefirst = async () => {
     let spore = find_token(tokens, {key:'symbol', value: 'spore'})
     let bscBurned = await new bsc.eth.Contract(abi_erc20, spore.bsc).methods.burned().call()
     let avaBurned = await new ava.eth.Contract(abi_erc20, spore.id).methods.balanceOf(spore.avaburn).call()
-    spore.bscBurned = bscBurned / 10 ** spore.decimals  
-    spore.avaBurned = avaBurned / 10 ** spore.decimals  
-    spore.circulatingSupply = spore.totalSupply - spore.avaBurned - spore.bscBurned; // - spore.totalFees / 2
     console.log(spore)
-    let report = {}    
-    report.locked = 0
-    report.pairs = []
+    let report = {
+        bscBurned: bscBurned / 10 ** spore.decimals,
+        avaBurned: avaBurned / 10 ** spore.decimals,
+        locked: 0,
+        pairs: []
+    }
+
+    report.circulatingSupply = spore.totalSupply - report.avaBurned - report.bscBurned; // - spore.totalFees / 2
+
     dexes.filter(d => d?.pairs).map(dex => {
         dex.pairs.filter(p => { return pair_contains(p, spore)} ).forEach(p => {
             console.log(`${dex.symbol.toLowerCase().padStart(8, ' ')} ${pairnick(p).padStart(14, ' ')} locked:`.padEnd(5, ' '), p.locked)
@@ -26,11 +29,13 @@ const pricefirst = async () => {
         })
     })    
 
-    Object.assign(report, spore.prices.filter(p => p.dex === 'png')[0])
+    let report_spore = Object.assign({}, spore.prices.filter(p => p.dex === 'png')[0], report)
 
-    console.log(report)
+    delete spore.prices
 
-    versioning(report, `dex/${spore.id.toLowerCase()}/tvl.json`.toLowerCase() )
+    Object.assign(spore, report_spore)
+
+    versioning(spore, `dex/${spore.id.toLowerCase()}/tvl.json`.toLowerCase() )
 
     await upload({
         Bucket: 'beta.scewpt.com',
@@ -58,6 +63,4 @@ pricefirst().then(res => {
         exit()
     }, 1000)
 })
-
-
 
