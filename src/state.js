@@ -88,6 +88,7 @@ const tokens = [
         id: '0x54b17F4f55bd93EfBe5f91a3A4619619bC7DBC33'
     },
     {
+        bsc: '0x33a3d962955a3862c8093d1273344719f03ca17c',
         id: '0x6e7f5C0b9f4432716bDd0a77a3601291b9D9e985'
     }
 ];

@@ -1,5 +1,3 @@
-import { topics, addresses } from './avalanche.js';
-
 const subs = [{
     id: 1, 
     method: 'eth_subscribe', 
@@ -26,7 +24,7 @@ const check = (bn, f) => {
         Object.keys(current).filter(k => k !== 'bn').forEach(key => {
             if ( current[key][0].blockNumber / 1 !== bn ) {                
                 document.dispatchEvent(new CustomEvent('tx', { detail: current[key] }))
-                console.log('tx:', current[key] );
+                console.log('remove tx:', current[key] );
                 delete current[key]
             }
         })

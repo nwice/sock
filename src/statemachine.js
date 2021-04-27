@@ -2,7 +2,7 @@
 import { tokens, dexes } from './state.js'
 import { dex_avaxprice, pair_contains, find_token, pairnick } from './util.js'
 import { dexpairs } from './graph.js'
-import { web3 } from './web3.js'
+import { ava as web3 } from './web3.js'
 import { abi_erc20 } from './abi/abi_erc20.js'
 import { exit } from 'process';
 
@@ -29,7 +29,12 @@ const populate = (token) => {
             token.owner = result
         }).catch(err => {
             //console.log('no owner:', err)            
-        })
+        }),
+        new web3.eth.Contract(abi_erc20, token.id).methods.totalFees().call().then( result => {            
+            token.totalFees = result / 1e18
+        }).catch(err => {
+            //console.log('no total fees:', err)            
+        })        
     ]).then(results => {
         if ( token.decimals !== 18 ) {
             console.log(token.symbol, 'decimals:', token.decimals)
@@ -149,16 +154,4 @@ const external = await Promise.all(Object.keys(tokens).map(k => { return tokens[
     return dexes
 })
 
-console.log(find_token(dexes, { key: 'symbol', value: 'olive'}).watch)
-/*
-let totalspore = 0
-dexes.filter(d => d?.pairs).map(dex => {
-    dex.pairs.filter(p => { return pair_contains(p, spore)} ).forEach(p => {
-        console.log(`${dex.symbol.toLowerCase().padStart(10, ' ')} ${pairnick(p).padStart(20, ' ')} locked:`, p.locked)
-        totalspore += p.locked
-    })
-})
-console.log('')
-console.log(`total spore locked:`.padStart(39, ' '), totalspore)
-*/
-export { tokens, dexes, web3 }
+export { tokens, dexes }

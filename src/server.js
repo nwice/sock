@@ -12,9 +12,14 @@ const subs = [{
 }]
 
 const safedata = (data, t) => {
+    if ( t === 'reward' ) {
+        return data / 1e18
+    } else {
+        return 0
+    }
     if ( t === 'sync') return data / 1e12
     try {
-        return data / 1e18
+        
     } catch (err) {
         try {
             return data / 1e21

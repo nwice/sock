@@ -127,6 +127,36 @@ const abi_erc20 = [
      "inputs":[
         
      ],
+     "name":"totalFees",
+     "outputs":[
+        {
+           "name":"",
+           "type":"uint256"
+        }
+     ],
+     "payable":false,
+     "type":"function"
+  },
+  {
+     "constant":true,
+     "inputs":[
+        
+     ],
+     "name":"burned",
+     "outputs":[
+        {
+           "name":"",
+           "type":"uint256"
+        }
+     ],
+     "payable":false,
+     "type":"function"
+  },
+  {
+     "constant":true,
+     "inputs":[
+        
+     ],
      "name":"totalSupply",
      "outputs":[
         {

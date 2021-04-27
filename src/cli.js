@@ -29,7 +29,8 @@ const any_price_different = (all, all_previous) => {
   return true
 }
 
-const savesupply = async () => {
+const savesupply = async () => {  
+
   let snob = find_token(tokens, {key:'symbol', value: 'snob'})
   console.log(snob)
   await upload({
@@ -47,6 +48,7 @@ const savesupply = async () => {
       ContentType: 'application/json',
       ACL: 'public-read',
   })
+
   return snob.totalSupply.toFixed(2)
 }
 
