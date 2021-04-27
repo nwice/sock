@@ -14,18 +14,23 @@ const pricefirst = async () => {
     spore.bscBurned = bscBurned / 10 ** spore.decimals  
     spore.avaBurned = avaBurned / 10 ** spore.decimals  
     spore.circulatingSupply = spore.totalSupply - spore.avaBurned - spore.bscBurned; // - spore.totalFees / 2
-    console.log(spore)    
-    spore.locked = 0
-    spore.tvl = []
+    console.log(spore)
+    let report = {}    
+    report.locked = 0
+    report.pairs = []
     dexes.filter(d => d?.pairs).map(dex => {
         dex.pairs.filter(p => { return pair_contains(p, spore)} ).forEach(p => {
             console.log(`${dex.symbol.toLowerCase().padStart(8, ' ')} ${pairnick(p).padStart(14, ' ')} locked:`.padEnd(5, ' '), p.locked)
-            spore.locked += p.locked
-            spore.tvl.push(p)
+            report.locked += p.locked
+            report.pairs.push(p)
         })
     })    
 
-    versioning(spore, `dex/${spore.id.toLowerCase()}/tvl.json`.toLowerCase() )
+    Object.assign(report, spore.prices.filter(p => p.dex === 'png')[0])
+
+    console.log(report)
+
+    versioning(report, `dex/${spore.id.toLowerCase()}/tvl.json`.toLowerCase() )
 
     await upload({
         Bucket: 'beta.scewpt.com',
