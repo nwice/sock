@@ -18,20 +18,6 @@ defiprice.innerHTML = `
 </table>
 `
 
-const numberformat = (price) => {
-    if ( isNaN(price) ) return price
-    if ( price > 1000 ) return price.toFixed(0)
-    if ( price > 100 ) return price.toFixed(1)
-    if ( price > 10 ) return price.toFixed(2)
-    if ( price > .97 ) {
-        console.log('what the:', price)
-        return price.toFixed(3)
-    }
-    if ( price < .000000001 ) return  price.toFixed(18)
-    if ( price < .01 ) return  price.toFixed(8)
-    return price.toFixed(4)    
-}
-
 window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
     
     constructor() {
@@ -49,7 +35,7 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
                 if ( pricetd ) {
                     let newprice = parseFloat(newvalue);
                     let oldprice = parseFloat(oldvalue);
-                    pricetd.innerHTML = numberformat(newprice, this);                                                    
+                    pricetd.innerHTML = shortNumberFormat(newprice, this);                                                    
                     if (oldprice) {
                         if (parseFloat(oldprice) < newprice) {
                             pricetd.classList.remove('down')
@@ -129,7 +115,6 @@ window.customElements.define('defi-price', class DefiPrice extends HTMLElement {
             this.setAttribute('price', e.detail.price)
             this.setAttribute('name', e.detail.name)
             this.setAttribute('symbol', e.detail.symbol)
-            console.log('yo:', this.listento(), e.detail)
         })
         if ( !this.getAttribute('price') ) {
             let location = `/dex/${this.dex.toLowerCase()}/price/${this.hash.toLowerCase()}.json?cb=${ new Date().getTime() }`;

@@ -1,3 +1,7 @@
+const range = (size, startAt = 0) => {
+    return [...Array(size).keys()].map(i => i + startAt);
+}
+
 const resolvedOrFetch = async (location) => {
     if ( !localStorage.getItem(location) )  {
         return fetch(location).then(res => {
@@ -117,6 +121,19 @@ const getParameterByName = (name, url = window.location.href) => {
     if (!results) return null;
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+const shortNumberFormat = (price) => {
+    if ( isNaN(price) ) return price
+    if ( price > 1000 ) return price.toFixed(0)
+    if ( price > 100 ) return price.toFixed(1)
+    if ( price > 10 ) return price.toFixed(2)
+    if ( price >= 1 ) {
+        return price.toFixed(3)
+    }
+    if ( price < .000000001 ) return  price.toFixed(18)
+    if ( price < .01 ) return  price.toFixed(8)
+    return price.toFixed(4)    
 }
 
 const prettyNumber = (n, fixed) => {
