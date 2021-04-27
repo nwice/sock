@@ -3,29 +3,54 @@ import { tokens, dexes } from './../statemachine.js'
 import { find_token, pair_contains, pairnick } from './../util.js'
 import { abi_erc20 } from './../abi/abi_erc20.js'
 import { dexprices } from './../price.js'
+import { exit } from 'process';
 
 const pricefirst = async () => {
     await dexprices(dexes.filter(d => d.symbol.toLowerCase() === 'png'))
     let spore = find_token(tokens, {key:'symbol', value: 'spore'})
     let bscBurned = await new bsc.eth.Contract(abi_erc20, spore.bsc).methods.burned().call()
-    let avaBurned = await new ava.eth.Contract(abi_erc20, spore.id).methods.balanceOf('0x000000000000000000000000000000000000dEaD').call()
-    spore.bscBurned = bscBurned / 1e18  
-    spore.avaBurned = avaBurned / 1e18
+    let avaBurned = await new ava.eth.Contract(abi_erc20, spore.id).methods.balanceOf(spore.avaburn).call()
+    spore.bscBurned = bscBurned / 10 ** spore.decimals  
+    spore.avaBurned = avaBurned / 10 ** spore.decimals  
     spore.circulatingSupply = spore.totalSupply - spore.avaBurned - spore.bscBurned; // - spore.totalFees / 2
     console.log(spore)    
-    let totalspore = 0
+    spore.locked = 0
+    spore.tvl = []
     dexes.filter(d => d?.pairs).map(dex => {
         dex.pairs.filter(p => { return pair_contains(p, spore)} ).forEach(p => {
             console.log(`${dex.symbol.toLowerCase().padStart(8, ' ')} ${pairnick(p).padStart(14, ' ')} locked:`.padEnd(5, ' '), p.locked)
-            totalspore += p.locked
+            spore.locked += p.locked
+            spore.tvl.push(p)
         })
+    })    
+
+    versioning(spore, `dex/${spore.id.toLowerCase()}/info.json`.toLowerCase() )
+
+    await upload({
+        Bucket: 'beta.scewpt.com',
+        Key: `spore/circulating`,
+        Body: spore.circulatingSupply.toFixed(2),
+        ContentType: 'text/plain',
+        ACL: 'public-read',
     })
-    console.log('')
-    console.log(`total spore locked:`.padStart(31, ' '), totalspore)
+
+    let o = { circulating: spore.circulatingSupply.toFixed(2), total: spore.totalSupply }
+    
+    await upload({
+        Bucket: 'powder.network',
+        Key: `supply/spore.json`,
+        Body: JSON.stringify(o),
+        ContentType: 'application/json',
+        ACL: 'public-read',
+    })    
+   
 }
 
 pricefirst().then(res => {
     console.log('done')
+    setTimeout( () => {
+        exit()
+    }, 1000)
 })
 
 
