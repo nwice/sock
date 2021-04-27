@@ -25,7 +25,7 @@ const pricefirst = async () => {
         })
     })    
 
-    versioning(spore, `dex/${spore.id.toLowerCase()}/info.json`.toLowerCase() )
+    versioning(spore, `dex/${spore.id.toLowerCase()}/tvl.json`.toLowerCase() )
 
     await upload({
         Bucket: 'beta.scewpt.com',
