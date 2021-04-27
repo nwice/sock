@@ -11,7 +11,7 @@ const pricefirst = async () => {
     let avaBurned = await new ava.eth.Contract(abi_erc20, spore.id).methods.balanceOf('0x000000000000000000000000000000000000dEaD').call()
     spore.bscBurned = bscBurned / 1e18  
     spore.avaBurned = avaBurned / 1e18
-    spore.circulatingSupply = spore.totalSupply - spore.avaBurned - spore.bscBurned;
+    spore.circulatingSupply = spore.totalSupply - spore.avaBurned - spore.bscBurned; // - spore.totalFees / 2
     console.log(spore)    
     let totalspore = 0
     dexes.filter(d => d?.pairs).map(dex => {
