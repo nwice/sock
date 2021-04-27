@@ -3,6 +3,7 @@ import { tokens, dexes } from './../statemachine.js'
 import { find_token, pair_contains, pairnick } from './../util.js'
 import { abi_erc20 } from './../abi/abi_erc20.js'
 import { dexprices } from './../price.js'
+import { versioning, upload } from './../versioning.js';
 import { exit } from 'process';
 
 const pricefirst = async () => {
