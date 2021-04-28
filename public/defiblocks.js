@@ -5,7 +5,8 @@ import { topics } from './avalanche.js';
 const safedata = (data, t) => {    
     if ( t === 'sync') {
         let rv = data / 1e12
-        console.log(t)
+        console.log('rv:', rv)
+        return rv
     }
     try {
         return data / 1e18        
@@ -32,8 +33,8 @@ window.customElements.define('defi-blocks', class DefiBlocks extends HTMLElement
     constructor() {
         super();              
         this.blocks = [];
-        this.visibleblocks = 4;
-        this.loadonstart = 4;
+        this.visibleblocks = 5;
+        this.loadonstart = 5;
     }
 
     doRender() {
@@ -48,7 +49,7 @@ window.customElements.define('defi-blocks', class DefiBlocks extends HTMLElement
                 </details>        
             <div>
             <div id="blocks">
-                ${this.blocks.filter( (b,i,a) => { return i > a.length - this.visibleblocks }).map(txarray => html`
+                ${this.blocks.filter( (b,i,a) => { return i >= a.length - this.visibleblocks }).map(txarray => html`
                     <div class="block">
                         <div><a target="_blank" href="https://cchain.explorer.avax.network/blocks/${txarray[0].blockNumber / 1}">${txarray[0].blockNumber / 1}</a></div>
                         <div><a target="_blank" href="https://cchain.explorer.avax.network/tx/${txarray[0].transactionHash}"><span style="font-size:smaller">${txarray[0].transactionHash.substring(0,20)}…</span></a></div>
@@ -56,8 +57,7 @@ window.customElements.define('defi-blocks', class DefiBlocks extends HTMLElement
                             let topic0 = topics[tx.topics[0]] || 'unknown'
                             return html`
                             <div class="topic" style="margin: 2px 0 2px 0">
-                                <div style="white-space: nowrap;">${tx.logIndex}</div>
-                                <div style="white-space: nowrap; flex:0; margin: 0 2px 0 2px">${topic0}</div>
+                                <div style="white-space: nowrap; flex:0; margin-right: 2px">${topic0}</div>
                                 <div style="flex:1;" class="right">${safedata(tx.data, topic0)}</div>
                             </div>                         
                         `

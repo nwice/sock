@@ -88,9 +88,9 @@ window.customElements.define('defi-supply', class DefiSupply extends HTMLElement
     }    
 
     connectedCallback() {       
-        this.appendChild(template.content.cloneNode(true));
-        this.firstElementChild.querySelector('.token').innerHTML = `<defi-price symbol="${this.symbol.toLowerCase()}"></defi-price>`
+        this.appendChild(template.content.cloneNode(true));        
         document.addEventListener(`supply-${this.symbol.toLowerCase()}-${this.dex.toLowerCase()}`, (e) => {
+            this.firstElementChild.querySelector('.token').innerHTML = `<defi-price hash="${e.detail.id.toLowerCase()}"></defi-price>`
             this.setAttribute('circulating', e.detail.circulating);
             this.checkcap()
             this.firstElementChild.querySelector('.circulating').innerHTML = prettyNumber(e.detail.circulating);

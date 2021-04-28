@@ -1,6 +1,6 @@
 import { bsc, ava } from './../web3.js';
 import { tokens, dexes } from './../statemachine.js'
-import { find_token, pair_contains } from './../util.js'
+import { find_token, pairnick, pair_contains } from './../util.js'
 import { abi_erc20 } from './../abi/abi_erc20.js'
 import { dexprices } from './../price.js'
 import { versioning, upload } from './../versioning.js';
@@ -23,10 +23,19 @@ const pricefirst = async () => {
 
     dexes.filter(d => d?.pairs).map(dex => {
         dex.pairs.filter(p => { return pair_contains(p, spore)} ).forEach(p => {
+            console.log(dex.symbol.toLowerCase(), pairnick(p), p.locked)
             report.locked += p.locked
             report.pairs.push(p)
         })
     })    
+
+    await upload({
+        Bucket: 'beta.scewpt.com',
+        Key: `spore/tvl`,
+        Body: report.locked.toFixed(2),
+        ContentType: 'text/plain',
+        ACL: 'public-read',
+    })
 
     let flat_shell = spore = Object.assign({}, spore.prices.filter(p => p.dex === 'png')[0], report)
 
@@ -47,7 +56,7 @@ const pricefirst = async () => {
     })
 
     let o = { circulating: spore.circulatingSupply.toFixed(2), total: spore.totalSupply }
-    
+
     await upload({
         Bucket: 'powder.network',
         Key: `supply/spore.json`,

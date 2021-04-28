@@ -52,11 +52,16 @@
         margin-left: var(--header-padding);
         position: relative;
     }
-    #sanity::before {
+    #snobsanity::before {
         position: absolute;
-        content: " Sanity Check ";
+        content: " Snob Sanity Check ";
         top: -10px;
     }
+    #sporesanity::before {
+        position: absolute;
+        content: " Spore Sanity Check ";
+        top: -10px;
+    }    
     #contracts::before {
         position: absolute;
         content: " Contracts ";
@@ -83,7 +88,9 @@
 <a href="/live"><u>Avalanche Live</u></a> - monitor transactions visually - (work in progress)
         </pre>
 
-        <pre id="sanity"></pre>
+        <pre id="snobsanity"></pre>
+
+        <pre id="sporesanity"></pre>
 
         <pre id="supported">
 <a href="/price"><u>Avalanche Price Page</u></a> - Quasi real-time pricing page - scheduled blened pricing modal
@@ -130,19 +137,34 @@
             }
             return r
         }
+        
         let sanitychecks = [
             'https://x-api.snowball.network/snob/tvl',
             'https://x-api.snowball.network/snob/harvest',
             'https://x-api.snowball.network/snob/circulating',
             'https://x-api.snowball.network/snob/price',
-            'https://x-api.snowball.network/supply/snob.json'
+            'https://x-api.snowball.network/supply/snob.json',
         ];
         let scl = sanitychecks.reduce( (a, b) => { return a.length > b.length ? a.length: b.length }, 0);
 
         sanitychecks.forEach(async (url,i) => {
             let res = await fetch(url).then(res => res.text());                        
-            document.getElementById('sanity').innerText += '\n' + url + spacer(scl + 10, url) + res
+            document.getElementById('snobsanity').innerText += '\n' + url + spacer(scl + 10, url) + res
         })
+
+
+        let sporesanitychecks = [
+        'https://x-api.snowball.network/supply/spore.json',
+        'https://x-api.snowball.network/spore/circulating',
+        ];
+        let scl2 = sporesanitychecks.reduce( (a, b) => { return a.length > b.length ? a.length: b.length }, 0);
+
+        sporesanitychecks.forEach(async (url,i) => {
+            let res = await fetch(url).then(res => res.text());                        
+            document.getElementById('sporesanity').innerText += '\n' + url + spacer(scl + 10, url) + res
+        })
+
+
 
         let contracts = [
             { stablevault: 'https://cchain.explorer.avax.network/address/0x6B41E5c07F2d382B921DE5C34ce8E2057d84C042/contracts' },

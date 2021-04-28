@@ -2,6 +2,7 @@ import { find_token, refuse } from './util.js';
 import { tokens, dexes } from './statemachine.js';
 import { dexprices } from './price.js';
 import { versioning, upload } from './versioning.js';
+import fs from 'fs';
 import { exit } from 'process';
 
 const price_different = (p, previous) => {
@@ -40,7 +41,11 @@ const savesupply = async () => {
       ContentType: 'text/plain',
       ACL: 'public-read',
   })
-  let o = { circulating: parseFloat(snob.totalSupply.toFixed(2)), total: 18000000 }
+  let o = { circulating: parseFloat(snob.totalSupply.toFixed(2)), total: 18000000, id: snob.id  }
+
+  await fs.promises.mkdir('public/supply', { recursive: true });
+  fs.writeFileSync('public/supply/snob.json', JSON.stringify(o, null, 2))
+
   await upload({
       Bucket: 'powder.network',
       Key: `supply/snob.json`,
@@ -100,6 +105,15 @@ const saveprice = async () => {
           ACL: 'public-read',
         })
       }
+      if ( p.symbol.toLowerCase() === 'spore' && p.dex.toLowerCase() === 'png' ) {
+        upload({
+          Bucket: 'beta.scewpt.com',
+          Key: `spore/price`,
+          Body: '' + p.price,
+          ContentType: 'text/plain',
+          ACL: 'public-read',
+        })
+      }      
       let dextoken = find_token(tokens, { key: 'symbol', value: p.dex})
       versioning(p, `dex/${dextoken.id.toLowerCase()}/price/${p.id.toLowerCase()}.json`.toLowerCase(), price_different)
     })
