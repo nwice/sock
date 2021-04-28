@@ -29,11 +29,13 @@ const pricefirst = async () => {
         })
     })    
 
-    let report_spore = Object.assign({}, spore.prices.filter(p => p.dex === 'png')[0], report)
+    let flat_shell = spore = Object.assign({}, spore.prices.filter(p => p.dex === 'png')[0], report)
 
     delete spore.prices
 
-    Object.assign(spore, report_spore)
+    Object.assign(spore, flat_shell)
+
+    console.log(spore)
 
     versioning(spore, `dex/${spore.id.toLowerCase()}/tvl.json`.toLowerCase() )
 
