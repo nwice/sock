@@ -57,7 +57,7 @@ const external = await Promise.all(Object.keys(tokens).map(k => { return tokens[
         return dexpairs(dex).then(pairs => {
             dex.pairs = pairs
             let avaxprice = dex_avaxprice(dex)[2]
-            console.log(dex.symbol.toLowerCase(), 'avaxprice:', avaxprice)
+            //console.log(dex.symbol.toLowerCase(), 'avaxprice:', avaxprice)
             let tvllocked = dex.pairs.map(pair => {                
                 pair.locked = parseFloat(pair.reserveETH) * avaxprice
                 return pair.locked

@@ -41,12 +41,12 @@ const getcurrent = async (path) => {
 }
 
 const upload = async (o) => {
-    if ( process.env.NODE_ENV === undefined || process.env.NODE_ENV !== 'dev' ) {
-        let s3upload = Object.assign({}, s3props, o)
-        console.log('s3upload:', s3upload);
+    let s3upload = Object.assign({}, s3props, o)
+    if ( process.env.NODE_ENV === undefined || process.env.NODE_ENV !== 'dev' ) {        
+        console.log('upload aws:', s3upload);
         return s3.upload(s3upload).promise();        
     } else {
-        console.log('not aws')
+        console.log('skip aws:', s3upload)
     }
     return Promise.resolve()
 }
@@ -71,9 +71,7 @@ const versioning = async (o, p, conditional) => {
                 Body: out,
                 Key: next_version_location,
             })).promise();    
-        } else {
-            console.log('not aws')
-        }
+        } 
     }
 }
 

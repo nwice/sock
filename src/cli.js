@@ -87,16 +87,15 @@ const savetvl = async () => {
 
 const saveprice = async () => {
     let prices = await dexprices(dexes)
-    console.log('prices length:', prices)
+    console.log('token length:', prices.length, 'pricing length:', tokens.map(p => p.prices.length).reduce( (a,b) => a + b, 0) )
 
     let publishable = prices.filter(p => {   
       return p.tradeVolume > 0 && !refuse.map(msi => msi.toLowerCase()).includes(p.id.toLowerCase())      
     });
 
-    console.log('publishable:', publishable.length)
-    
     publishable.forEach(async (p) => {    
       if ( p.symbol.toLowerCase() === 'snob' && p.dex.toLowerCase() === 'png' ) {
+        console.log('individual:', p.symbol.toLowerCase())
         upload({
           Bucket: 'beta.scewpt.com',
           Key: `snob/price`,
@@ -106,17 +105,20 @@ const saveprice = async () => {
         })
       }
       if ( p.symbol.toLowerCase() === 'spore' && p.dex.toLowerCase() === 'png' ) {
+        console.log('individual:', p.symbol.toLowerCase())
         upload({
           Bucket: 'beta.scewpt.com',
           Key: `spore/price`,
-          Body: '' + p.price,
+          Body: '' + p.price.toFixed(18),
           ContentType: 'text/plain',
           ACL: 'public-read',
         })
       }      
       let dextoken = find_token(tokens, { key: 'symbol', value: p.dex})
       versioning(p, `dex/${dextoken.id.toLowerCase()}/price/${p.id.toLowerCase()}.json`.toLowerCase(), price_different)
-    })
+    })    
+
+    console.log('publishable:', publishable.length)    
     return prices;
 }
 
@@ -126,7 +128,7 @@ if ( process.argv.length > 2 && Object.keys(commands).includes(process.argv[2]) 
     let command = process.argv[2];
     console.log('running command:', command)
     await commands[command]().then(res => {
-        console.log('command complete:', command, 'result:', res)
+        console.log('command complete:', command, 'result:', typeof res)
         setTimeout( () => {
             console.log('exit')
             exit()        
