@@ -1,6 +1,6 @@
 import { bsc, ava } from './../web3.js';
 import { tokens, dexes } from './../statemachine.js'
-import { find_token, pair_contains, pairnick } from './../util.js'
+import { find_token, pair_contains } from './../util.js'
 import { abi_erc20 } from './../abi/abi_erc20.js'
 import { dexprices } from './../price.js'
 import { versioning, upload } from './../versioning.js';
@@ -23,7 +23,6 @@ const pricefirst = async () => {
 
     dexes.filter(d => d?.pairs).map(dex => {
         dex.pairs.filter(p => { return pair_contains(p, spore)} ).forEach(p => {
-            console.log(`${dex.symbol.toLowerCase().padStart(8, ' ')} ${pairnick(p).padStart(14, ' ')} locked:`.padEnd(5, ' '), p.locked)
             report.locked += p.locked
             report.pairs.push(p)
         })

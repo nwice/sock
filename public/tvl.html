@@ -51,8 +51,13 @@
 <body class="mdc-typography">
     <defi-header></defi-header>
     <main>
-        <defi-tvl hash="0xC38f41A296A4493Ff429F1238e030924A1542e50"></defi-tvl>        
+                
     </main>    
     <defi-footer></defi-footer>
+    <script>
+        let tvl = document.createElement('defi-tvl');
+        tvl.setAttribute('hash', getParameterByName('hash') || '0xC38f41A296A4493Ff429F1238e030924A1542e50')
+        document.querySelector('main').appendChild(tvl)
+    </script>
 </body>
 </html>
