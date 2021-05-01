@@ -21,6 +21,15 @@ const pricefirst = async () => {
 
     report.circulatingSupply = spore.totalSupply - report.avaBurned - report.bscBurned; // - spore.totalFees / 2
 
+    await upload({
+        Bucket: 'powder.network',
+        Key: `supply/spore.json`,
+        Body: JSON.stringify(Object.assign({}, report, { totalSupply: spore.totalSupply })),
+        ContentType: 'application/json',
+        ACL: 'public-read',
+    })    
+
+
     dexes.filter(d => d?.pairs).map(dex => {
         dex.pairs.filter(p => { return pair_contains(p, spore)} ).forEach(p => {
             console.log(dex.symbol.toLowerCase(), pairnick(p), p.locked)
@@ -54,16 +63,6 @@ const pricefirst = async () => {
         ContentType: 'text/plain',
         ACL: 'public-read',
     })
-
-    let o = { total: 100000000000000000, circulating: spore.circulatingSupply.toFixed(2) }
-
-    await upload({
-        Bucket: 'powder.network',
-        Key: `supply/spore.json`,
-        Body: JSON.stringify(o),
-        ContentType: 'application/json',
-        ACL: 'public-read',
-    })    
    
 }
 
