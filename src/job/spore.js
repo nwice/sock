@@ -14,9 +14,7 @@ const pricefirst = async () => {
     console.log(spore)
     let report = {
         bscBurned: bscBurned / 10 ** spore.decimals,
-        avaBurned: avaBurned / 10 ** spore.decimals,
-        locked: 0,
-        pairs: []
+        avaBurned: avaBurned / 10 ** spore.decimals
     }
 
     report.circulatingSupply = spore.totalSupply - report.avaBurned - report.bscBurned; // - spore.totalFees / 2
@@ -29,6 +27,8 @@ const pricefirst = async () => {
         ACL: 'public-read',
     })    
 
+    report.locked = 0;
+    report.pairs = []
 
     dexes.filter(d => d?.pairs).map(dex => {
         dex.pairs.filter(p => { return pair_contains(p, spore)} ).forEach(p => {
