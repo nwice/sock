@@ -55,7 +55,7 @@ const pricefirst = async () => {
         ACL: 'public-read',
     })
 
-    let o = { circulating: spore.circulatingSupply.toFixed(2), total: spore.totalSupply }
+    let o = { total: spore.totalSupply, circulating: spore.circulatingSupply.toFixed(2) }
 
     await upload({
         Bucket: 'powder.network',

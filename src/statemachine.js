@@ -154,4 +154,17 @@ const external = await Promise.all(Object.keys(tokens).map(k => { return tokens[
     return dexes
 })
 
+/*
+let sfi = find_token(tokens, { key: 'id', value: '0x1f1fe1ef06ab30a791d6357fdf0a7361b39b1537'})
+let report = { pairs: [], locked: 0 }
+dexes.filter(d => d?.pairs).map(dex => {
+    dex.pairs.filter(p => { return pair_contains(p, sfi)} ).forEach(p => {
+        console.log(dex.symbol.toLowerCase(), pairnick(p), p.locked)
+        report.locked += p.locked
+        report.pairs.push(p)
+    })
+})
+console.log('sfi locked:', report.locked)
+*/
+
 export { tokens, dexes }
