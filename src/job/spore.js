@@ -55,10 +55,12 @@ const pricefirst = async () => {
         ACL: 'public-read',
     })
 
+    let o = { total: 100000000000000000, circulating: spore.circulatingSupply.toFixed(2) }
+
     await upload({
         Bucket: 'powder.network',
         Key: `supply/spore.json`,
-        Body: JSON.stringify({ total: spore.totalSupply, circulating: spore.circulatingSupply.toFixed(2) }),
+        Body: JSON.stringify(o),
         ContentType: 'application/json',
         ACL: 'public-read',
     })    
