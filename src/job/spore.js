@@ -17,7 +17,8 @@ const pricefirst = async () => {
         avaBurned: avaBurned / 10 ** spore.decimals
     }
 
-    report.circulatingSupply = spore.totalSupply - report.avaBurned - report.bscBurned; // - spore.totalFees / 2
+    report.totalBurned = report.avaBurned + report.bscBurned;
+    report.circulatingSupply = spore.totalSupply - report.totalBurned; // - spore.totalFees / 2
 
     await upload({
         Bucket: 'powder.network',
