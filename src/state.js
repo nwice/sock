@@ -35,6 +35,10 @@ const tokens = [
         id: '0x488F73cddDA1DE3664775fFd91623637383D6404' // yts
     },    
     {
+        dex: 'bag',
+        id: '0xa1144a6a1304bd9cbb16c800f7a867508726566e'
+    },
+    {
         id: '0x9a928D7dcD8D7E5Cb6860B7768eC2D87B8934267'
     },
     {
@@ -86,6 +90,26 @@ const tokens = [
     },    
     {
         id: '0x54b17F4f55bd93EfBe5f91a3A4619619bC7DBC33'
+    },
+    {
+        id: '0xD67de0e0a0Fd7b15dC8348Bb9BE742F3c5850454',
+        nick: 'Frax Share'
+    },
+    {
+        id: '0xd606199557c8ab6f4cc70bd03facc96ca576f142',
+        nick: 'gondola'
+    },
+    {
+        id: '0x846d50248baf8b7ceaa9d9b53bfd12d7d7fbb25a',
+        nick: 'verso'
+    },
+    {
+        id: '0x1ecd47ff4d9598f89721a2866bfeb99505a413ed',
+        nick: 'avme'
+    },
+    {
+        id: '0xc931f61b1534eb21d8c11b24f3f5ab2471d4ab50',
+        nick: 'blocknet'
     },
     {
         bsc: '0x33a3d962955a3862c8093d1273344719f03ca17c',
@@ -339,6 +363,9 @@ const dexes = [
     }),
     Object.assign({},  tokens[8], {
         graphql: 'https://api.thegraph.com/subgraphs/name/yetiswap/yetiswap',
+    }),
+    Object.assign({},  tokens[9], {
+        graphql: 'https://api.thegraph.com/subgraphs/name/baguette-exchange/baguette',
     })    
 ]
 
